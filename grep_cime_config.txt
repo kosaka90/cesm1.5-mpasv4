@@ -1,0 +1,133 @@
+Binary file ./cime/.svn/wc.db matches
+./cime/.svn/pristine/3c/3c272bc4579b091116b5770526b1aa5a23f89b3c.svn-base:    <base>-Wp,-macro=no_com -convert=BIG_ENDIAN -indirect <env>CIMEROOT</env>/cime_config/cesm/machines/nag_mpi_argument.txt</base>
+./cime/.svn/pristine/3c/3c272bc4579b091116b5770526b1aa5a23f89b3c.svn-base:    <base>-Wp,-macro=no_com -convert=BIG_ENDIAN -indirect <env>CIMEROOT</env>/cime_config/cesm/machines/nag_mpi_argument.txt</base>
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:	M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:	M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:	M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/Makefile
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/Makefile
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:        M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:	M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:	M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:	M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/Makefile
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:D       cime_config/cesm/machines/config_build.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/Makefile
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/userdefined_laptop_template/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_pio.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/Makefile
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/userdefined_laptop_template/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/Makefile
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:D       cime_config/cesm/machines/buildlib.csm_share
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:D       cime_config/cesm/machines/buildlib.gptl
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:D       cime_config/cesm/machines/buildlib.mct
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:D       cime_config/cesm/machines/buildlib.pio
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/template.case.run
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/template.lt_archive
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/template.st_archive
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_build.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_pio.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:D       cime_config/cesm/machines/taskmaker.pl
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:D       cime_config/cesm/machines/userdefined_laptop_template/mkbatch.no_batch_system
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:cime_config/cesm/machines/config_batch.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:cime_config/cesm/machines/config_machines.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/Makefile
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_compilers.xml
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:A       cime_config/cesm/machines/nag_mpi_argument.txt
+./cime/.svn/pristine/bc/bc8a77a449984b307ef129a6cc8fefa36eb4515c.svn-base:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:	M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:	M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:	M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/Makefile
+./cime/ChangeLog:M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/Makefile
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:        M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:	M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:	M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:	M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/Makefile
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:D       cime_config/cesm/machines/config_build.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/Makefile
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/userdefined_laptop_template/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_pio.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/Makefile
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/userdefined_laptop_template/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/Makefile
+./cime/ChangeLog:D       cime_config/cesm/machines/buildlib.csm_share
+./cime/ChangeLog:D       cime_config/cesm/machines/buildlib.gptl
+./cime/ChangeLog:D       cime_config/cesm/machines/buildlib.mct
+./cime/ChangeLog:D       cime_config/cesm/machines/buildlib.pio
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/template.case.run
+./cime/ChangeLog:M       cime_config/cesm/machines/template.lt_archive
+./cime/ChangeLog:M       cime_config/cesm/machines/template.st_archive
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_build.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_pio.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:D       cime_config/cesm/machines/taskmaker.pl
+./cime/ChangeLog:D       cime_config/cesm/machines/userdefined_laptop_template/mkbatch.no_batch_system
+./cime/ChangeLog:cime_config/cesm/machines/config_batch.xml
+./cime/ChangeLog:cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:cime_config/cesm/machines/config_machines.xml
+./cime/ChangeLog:M       cime_config/cesm/machines/Makefile
+./cime/ChangeLog:M       cime_config/cesm/machines/config_compilers.xml
+./cime/ChangeLog:A       cime_config/cesm/machines/nag_mpi_argument.txt
+./cime/ChangeLog:M       cime_config/cesm/machines/config_machines.xml
+./cime/cime_config/cesm/machines/config_compilers.xml:    <base>-Wp,-macro=no_com -convert=BIG_ENDIAN -indirect <env>CIMEROOT</env>/cime_config/cesm/machines/nag_mpi_argument.txt</base>
+./cime/cime_config/cesm/machines/config_compilers.xml:    <base>-Wp,-macro=no_com -convert=BIG_ENDIAN -indirect <env>CIMEROOT</env>/cime_config/cesm/machines/nag_mpi_argument.txt</base>
+./components/pop/.svn/pristine/08/086aa6feb5f98cee8052a70bb8c21ed67514c7b2.svn-base:	     cime/cime_config/cesm/machines/Makefile 
+./components/pop/ChangeLog:	     cime/cime_config/cesm/machines/Makefile 

@@ -1,0 +1,11 @@
+-spmd -nosmp
+-dyn fv
+-res 1.9x2.5
+-phys spcam_m2005
+-rad rrtmg
+-chem trop_mam3
+-spcam_nx 16
+-spcam_ny 1
+-spcam_dx 4000
+-spcam_dt 20
+-s

@@ -1,0 +1,7 @@
+-nosmp -spmd
+-dyn se
+-dyn_test
+-res ne16np4
+-phys ideal
+-debug
+-s

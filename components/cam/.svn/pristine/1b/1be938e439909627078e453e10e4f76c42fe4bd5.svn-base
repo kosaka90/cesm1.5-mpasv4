@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+
+<grid_data>
+
+  <help>
+    =========================================
+    GRID naming convention
+    =========================================
+    The long grid name has the order atm,lnd,ocn/ice,river,mask,glc 
+    The following shortname is used
+    a% => atm, l% => lnd, oi% => ocn/ice, r% => river, m% => mask, g% => glc, w% => wav
+    The notation is 
+    a%name_l%name_oi%name_r%name_m%mask_g%name_w%name
+    Each grid is associated with three required elements and one optional element
+    longname      (a%name_l%name_oi%name_r%name_m%mask_g%name_w%name)
+    shortname     (for backwards compatibility)
+    alias         (even shorter notation than shortname) (optional)
+    support       (Description of the support level for this grid) (optional)
+    Each grid can also be associated with the following optional attributes	 
+    compset       (Regular expression for compsets that are required to match for this grid) (optional)
+  </help>
+
+  <grids>
+
+    <grid>
+      <sname>ne16np4nc2</sname>
+      <alias>ne16nc2</alias>
+      <lname>a%ne16np4nc2_l%null_oi%null_r%null_m%null_g%null_w%null</lname>
+    </grid>
+
+    <grid>
+      <sname>ne16np4nc3</sname>
+      <alias>ne16nc3</alias>
+      <lname>a%ne16np4nc3_l%null_oi%null_r%null_m%null_g%null_w%null</lname>
+    </grid>
+
+    <grid>
+      <sname>ne16np4nc4</sname>
+      <alias>ne16nc4</alias>
+      <lname>a%ne16np4nc4_l%null_oi%null_r%null_m%null_g%null_w%null</lname>
+    </grid>
+
+    <grid>
+      <sname>ne30np4nc2</sname>
+      <alias>ne30nc2</alias>
+      <lname>a%ne30np4nc2_l%null_oi%null_r%null_m%null_g%null_w%null</lname>
+    </grid>
+
+    <grid>
+      <sname>ne30np4nc3</sname>
+      <alias>ne30nc3</alias>
+      <lname>a%ne30np4nc3_l%null_oi%null_r%null_m%null_g%null_w%null</lname>
+    </grid>
+
+    <grid>
+      <sname>ne30np4nc4</sname>
+      <alias>ne30nc4</alias>
+      <lname>a%ne30np4nc4_l%null_oi%null_r%null_m%null_g%null_w%null</lname>
+    </grid>
+
+  </grids>
+
+  <!-- ======================================================== -->
+  <!-- Component grid domain specifications -->
+  <!-- ======================================================== -->
+
+  <domains>
+
+    <domain name="ne16np4nc2">
+      <nx>6144</nx> <ny>1</ny>   
+      <desc>ne16np4nc2 is Spectral Elem 2-deg grid with 2x2 pyhsics grid:</desc> 
+      <support>For low resolution spectral element grid testing</support>
+    </domain>
+
+    <domain name="ne16np4nc3">
+      <nx>13824</nx> <ny>1</ny>   
+      <desc>ne16np4nc3 is Spectral Elem 2-deg grid with 3x3 pyhsics grid:</desc> 
+      <support>For low resolution spectral element grid testing</support>
+    </domain>
+
+    <domain name="ne16np4nc4">
+      <nx>24576</nx> <ny>1</ny>   
+      <desc>ne16np4nc4 is Spectral Elem 2-deg grid with 4x4 pyhsics grid:</desc> 
+      <support>For low resolution spectral element grid testing</support>
+    </domain>
+
+    <domain name="ne30np4nc2">
+      <nx>21600</nx> <ny>1</ny>   
+      <desc>ne30np4nc2 is Spectral Elem 1-deg grid with 2x2 pyhsics grid:</desc> 
+    </domain>
+
+    <domain name="ne30np4nc3">
+      <nx>48600</nx> <ny>1</ny>   
+      <desc>ne30np4nc3 is Spectral Elem 1-deg grid with 3x3 pyhsics grid:</desc> 
+    </domain>
+
+    <domain name="ne30np4nc4">
+      <nx>86400</nx> <ny>1</ny>   
+      <desc>ne30np4nc4 is Spectral Elem 1-deg grid with 4x4 pyhsics grid:</desc> 
+    </domain>
+
+  </domains>
+
+  <!-- ======================================================== -->
+  <!-- Mapping -->
+  <!-- ======================================================== -->
+
+  <gridmaps>
+
+  </gridmaps>
+
+</grid_data>

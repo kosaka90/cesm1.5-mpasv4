@@ -2714,22 +2714,17 @@ module atm_time_integration
                ! followed by imposition of an upper bound on the eddy viscosity
                kdiff(k,iCell) = (c_s * config_len_disp)**2 * sqrt(d_diag(k)**2 + d_off_diag(k)**2)
                kdiff(k,iCell) = min(kdiff(k,iCell),(0.01*config_len_disp**2)/dt)
-
-               !if (add_top_damp) then
-               !  z = 0.5*(zgrid(k,iCell) + zgrid(k+1,iCell))
-               !  dz= (zgrid(k+1,iCell) - zgrid(k,iCell))
-               !  if (z > zd) then
-               !     dampk(k,iCell) = config_len_disp**2./dt * config_xnutr * cos(0.5*pii*(zt-z)/(zt-zd))**2.0
-               !     !dampk(k,iCell) = areaCell(iCell)/dt * config_xnutr * cos(0.5*pii*(zt-z)/(zt-zd))**2.0
-               !     dampkv(k,iCell)= dz**2./dt * config_xnutr * cos(0.5*pii*(zt-z)/(zt-zd))**2.0
-               !     ! set upper limit on vertical K (based on horizontal K)
-               !     dampkv(k,iCell)= min(dampkv(k,iCell), dampk(k,iCell))
-
-               !     kdiff(k,iCell) = max(kdiff(k,iCell), dampk(k,iCell)) 
-               !  end if
-               !end if
-
             end do
+
+            !
+            ! 2nd-order filter for top absorbing layer as in CAM-SE :  WCS 10 May 2017
+            !
+            kdiff(nVertLevels-2,iCell) = max(kdiff(nVertLevels-2,iCell),   2.0833*config_len_disp)
+            kdiff(nVertLevels-1,iCell) = max(kdiff(nVertLevels-1,iCell),2.*2.0833*config_len_disp)
+            kdiff(nVertLevels  ,iCell) = max(kdiff(nVertLevels  ,iCell),4.*2.0833*config_len_disp)
+            !
+            !  end of absorbing layer addition
+
          end do
 !ldf (2012-10-10):
          h_mom_eddy_visc4   = config_visc4_2dsmag * config_len_disp**3
@@ -2744,6 +2739,12 @@ module atm_time_integration
          delsq_horiz_mixing = .true.
 !ldf (2012-10-10):
       end if
+
+!+++KSA
+        ! write(0,*) '(KSA)... config_visc4_2dsmag = ', config_visc4_2dsmag
+        ! write(0,*) '(KSA)... h_mom_eddy_visc4    = ', h_mom_eddy_visc4
+        ! write(0,*) '(KSA)... h_theta_eddy_visc4  = ', h_theta_eddy_visc4
+!---KSA
 
       tend_u(:,:) = 0.0
 
@@ -2972,14 +2973,14 @@ module atm_time_integration
                   u_diffusion =   ( divergence(k,cell2)  - divergence(k,cell1) ) / dcEdge(iEdge)  &
                                  -( vorticity(k,vertex2) - vorticity(k,vertex1) ) / max(dvEdge(iEdge),0.25*dcEdge(iEdge))
 
-                  if (add_top_damp) then
-                     dampk1 = 0.
-                     z = 0.25*(zgrid(k,cell1) + zgrid(k,cell2) + zgrid(k+1,cell1) + zgrid(k+1,cell2))
-                     if (z > zd) dampk1 = 1./64.*config_len_disp**2./dt * config_xnutr * cos(0.5*pii*(zt-z)/(zt-zd))**2.0
-                     u_diffusion = rho_edge(k,iEdge)* max( 0.5*(kdiff(k,cell1)+kdiff(k,cell2)), dampk1 ) * u_diffusion
-                  end if
+                  !! if (add_top_damp) then
+                  !!    dampk1 = 0.
+                  !!    z = 0.25*(zgrid(k,cell1) + zgrid(k,cell2) + zgrid(k+1,cell1) + zgrid(k+1,cell2))
+                  !!    if (z > zd) dampk1 = 1./64.*config_len_disp**2./dt * config_xnutr * cos(0.5*pii*(zt-z)/(zt-zd))**2.0
+                  !!    u_diffusion = rho_edge(k,iEdge)* max( 0.5*(kdiff(k,cell1)+kdiff(k,cell2)), dampk1 ) * u_diffusion
+                  !! end if
 
-                  !u_diffusion = rho_edge(k,iEdge)* 0.5*(kdiff(k,cell1)+kdiff(k,cell2)) * u_diffusion
+                  u_diffusion = rho_edge(k,iEdge)* 0.5*(kdiff(k,cell1)+kdiff(k,cell2)) * u_diffusion
                   u_diffusion = u_diffusion * meshScalingDel2(iEdge)
  
                   tend_u_euler(k,iEdge) = tend_u_euler(k,iEdge) + u_diffusion
@@ -3068,19 +3069,19 @@ module atm_time_integration
                !    stringent than the rotational part, and this flexibility may be useful.
                !
 
-               if (add_top_damp) then
-                  dampk2 = 1.
-                  z = 0.25*(zgrid(k,cell1) + zgrid(k,cell2) + zgrid(k+1,cell1) + zgrid(k+1,cell2))
-                  if (z > zd) dampk2 = 1. + 2.*cos(0.5*pii*(zt-z)/(zt-zd))**2.0
+               !! if (add_top_damp) then
+               !!    dampk2 = 1.
+               !!    z = 0.25*(zgrid(k,cell1) + zgrid(k,cell2) + zgrid(k+1,cell1) + zgrid(k+1,cell2))
+               !!    if (z > zd) dampk2 = 1. + 2.*cos(0.5*pii*(zt-z)/(zt-zd))**2.0
+               !!
+               !!   u_diffusion =  rho_edge(k,iEdge) * ( config_del4u_div_factor * dampk2 * ( delsq_divergence(k,cell2)  - delsq_divergence(k,cell1) ) / dcEdge(iEdge)  &
+               !!               -( delsq_vorticity(k,vertex2) - delsq_vorticity(k,vertex1) ) / max(dvEdge(iEdge), 0.25*dcEdge(iEdge)) &
+               !!                                      )
+               !! end if
 
-                  u_diffusion =  rho_edge(k,iEdge) * ( config_del4u_div_factor * dampk2 * ( delsq_divergence(k,cell2)  - delsq_divergence(k,cell1) ) / dcEdge(iEdge)  &
-                              -( delsq_vorticity(k,vertex2) - delsq_vorticity(k,vertex1) ) / max(dvEdge(iEdge), 0.25*dcEdge(iEdge)) &
-                                                     )
-               end if
-
-               !u_diffusion =  rho_edge(k,iEdge) * ( config_del4u_div_factor * ( delsq_divergence(k,cell2)  - delsq_divergence(k,cell1) ) / dcEdge(iEdge)  &
-               !            -( delsq_vorticity(k,vertex2) - delsq_vorticity(k,vertex1) ) / max(dvEdge(iEdge), 0.25*dcEdge(iEdge)) &
-               !                                   )
+               u_diffusion =  rho_edge(k,iEdge) * ( config_del4u_div_factor * ( delsq_divergence(k,cell2)  - delsq_divergence(k,cell1) ) / dcEdge(iEdge)  &
+                           -( delsq_vorticity(k,vertex2) - delsq_vorticity(k,vertex1) ) / max(dvEdge(iEdge), 0.25*dcEdge(iEdge)) &
+                                                  )
 
                u_diffusion = u_diffusion * meshScalingDel4(iEdge)
                tend_u_euler(k,iEdge) = tend_u_euler(k,iEdge) - h_mom_eddy_visc4 * u_diffusion

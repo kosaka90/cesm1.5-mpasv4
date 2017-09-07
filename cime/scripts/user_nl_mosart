@@ -1,0 +1,15 @@
+!----------------------------------------------------------------------------------
+! Users should add all user specific namelist changes below in the form of 
+! namelist_var = new_namelist_value 
+! NOTE: namelist variable rtm_tstep CAN ONLY be changed by modifying the value
+!       of the xml variable ROF_NCPL in env_run.xml
+! NOTE: if the xml variable ROF GRID in env_build.xml is set to 'null', then
+!        the RTM build-namelist will set do_rtm to .false. - and will ignore 
+!        any change below
+!----------------------------------------------------------------------------------
+
+rtmhist_nhtfrq = -24
+rtmhist_fincl1 = 'STORAGE_LIQ',
+rtmhist_fexcl1 = 'TOTAL_DISCHARGE_TO_OCEAN_ICE','RIVER_DISCHARGE_OVER_LAND_ICE'
+!frivinp_rtm = '$DIN_LOC_ROOT/rof/mosart/MOSART_Global_8th_20160716a.nc'
+
