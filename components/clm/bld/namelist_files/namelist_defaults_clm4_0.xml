@@ -284,7 +284,8 @@ lnd/clm2/surfdata_map/surfdata_ne240np4_simyr2000_c130313.nc</fsurdat>
 /global/project/projectdirs/m1867/MPASinput/mp30a/clm4_0/surfdata_mp30a_simyr2000_c150518.nc</fsurdat>
 <fsurdat hgrid="mp34306a"    sim_year="2000" irrig=".false." >
 /global/project/projectdirs/m2645/MPAS/FACETs_50-200km/clm4_0/surfdata_mpas.34306.chun_simyr2000_c170512.nc</fsurdat>
-
+<fsurdat hgrid="mp137218a"    sim_year="2000" irrig=".false." >
+/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/clm4_0/surfdata_mp137218a_simyr2000_c170726.nc</fsurdat>
 
 <!-- Crop and Irrigation surface datasets -->
 <fsurdat hgrid="1.9x2.5" sim_year="2000" irrig=".true." crop="on">
@@ -389,6 +390,8 @@ lnd/clm2/surfdata_map/surfdata_ne240np4_simyr1850_c130313.nc</fsurdat>
 /global/project/projectdirs/m1867/MPASinput/mp30a/clm4_0/surfdata_mp30a_simyr1850_c150518.nc</fsurdat>
 <fsurdat hgrid="mp34306a"    sim_year="1850" irrig=".false." >
 /global/project/projectdirs/m2645/MPAS/FACETs_50-200km/clm4_0/surfdata_mpas.34306.chun_simyr1850_c170512.nc</fsurdat>
+<fsurdat hgrid="mp137218a"    sim_year="1850" irrig=".false." >
+/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/clm4_0/surfdata_mp137218a_simyr1850_c170726.nc</fsurdat>
 
 <!-- Single point data for year 1850 -->
 <fsurdat hgrid="1x1_tropicAtl" sim_year="1850" irrig=".false." crop="off">
