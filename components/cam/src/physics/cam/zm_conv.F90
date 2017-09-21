@@ -76,7 +76,8 @@ contains
 
 
 subroutine zm_convi(limcnv_in, zmconv_c0_lnd, zmconv_c0_ocn, zmconv_ke, zmconv_ke_lnd, &
-                    zmconv_momcu, zmconv_momcd, zmconv_num_cin, zmconv_org, no_deep_pbl_in)
+                    zmconv_momcu, zmconv_momcd, zmconv_num_cin, zmconv_org, zmconv_tau, no_deep_pbl_in)
+   !zmtau added by KSA
 
    use dycore,       only: get_resolution
 
@@ -89,6 +90,8 @@ subroutine zm_convi(limcnv_in, zmconv_c0_lnd, zmconv_c0_ocn, zmconv_ke, zmconv_k
    real(r8),intent(in)           :: zmconv_ke_lnd
    real(r8),intent(in)           :: zmconv_momcu
    real(r8),intent(in)           :: zmconv_momcd
+   real(r8),intent(in)           :: zmconv_tau       !added by KSA
+
    logical                       :: zmconv_org
    logical, intent(in), optional :: no_deep_pbl_in  ! no_deep_pbl = .true. eliminates ZM convection entirely within PBL 
 
@@ -125,7 +128,8 @@ subroutine zm_convi(limcnv_in, zmconv_c0_lnd, zmconv_c0_ocn, zmconv_ke, zmconv_k
    ! convection is too weak, thus adjusted to 2400.
 
    hgrid = get_resolution()
-   tau = 3600._r8
+   !tau = 3600._r8
+   tau = zmconv_tau   ! (KSA)changed to read in from the cam namelist
 
    if ( masterproc ) then
       write(iulog,*) 'tuning parameters zm_convi: tau',tau
@@ -133,6 +137,8 @@ subroutine zm_convi(limcnv_in, zmconv_c0_lnd, zmconv_c0_ocn, zmconv_ke, zmconv_k
       write(iulog,*) 'tuning parameters zm_convi: num_cin', num_cin
       write(iulog,*) 'tuning parameters zm_convi: ke',ke
       write(iulog,*) 'tuning parameters zm_convi: no_deep_pbl',no_deep_pbl
+      write(iulog,*) 'KSA: tuning parameters zm_convi: tau',tau
+
    endif
 
    if (masterproc) write(iulog,*)'**** ZM: DILUTE Buoyancy Calculation ****'

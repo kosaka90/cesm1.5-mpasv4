@@ -54,6 +54,8 @@ module zm_conv_intr
    real(r8) :: zmconv_ke_lnd = unset_r8
    real(r8) :: zmconv_momcu  = unset_r8
    real(r8) :: zmconv_momcd  = unset_r8
+   real(r8) :: zmconv_tau    = unset_r8  !KSA, time scale in the ZM scheme
+
    integer  :: zmconv_num_cin            ! Number of negative buoyancy regions that are allowed 
                                          ! before the convection top and CAPE calculations are completed.
    logical  :: zmconv_org                ! Parameterization for sub-grid scale convective organization for the ZM deep 
@@ -145,7 +147,8 @@ subroutine zm_conv_readnl(nlfile)
 
    namelist /zmconv_nl/ zmconv_c0_lnd, zmconv_c0_ocn, zmconv_num_cin, &
                         zmconv_ke, zmconv_ke_lnd, zmconv_org, &
-                        zmconv_momcu, zmconv_momcd
+                        zmconv_momcu, zmconv_momcd, zmconv_tau       
+   !zmtau added by KSA
    !-----------------------------------------------------------------------------
 
    if (masterproc) then
@@ -180,6 +183,10 @@ subroutine zm_conv_readnl(nlfile)
    if (ierr /= 0) call endrun("zm_conv_init: FATAL: mpi_bcast: zmconv_momcd")
    call mpi_bcast(zmconv_org,               1, mpi_logical, masterprocid, mpicom, ierr)
    if (ierr /= 0) call endrun("zm_conv_init: FATAL: mpi_bcast: zmconv_org")
+!++KSA
+   call mpi_bcast(zmconv_tau     ,               1, mpi_logical, masterprocid, mpicom, ierr)
+   if (ierr /= 0) call endrun("zm_conv_init: FATAL: mpi_bcast: zmconv_tau")
+!--KSA
 
 end subroutine zm_conv_readnl
 
@@ -309,8 +316,8 @@ subroutine zm_conv_init(pref_edge)
         
     no_deep_pbl = phys_deepconv_pbl()
     call zm_convi(limcnv,zmconv_c0_lnd, zmconv_c0_ocn, zmconv_ke, zmconv_ke_lnd, &
-                  zmconv_momcu, zmconv_momcd, zmconv_num_cin, zmconv_org, no_deep_pbl_in = no_deep_pbl)
-
+                  zmconv_momcu, zmconv_momcd, zmconv_num_cin, zmconv_org,zmconv_tau, no_deep_pbl_in = no_deep_pbl)
+    !zmconv_tau added by KSA
     cld_idx         = pbuf_get_index('CLD')
     fracis_idx      = pbuf_get_index('FRACIS')
 
