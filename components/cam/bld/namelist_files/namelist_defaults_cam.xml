@@ -1242,6 +1242,7 @@
 <zmconv_org                                        zmconv_org="1"     > .true.  </zmconv_org>
 
 <zmconv_num_cin                                                       > 5       </zmconv_num_cin>
+<zmconv_tau                                                           > 3.6D3   </zmconv_tau>
 
 <!-- Cloud sedimentation -->
 
