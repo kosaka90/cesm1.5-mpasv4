@@ -59,7 +59,7 @@ ppnode=68   # number of logical cores (MPI ranks) to use per node (control hyper
 
 #env_mach_pes.xml. 
 #Need to run case.setup (and --clean) everytime (except first) we edit this file
-edit_pes=false
+edit_pes=true
 if [ "$edit_pes" = true ]; then
     echo "editing env_mach_pes.xml"
     $casedir/xmlchange NTASKS_ATM=$ntasks
@@ -80,7 +80,7 @@ $casedir/xmlquery PES_PER_NODE
 #env_build.xml. 
 #must run the case.build command after changing this file.
 #safe to run clean_build before case.build
-edit_build=false
+edit_build=true
 if [ "$edit_build" = true ]; then
     echo "editing env_build.xml"
     $casedir/xmlchange CIME_OUTPUT_ROOT=$SIM_ROOT
@@ -99,7 +99,7 @@ $casedir/xmlquery CAM_CONFIG_OPTS
 #env_run.xml
 #Sets run-time settings such as length of run, frequency of restarts, output of coupler diagnostics,
 #and short-term and long-term archiving. This file can be edited at any time before a job starts.
-edit_run=false
+edit_run=true
 if [ "$edit_run" = true ]; then
     echo "editing env_run.xml"
     $casedir/xmlchange RUN_STARTDATE=2000-01-01
@@ -179,7 +179,7 @@ aoflux_grid='atm'
 HERE
 
 #### run case.setup ####
-run_setup=false
+run_setup=true
 clean_setup=false    #for changing PE layout
 if [ "$run_setup" = true ]; then
     if [ "$clean_setup" = true ]; then
@@ -197,18 +197,18 @@ echo "copying modified source codes into $case/SourceMods/"
 if [ $AERO_OPT = "none" ];then 
     if [ $CAM_VER = "cam5" ];then 
        echo "copying mpas_atm_core_interface.f90 for prescribed aerosol with MG1 (CAM5.3)"
-       cp /global/project/projectdirs/m1867/MPASinput/SourceMods/PM_MG1_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
+       /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/PM_MG1_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
 
     else
        echo "copying mpas_atm_core_interface.f90 for prescribed aerosol with MG2 (CAM5.4 or later)"
 
-       cp /global/project/projectdirs/m1867/MPASinput/SourceMods/PM_MG2_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
+       /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/PM_MG2_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
     fi
 fi
 
 
 #### run case.build ####
-run_build=false
+run_build=true
 clean_build=false
 if [ "$run_build" = true ]; then
     if [ "$clean_build" = true ]; then
