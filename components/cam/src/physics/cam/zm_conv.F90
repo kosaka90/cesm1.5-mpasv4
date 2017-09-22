@@ -137,8 +137,6 @@ subroutine zm_convi(limcnv_in, zmconv_c0_lnd, zmconv_c0_ocn, zmconv_ke, zmconv_k
       write(iulog,*) 'tuning parameters zm_convi: num_cin', num_cin
       write(iulog,*) 'tuning parameters zm_convi: ke',ke
       write(iulog,*) 'tuning parameters zm_convi: no_deep_pbl',no_deep_pbl
-      write(iulog,*) 'KSA: tuning parameters zm_convi: tau',tau
-
    endif
 
    if (masterproc) write(iulog,*)'**** ZM: DILUTE Buoyancy Calculation ****'
