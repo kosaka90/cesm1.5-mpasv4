@@ -2,7 +2,7 @@
 #run this script in $CESM_ROOT/cime/scripts. After creating the case, 
 #I usually create a copy under the case directory, and run from there.
 
-casename="test01_240aFC53_knl"
+casename="test02_120aFC5AQUAP_knl"
 
 CESM_ROOT="/global/u1/k/ksa/MPAS/model/cesm2_0_beta05"
 
@@ -10,11 +10,11 @@ SIM_ROOT="/global/cscratch1/sd/ksa/simulation/MPAS"
 
 CASE_ROOT="/global/project/projectdirs/m1867/ksa/MPAS/cases"
 
-CASE_RES="mp240a_g16"
+CASE_RES="mp120a_g16"
 
 CASE_MACH="cori-knl"
 
-MPAS_INPUT_DIR="/global/project/projectdirs/m1867/MPASinput/mp240a"
+MPAS_INPUT_DIR="/global/project/projectdirs/m1867/MPASinput/mp120a"
 
 CAM_VER="cam5"
 
@@ -32,9 +32,7 @@ echo "CAM version = " $CAM_VER
 echo "Aerosol scheme = " $AERO_PROG
 echo "myemail = " $myemail
 
-#additionally set env.var for land model input 
-MPAS_LNDINPUT_DIR=${MPAS_INPUT_DIR}"/clm4_0"
-echo "MPAS_LNDINPUT_DIR=" $MPAS_LNDINPUT_DIR
+
 MPAS_RUN_DIR="$SIM_ROOT/$casename/run"
 echo "run directory is " $MPAS_RUN_DIR
 
@@ -47,17 +45,17 @@ else
     cd $CESM_ROOT/cime/scripts
     pwd
     echo "creating a new case"
-    ./create_newcase -case $CASE_ROOT/$casename -compset FC5 -res $CASE_RES -mach $CASE_MACH
+    ./create_newcase -case $CASE_ROOT/$casename -compset FC5AQUAP -res $CASE_RES -mach $CASE_MACH
 fi
 
 cd $CASE_ROOT/$casename
-#./create_newcase -case /global/project/projectdirs/m1867/ksa/MPAS/cases/test01_240aFC53_knl -compset FC5 -res mp240a_g16 -mach cori-knl
+
 
 casedir=`pwd`
 #use backtick ` to capture command output to a variable
 
 
-ntasks=68   # number of MPI tasks. Note MPAS does not support openMP threads
+ntasks=544  # number of MPI tasks. Note MPAS does not support openMP threads
 ppnode=68   # number of logical cores (MPI ranks) to use per node (control hyperthreads) 
 
 #env_mach_pes.xml. 
@@ -88,9 +86,8 @@ if [ "$edit_build" = true ]; then
     echo "editing env_build.xml"
     $casedir/xmlchange CIME_OUTPUT_ROOT=$SIM_ROOT
     $casedir/xmlchange DEBUG=FALSE
-    #$casedir/xmlchange CAM_DYCORE=fv  MPAS is set as the default dycore for this CESM package
-    $casedir/xmlchange -id CLM_CONFIG_OPTS -val ' -phys clm4_0'
-    $casedir/xmlchange -id CAM_CONFIG_OPTS -val " -phys $CAM_VER  -chem $AERO_OPT"
+    #$casedir/xmlchange CAM_DYCORE=fv  MPAS is set as the default dycore in this CESM package (cesm2_0 beta05)
+    $casedir/xmlchange -id CAM_CONFIG_OPTS -val " -phys $CAM_VER  -chem $AERO_OPT -ocn aquaplanet -aquaplanet"
 
 fi
 $casedir/xmlquery DEBUG
@@ -105,16 +102,17 @@ $casedir/xmlquery CAM_CONFIG_OPTS
 edit_run=true
 if [ "$edit_run" = true ]; then
     echo "editing env_run.xml"
-    $casedir/xmlchange RUN_STARTDATE=2000-01-01
+    $casedir/xmlchange CAM_NML_USE_CASE='aquaplanet_cam5'
+    $casedir/xmlchange RUN_STARTDATE=0000-01-01
     $casedir/xmlchange STOP_OPTION=ndays
     $casedir/xmlchange STOP_N=5
     $casedir/xmlchange DOUT_S=FALSE
     $casedir/xmlchange INFO_DBUG=1
     #$casedir/xmlchange ATM_NCPL=144   #set physics time step by this variable
     #$casedir/xmlchange REST_OPTION='$STOP_OPTION'
-    $casedir/xmlchange REST_OPTION=never
+    #$casedir/xmlchange REST_OPTION=never
     #$casedir/xmlchange REST_N='$STOP_N'
-    $casedir/xmlchange HIST_OPTION=never
+    #$casedir/xmlchange HIST_OPTION=never
 fi
 #check
 $casedir/xmlquery RUN_STARTDATE
@@ -140,6 +138,7 @@ if [ "$edit_batch" = true ]; then
 
     #change the automatic email message from default (Koichi) to your own email
     sed -i "s/Koichi.Sakaguchi@pnnl.gov/$myemail/g" env_batch_temp.xml
+
 fi      
 #check
 $casedir/xmlquery JOB_WALLCLOCK_TIME
@@ -159,28 +158,31 @@ $casedir/xmlquery JOB_QUEUE
 # for prescribed aerosol (with MG2 only?), need  use_hetfrz_classnuc = .false.
 # and other MPAS specific input files need to be specified
 cat >| user_nl_cam <<HERE
+ext_frc_specifier = ''
+srf_emis_specifier = ''
+tracer_cnst_specifier = ''
+micro_mg_nccons = .true.,
+micro_mg_nicons = .true.
 phys_loadbalance=0
 state_debug_checks=.false.
 use_hetfrz_classnuc = .false.
 empty_htapes=.true.
-fincl1 = 'U:I','OMEGA:I','PRESSURE:I','Z3:I'
-nhtfrq = -1
-mfilt = 24
-ncdata	='$MPAS_INPUT_DIR/x1.10242.CAM.init.161018.nc'
-bnd_topo='$MPAS_INPUT_DIR/mp240a_topo_150210.nc'
-drydep_srf_file='$MPAS_INPUT_DIR/atmsrf_mp240a_150519.nc'
+fincl1 = 'PRESSURE:I','PRESSUREi:I','PRECT','SST','TMQ:I','LHFLX:A','SHFLX:A','TREFHT:I','CLDICE:I','CLDLIQ:I','AWNC:I','AWNI:I'
+nhtfrq = -6
+mfilt  = 4
+ncdata	='$MPAS_INPUT_DIR/aquap/x1.40962.init.APE.nc'
+bnd_topo='$MPAS_INPUT_DIR/aquap/mp120a_topo_150430.APE.nc'
+drydep_srf_file='$MPAS_INPUT_DIR/aquap/atmsrf.mp120a_APE.nc'
 HERE
 
-# CLM namelist. CLM runs on the MPAS grid, so it requires regridded input data
-cat >| user_nl_clm <<HERE
-hist_empty_htapes=.true.
-finidat='$MPAS_LNDINPUT_DIR/clmi.BCN.2000-01-01_mp240a_gx1v6_simyr2000_c150311.nc'
-flanduse_timeseries='$MPAS_LNDINPUT_DIR/landuse.timeseries_mp240a_hist_simyr1850-2005_c150311.nc'
-HERE
 
 #CPL namelist
 cat >| user_nl_cpl <<HERE
 aoflux_grid='atm'
+orb_eccen = 0. 
+orb_obliq = 0. 
+orb_mvelp = 0. 
+orb_mode = 'fixed_parameters'
 HERE
 
 #### run case.setup ####
@@ -225,7 +227,7 @@ if [ "$run_build" = true ]; then
 fi
 
 #### copy MPAS-specific namelist into the run directory
-cp_mpasin=false
+cp_mpasin=true
 if [ "$cp_mpasin" = true ]; then
     cd ${MPAS_RUN_DIR}
     pwd
