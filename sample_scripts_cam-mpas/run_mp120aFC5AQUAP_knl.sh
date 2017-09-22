@@ -213,6 +213,10 @@ if [ $AERO_OPT = "none" ];then
     fi
 fi
 
+echo "EXP5 diffusion"
+/usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/filter_exp5/src.cam/mpas_atm_time_integration.f90.exp5 $casedir/SourceMods/src.cam/mpas_atm_time_integration.f90
+
+
 
 #### run case.build ####
 run_build=true
