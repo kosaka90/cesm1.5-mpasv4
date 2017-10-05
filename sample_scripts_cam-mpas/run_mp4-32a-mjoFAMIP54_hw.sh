@@ -146,7 +146,7 @@ if [ "$edit_batch" = true ]; then
     #$casedir/xmlchange JOB_QUEUE=regular
 
     #change the automatic email message from default (Koichi) to your own email
-    sed -i "s/Koichi.Sakaguchi@pnnl.gov/$myemail/g" env_batch_temp.xml
+    sed -i "s/Koichi.Sakaguchi@pnnl.gov/$myemail/g" env_batch.xml
 
 fi      
 #check
@@ -238,7 +238,7 @@ fi
 
 #numerical filter
 echo "EXP5 with internal debug false"
-/usr/bin/cp -f /global/u1/k/ksa/MPAS/model/mymods/filter_exp5/mpas_atm_time_integration.f90.exp5 $casedir/SourceMods/src.cam/mpas_atm_time_integration.f90
+/usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/filter_exp5/src.cam/mpas_atm_time_integration.f90.exp5 $casedir/SourceMods/src.cam/mpas_atm_time_integration.f90
 
 
 

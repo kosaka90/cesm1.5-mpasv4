@@ -137,7 +137,7 @@ if [ "$edit_batch" = true ]; then
     #$casedir/xmlchange JOB_QUEUE=regular
 
     #change the automatic email message from default (Koichi) to your own email
-    sed -i "s/Koichi.Sakaguchi@pnnl.gov/$myemail/g" env_batch_temp.xml
+    sed -i "s/Koichi.Sakaguchi@pnnl.gov/$myemail/g" env_batch.xml
 
 fi      
 #check
