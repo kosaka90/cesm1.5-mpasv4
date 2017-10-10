@@ -547,6 +547,12 @@
       <grid name="rof">r05</grid>
     </model_grid>
 
+    <model_grid alias="mp4-32a-mjo_g16">
+      <grid name="atm">mp4-32a-mjo</grid>
+      <grid name="lnd">mp4-32a-mjo</grid>
+      <grid name="ocnice">gx1v6</grid>
+      <grid name="rof">r05</grid>
+    </model_grid>
 
     <!-- new runoff grids for data runoff model DROF -->
 
