@@ -44,6 +44,7 @@
 
 <horiz_grid dyn="mpas"  hgrid="mp240a"            ncol="10242"  />
 <horiz_grid dyn="mpas"  hgrid="mp120a"            ncol="40962"  />
+<horiz_grid dyn="mpas"  hgrid="mp60a"             ncol="163842"  />
 <horiz_grid dyn="mpas"  hgrid="mp30a"             ncol="655362"  />
 <horiz_grid dyn="mpas"  hgrid="mp15a-120a-US"     ncol="195266"  />
 <horiz_grid dyn="mpas"  hgrid="mp34306a"          ncol="34306"  />
