@@ -836,8 +836,8 @@
 
     <domain name="mp120a">
       <nx>40962</nx> <ny>1</ny>
-      <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/mp120a/domain.lnd.mp120a_gx1v6.150508.nc</file>
-      <file grid="ocnice">/global/project/projectdirs/m1867/MPASinput/mp120a/domain.ocn.gx1v6.150508.nc</file>
+      <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/mp120a/domain.lnd.mp40962a_gx1v6.150722.nc</file>
+      <file grid="ocnice">/global/project/projectdirs/m1867/MPASinput/mp120a/domain.ocn.mp40962a_gx1v6.150722.nc</file>
       <desc>mp120a is MPAS-A 120km grid:</desc>
     </domain>
 
