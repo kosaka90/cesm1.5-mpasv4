@@ -1193,11 +1193,11 @@
     </gridmap>
 
     <gridmap atm_grid="mp120a" ocn_grid="gx1v6">
-      <map name="ATM2OCN_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_mp120a_TO_gx1v6_aave.150430.nc</map>
-      <map name="ATM2OCN_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_mp120a_TO_gx1v6_blin.150430.nc</map>
-      <map name="ATM2OCN_VMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_mp120a_TO_gx1v6_blin.150430.nc</map>
-      <map name="OCN2ATM_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_gx1v6_TO_mp120a_aave.150430.nc</map>
-      <map name="OCN2ATM_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_gx1v6_TO_mp120a_aave.150430.nc</map>
+      <map name="ATM2OCN_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/mpas.40962.chun_to_gx1v6_conserve.nc</map>
+      <map name="ATM2OCN_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/mpas.40962.chun_to_gx1v6_bilinear.nc</map>
+      <map name="ATM2OCN_VMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/mpas.40962.chun_to_gx1v6_bilinear.nc</map>
+      <map name="OCN2ATM_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/gx1v6_to_mpas.40962.chun_conserve.nc</map>
+      <map name="OCN2ATM_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/gx1v6_to_mpas.40962.chun_conserve.nc</map>
     </gridmap>
 
     <gridmap atm_grid="mp60a" ocn_grid="gx1v6">
@@ -1460,8 +1460,8 @@
     </gridmap>
 
     <gridmap lnd_grid="mp120a" rof_grid="r05">
-      <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_mp120a_TO_r05_aave.150430.nc</map>
-      <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_r05_TO_mp120a_aave.150430.nc</map>
+      <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/mpas.40962.chun_to_r05_conserve.nc</map>
+      <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/r05_to_mpas.40962.chun_conserve.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="mp60a" rof_grid="r05">
@@ -1719,10 +1719,10 @@
     </gridmap>
 
     <gridmap lnd_grid="mp120a" glc_grid="gland4" >
-      <map name="LND2GLC_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_mp120a_TO_gland4km_aave.170224.nc</map>
-      <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_mp120a_TO_gland4km_blin.170224.nc</map>
-      <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_gland4km_TO_mp120a_aave.170224.nc</map>
-      <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/map_gland4km_TO_mp120a_aave.170224.nc</map>
+      <map name="LND2GLC_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/mp40962a_TO_gland4km_conserve.nc</map>
+      <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/mp40962a_TO_gland4km_bilinear.nc</map>
+      <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/gland4km_TO_mp40962a_conserve.nc</map>
+      <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp120a/gridmaps/gland4km_TO_mp40962a_conserve.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="mp60a" glc_grid="gland4" >
