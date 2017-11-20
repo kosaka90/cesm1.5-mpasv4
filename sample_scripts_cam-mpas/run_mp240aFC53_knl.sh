@@ -18,7 +18,7 @@ MPAS_INPUT_DIR="/global/project/projectdirs/m1867/MPASinput/mp240a"
 
 CAM_VER="cam5"
 
-AERO_OPT="none"
+AERO_OPT="trop_mam3"  #"trop_mam3" (default for CAM5.3 or before), "trop_mam4" (default for CAM5.4 or later), or "none"
 
 myemail="your.email@pnnl.gov"
 
@@ -209,6 +209,18 @@ if [ $AERO_OPT = "none" ];then
 
        /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/PM_MG2_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
     fi
+
+else
+
+    if [ $CAM_VER = "cam5" ];then 
+       echo "copying mpas_atm_core_interface.f90 for MAM3 (CAM5.3)"
+       /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/MG1_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
+
+    else
+       echo "copying mpas_atm_core_interface.f90 for MAM4 (CAM5.4 or later)"
+
+       /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/rainmass_MG2_MPASv4/src.cam/*90 $casedir/SourceMods/src.cam/
+    fi
 fi
 
 
@@ -225,7 +237,7 @@ if [ "$run_build" = true ]; then
 fi
 
 #### copy MPAS-specific namelist into the run directory
-cp_mpasin=false
+cp_mpasin=true
 if [ "$cp_mpasin" = true ]; then
     cd ${MPAS_RUN_DIR}
     pwd
