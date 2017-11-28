@@ -10,7 +10,7 @@ SIM_ROOT="/global/cscratch1/sd/ksa/simulation/MPAS"
 
 CASE_ROOT="/global/project/projectdirs/m1867/ksa/MPAS/cases"
 
-CASE_RES="mp120a_g16"
+CASE_RES="mp120a_mp120a"
 
 CASE_MACH="cori-knl"
 
