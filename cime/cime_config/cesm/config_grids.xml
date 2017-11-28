@@ -498,12 +498,48 @@
       <mask>gx1v6</mask>
    </model_grid>
 
+   <model_grid alias="mp120a_mp120a" not_compset="_POP">
+      <grid name="atm">mp120a</grid>
+      <grid name="lnd">mp120a</grid>
+      <grid name="ocnice">mp120a</grid>
+      <mask>gx1v6</mask>
+   </model_grid>
+
+   <model_grid alias="mp60a_mp60a" not_compset="_POP">
+      <grid name="atm">mp60a</grid>
+      <grid name="lnd">mp60a</grid>
+      <grid name="ocnice">mp60a</grid>
+      <mask>gx1v6</mask>
+   </model_grid>
+
+   <model_grid alias="mp30a_mp30a" not_compset="_POP">
+      <grid name="atm">mp30a</grid>
+      <grid name="lnd">mp30a</grid>
+      <grid name="ocnice">mp30a</grid>
+      <mask>gx1v6</mask>
+   </model_grid>
+
+   <model_grid alias="mp10a_mp10a" not_compset="_POP">
+      <grid name="atm">mp10a</grid>
+      <grid name="lnd">mp10a</grid>
+      <grid name="ocnice">mp10a</grid>
+      <mask>gx1v6</mask>
+   </model_grid>
+
+   <model_grid alias="mp4a_mp4a" not_compset="_POP">
+      <grid name="atm">mp4a</grid>
+      <grid name="lnd">mp4a</grid>
+      <grid name="ocnice">mp4a</grid>
+      <mask>gx1v6</mask>
+   </model_grid>
+
    <model_grid alias="mp240a_g16">
       <grid name="atm">mp240a</grid>
       <grid name="lnd">mp240a</grid>
       <grid name="ocnice">gx1v6</grid>
       <grid name="rof">r05</grid>
    </model_grid>
+   
 
    <model_grid alias="mp120a_g16">
       <grid name="atm">mp120a</grid>
@@ -564,6 +600,13 @@
     <model_grid alias="mp4-32a-amazon_g16">
       <grid name="atm">mp4-32a-amazon</grid>
       <grid name="lnd">mp4-32a-amazon</grid>
+      <grid name="ocnice">gx1v6</grid>
+      <grid name="rof">r05</grid>
+    </model_grid>
+
+    <model_grid alias="mp4-32a-ctrus_g16">
+      <grid name="atm">mp4-32a-ctrus</grid>
+      <grid name="lnd">mp4-32a-ctrus</grid>
       <grid name="ocnice">gx1v6</grid>
       <grid name="rof">r05</grid>
     </model_grid>
@@ -898,6 +941,12 @@
       <desc>VR MPAS with Amazon refinment to 4 km (32km base)</desc>
     </domain>
 
+    <domain name="mp4-32a-ctrus">
+      <nx>1830914</nx> <ny>1</ny>
+      <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/domain.lnd.mp1830914a_gx1v6.160601.nc</file>
+      <file grid="ocnice">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/domain.ocn.mp1830914a_gx1v6.160601.nc</file>
+      <desc>VR MPAS with Amazon refinment to 4 km (32km base)</desc>
+    </domain>
 
     <domain name="gx1v6">
       <nx>320</nx>  <ny>384</ny>
@@ -1256,6 +1305,14 @@
       <map name="OCN2ATM_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_Amazon/gx1v6_TO_mp4-32a-amazon_conserve.nc</map>
     </gridmap>
 
+    <gridmap atm_grid="mp4-32a-ctrus" ocn_grid="gx1v6">
+      <map name="ATM2OCN_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mpas.1830914.chun_to_gx1v6_conserve.nc</map>
+      <map name="ATM2OCN_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mpas.1830914.chun_to_gx1v6_bilinear.nc</map>
+      <map name="ATM2OCN_VMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mpas.1830914.chun_to_gx1v6_bilinear.nc</map>
+      <map name="OCN2ATM_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gx1v6_to_mpas.1830914.chun_conserve.nc</map>
+      <map name="OCN2ATM_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gx1v6_to_mpas.1830914.chun_conserve.nc</map>
+    </gridmap>
+
     <gridmap atm_grid="ne0np4conus30x8" ocn_grid="gx1v6">
       <map name="ATM2OCN_FMAPNAME">/glade/p/work/zarzycki/ASD2017_files/cpl/gridmaps/ne0np4conus30x8/map_ne0np4conus30x8_TO_gx1v6_aave.170202.nc</map>
       <map name="ATM2OCN_SMAPNAME">/glade/p/work/zarzycki/ASD2017_files/cpl/gridmaps/ne0np4conus30x8/map_ne0np4conus30x8_TO_gx1v6_blin.170202.nc</map>
@@ -1497,6 +1554,11 @@
     <gridmap lnd_grid="mp4-32a-amazon" rof_grid="r05">
       <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_Amazon/mp4-32a-amazon_TO_r05_conserve.nc</map>
       <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_Amazon/r05_TO_mp4-32a-amazon_conserve.nc</map>
+    </gridmap>
+
+    <gridmap lnd_grid="mp4-32a-ctrus" rof_grid="r05">
+      <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mpas.1830914.chun_to_r05_conserve.nc</map>
+      <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/r05_to_mpas.1830914.chun_conserve.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="ne0np4conus30x8" rof_grid="r8th">
@@ -1772,6 +1834,13 @@
       <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_Amazon/mp4-32a-amazon_TO_gland4km_bilinear.nc</map>
       <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_Amazon/gland4km_TO_mp4-32a-amazon_conserve.nc</map>
       <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_Amazon/gland4km_TO_mp4-32a-amazon_conserve.nc</map>
+    </gridmap>
+
+    <gridmap lnd_grid="mp4-32a-ctrus" glc_grid="gland4" >
+      <map name="LND2GLC_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mp4-32a-ctrus_TO_gland4km_conserve.nc</map>
+      <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mp4-32a-ctrus_TO_gland4km_bilinear.nc</map>
+      <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gland4km_TO_mp4-32a-ctrus_conserve.nc</map>
+      <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gland4km_TO_mp4-32a-ctrus_conserve.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="mp15a-120a-US" glc_grid="gland4" >
