@@ -437,6 +437,11 @@ subroutine micro_mg_tend ( &
        evaporate_sublimate_precip, &
        bergeron_process_snow
 
+  !++ KSA, to check bug correction (12/21/2017)
+  use spmd_utils,     only: masterproc
+  use cam_logfile,    only: iulog
+  !--
+
   !Authors: Hugh Morrison, Andrew Gettelman, NCAR, Peter Caldwell, LLNL
   ! e-mail: morrison@ucar.edu, andrew@ucar.edu
 
@@ -825,6 +830,11 @@ subroutine micro_mg_tend ( &
   real(r8) :: ifrac
 
   !cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+
+  !++KSA
+  !if (masterproc) then
+  !    write(iulog,*) "KSA: bug in the subroutine micro_mg_tend is fixed (12/21/2017, via Colin Zarzycki) "
+  !end if
 
   ! Return error message
   errstring = ' '
@@ -1696,8 +1706,11 @@ subroutine micro_mg_tend ( &
              nprc(i,k)*lcldm(i,k))*deltat
 
         if (dum.gt.nr(i,k)) then
-           ratio = (nr(i,k)/deltat+nprc(i,k)*lcldm(i,k)/precip_frac(i,k))/ &
-                (-nsubr(i,k)+npracs(i,k)+nnuccr(i,k)+nnuccri(i,k)-nragg(i,k))*omsm
+          ! ratio = (nr(i,k)/deltat+nprc(i,k)*lcldm(i,k)/precip_frac(i,k))/ &
+          !      (-nsubr(i,k)+npracs(i,k)+nnuccr(i,k)+nnuccri(i,k)-nragg(i,k))*omsm
+          !bug fix informed via Collin Zarzycki (12/20/2017, originally found 07/08/2017)
+          ratio = (nr(i,k)/deltat+nprc(i,k)*lcldm(i,k))/precip_frac(i,k)/ &
+                 (-nsubr(i,k)+npracs(i,k)+nnuccr(i,k)+nnuccri(i,k)-nragg(i,k))*omsm !KSA
 
            nragg(i,k)=nragg(i,k)*ratio
            npracs(i,k)=npracs(i,k)*ratio
