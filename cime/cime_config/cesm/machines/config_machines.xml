@@ -444,15 +444,15 @@
       </modules>
       <modules>
 	<!--<command name="load">cray-memkind</command>-->
-	<command name="load">papi/5.4.3.2</command>
-	<command name="swap">craype craype/2.5.7</command>
+	<command name="load">papi</command>
+	<!-- this version not available after 01/08/2018 <command name="swap">craype craype/2.5.7</command>-->
 	<command name="load">craype-haswell</command>
       </modules>
-      <modules>
+      <modules compiler="!intel">
 	<command name="switch">cray-libsci/16.09.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.4.4</command>
+	<command name="load">cray-mpich</command>
       </modules>
       <modules mpilib="mpi-serial">
 	<command name="load">cray-hdf5/1.10.0</command>
@@ -560,14 +560,14 @@
       <modules>
 	<command name="load">cray-memkind</command>
 	<command name="load">craype-mic-knl</command>
-	<command name="load">papi/5.5.1.1</command>
-	<command name="swap">craype craype/2.5.7</command>
+	<command name="load">papi</command>
+	<!-- not available after 01/08/2018 <command name="swap">craype craype/2.5.7</command>-->
       </modules>
       <modules compiler="!intel">
 	<command name="switch">cray-libsci/16.09.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.4.4</command>
+	<command name="load">cray-mpich</command>
       </modules>
       <modules mpilib="mpi-serial">
 	<command name="load">cray-hdf5/1.10.0</command>
@@ -814,15 +814,15 @@
 	<command name="switch">gcc gcc/6.1.0</command>
       </modules>
       <modules>
-	<command name="load">papi/5.4.3.2</command>
-	<command name="swap">craype craype/2.5.5</command>
+	<command name="load">papi</command>
+	<!-- not available after 01/08/2018 <command name="swap">craype craype/2.5.5</command>-->
 	<command name="load">craype-ivybridge</command>
       </modules>
       <modules compiler="!intel">
 	<command name="switch">cray-libsci/16.07.1</command>
       </modules>
       <modules>
-	<command name="load">cray-mpich/7.4.1</command>
+	<command name="load">cray-mpich</command>
       </modules>
       <modules mpilib="mpi-serial">
 	<command name="load">cray-hdf5/1.8.16</command>

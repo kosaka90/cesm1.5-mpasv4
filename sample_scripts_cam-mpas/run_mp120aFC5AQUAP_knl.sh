@@ -2,13 +2,18 @@
 #run this script in $CESM_ROOT/cime/scripts. After creating the case, 
 #I usually create a copy under the case directory, and run from there.
 
-casename="test02_120aFC5AQUAP_knl"
+casename="test01_120aFC5AQUAP_knl"
 
+#change the following directories to your own -------------------
+#where you put the cesm-mpas code
 CESM_ROOT="/global/u1/k/ksa/MPAS/model/cesm2_0_beta05"
 
+#the root directory for running simulations (scratch space)
 SIM_ROOT="/global/cscratch1/sd/ksa/simulation/MPAS"
 
+#the root directory for organizing cesm scripts for each case
 CASE_ROOT="/global/project/projectdirs/m1867/ksa/MPAS/cases"
+#---------------------------
 
 CASE_RES="mp120a_mp120a"
 
@@ -20,7 +25,7 @@ CAM_VER="cam5"
 
 AERO_OPT="none"
 
-myemail="your.email@pnnl.gov"
+myemail="your.email@somewhere.edu"
 
 echo "CESM_ROOT=" $CESM_ROOT
 echo "SIM_ROOT=" $SIM_ROOT
@@ -167,14 +172,18 @@ phys_loadbalance=0
 state_debug_checks=.false.
 use_hetfrz_classnuc = .false.
 empty_htapes=.true.
-fincl1 = 'PRESSURE:I','PRESSUREi:I','PRECT','SST','TMQ:I','LHFLX:A','SHFLX:A','TREFHT:I','CLDICE:I','CLDLIQ:I','AWNC:I','AWNI:I'
+fincl1 = 'PRESSURE:I','PRESSUREi:I','PRECT','SST','TMQ','LHFLX','SHFLX','FSNT','FLNT','FSNS','FLNS','QFLX','TGCLDCWP','TEFIX'
 nhtfrq = -6
 mfilt  = 4
 ncdata	='$MPAS_INPUT_DIR/aquap/x1.40962.init.APE.nc'
 bnd_topo='$MPAS_INPUT_DIR/aquap/mp120a_topo_150430.APE.nc'
-drydep_srf_file='$MPAS_INPUT_DIR/aquap/atmsrf.mp120a_APE.nc'
+drydep_srf_file=''
+prescribed_aero_datapath='/global/project/projectdirs/m1867/beharrop/MPAS/inputdata/APE_aerosols/'
+prescribed_aero_file='mam3_1.9x2.5_L30_1850clim_aquap_equinoctial_c171108.nc'
+prescribed_aero_cycle_yr = 1850
+prescribed_aero_type = 'CYCLICAL'
 HERE
-
+#using aerosol input file prepared by Bryce Harrop. See README_AQUAP.txt. 
 
 #CPL namelist
 cat >| user_nl_cpl <<HERE

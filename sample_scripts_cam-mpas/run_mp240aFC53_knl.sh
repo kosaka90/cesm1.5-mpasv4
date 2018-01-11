@@ -4,11 +4,18 @@
 
 casename="test01_240aFC53_knl"
 
+#change the following directories to your own -------------------
+#where you put the cesm-mpas code
 CESM_ROOT="/global/u1/k/ksa/MPAS/model/cesm2_0_beta05"
 
+#the root directory for running simulations (scratch space)
 SIM_ROOT="/global/cscratch1/sd/ksa/simulation/MPAS"
 
+#the root directory for organizing cesm scripts for each case
 CASE_ROOT="/global/project/projectdirs/m1867/ksa/MPAS/cases"
+#---------------------------
+
+COMP_SET="FC5"
 
 CASE_RES="mp240a_g16"
 
@@ -20,7 +27,7 @@ CAM_VER="cam5"
 
 AERO_OPT="trop_mam3"  #"trop_mam3" (default for CAM5.3 or before), "trop_mam4" (default for CAM5.4 or later), or "none"
 
-myemail="your.email@pnnl.gov"
+myemail="your.email@somewhere.edu"
 
 echo "CESM_ROOT=" $CESM_ROOT
 echo "SIM_ROOT=" $SIM_ROOT
@@ -47,7 +54,7 @@ else
     cd $CESM_ROOT/cime/scripts
     pwd
     echo "creating a new case"
-    ./create_newcase -case $CASE_ROOT/$casename -compset FC5 -res $CASE_RES -mach $CASE_MACH
+    ./create_newcase -case $CASE_ROOT/$casename -compset $COMP_SET -res $CASE_RES -mach $CASE_MACH
 fi
 
 cd $CASE_ROOT/$casename
@@ -175,7 +182,8 @@ HERE
 cat >| user_nl_clm <<HERE
 hist_empty_htapes=.true.
 finidat='$MPAS_LNDINPUT_DIR/clmi.BCN.2000-01-01_mp240a_gx1v6_simyr2000_c150311.nc'
-flanduse_timeseries='$MPAS_LNDINPUT_DIR/landuse.timeseries_mp240a_hist_simyr1850-2005_c150311.nc'
+flanduse_timeseries=''
+fsurdat='$MPAS_LNDINPUT_DIR/surfdata_mp240a_simyr2000_c150311.nc'
 HERE
 
 #CPL namelist

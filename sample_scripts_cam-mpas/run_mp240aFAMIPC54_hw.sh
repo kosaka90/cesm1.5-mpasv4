@@ -2,34 +2,38 @@
 #run this script in $CESM_ROOT/cime/scripts. After creating the case, 
 #I usually create a copy under the case directory, and run from there.
 
-casename="test02_4-32aFC54_hw"
+casename="test01_240aFAMIP54_hw"
 
+#change the following directories to your own -------------------
+#where you put the cesm-mpas code
 CESM_ROOT="/global/u1/k/ksa/MPAS/model/cesm2_0_beta05"
 
+#the root directory for running simulations (scratch space)
 SIM_ROOT="/global/cscratch1/sd/ksa/simulation/MPAS"
 
+#the root directory for organizing cesm scripts for each case
 CASE_ROOT="/global/project/projectdirs/m1867/ksa/MPAS/cases"
-
-CASE_RES="mp4-32a-mjo_g16"
-
-CASE_MACH="cori-haswell"
+#---------------------------
 
 COMP_SET="FAMIPC5"
 
-MPAS_INPUT_DIR="/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_0.69S73.15E"
+CASE_RES="mp240a_g16"
+
+CASE_MACH="cori-haswell"
+
+MPAS_INPUT_DIR="/global/project/projectdirs/m1867/MPASinput/mp240a"
 
 CAM_VER="cam5.4"
 
-AERO_OPT="trop_mam4"  #trop_mam4 or none
+AERO_OPT="trop_mam4"  #"trop_mam3" (default for CAM5.3 or before), "trop_mam4" (default for CAM5.4 or later), or "none"
 
-myemail="koichi.sakaguchi@pnnl.gov"
+myemail="your.email@somewhere.edu"
 
 echo "CESM_ROOT=" $CESM_ROOT
 echo "SIM_ROOT=" $SIM_ROOT
 echo "CASE_ROOT=" $CASE_ROOT
 echo "CASE_RES=" $CASE_RES
 echo "CASE_MACH=" $CASE_MACH
-echo "COMP_SET=" $COMP_SET
 echo "MPAS_INPUT_DIR=" $MPAS_INPUT_DIR   #this is only within the script process under cshell terminal?
 echo "CAM version = " $CAM_VER
 echo "Aerosol scheme = " $AERO_PROG
@@ -54,13 +58,13 @@ else
 fi
 
 cd $CASE_ROOT/$casename
-
+#./create_newcase -case /global/project/projectdirs/m1867/ksa/MPAS/cases/test01_240aFC53_knl -compset FC5 -res mp240a_g16 -mach cori-knl
 
 casedir=`pwd`
 #use backtick ` to capture command output to a variable
 
 
-ntasks=2048  # number of MPI tasks. Note MPAS does not support openMP threads
+ntasks=64   # number of MPI tasks. Note MPAS does not support openMP threads
 ppnode=32   # number of logical cores (MPI ranks) to use per node (control hyperthreads) 
 
 #env_mach_pes.xml. 
@@ -91,9 +95,10 @@ if [ "$edit_build" = true ]; then
     echo "editing env_build.xml"
     $casedir/xmlchange CIME_OUTPUT_ROOT=$SIM_ROOT
     $casedir/xmlchange DEBUG=FALSE
-    #$casedir/xmlchange CAM_DYCORE=fv  MPAS is set as the default dycore in this CESM package (cesm2_0 beta05)
+    #$casedir/xmlchange CAM_DYCORE=fv  MPAS is set as the default dycore for this CESM package
     $casedir/xmlchange -id CLM_CONFIG_OPTS -val ' -phys clm4_0'
     $casedir/xmlchange -id CAM_CONFIG_OPTS -val " -phys $CAM_VER  -chem $AERO_OPT"
+
 fi
 $casedir/xmlquery DEBUG
 $casedir/xmlquery BUILD_THREADED
@@ -107,28 +112,23 @@ $casedir/xmlquery CAM_CONFIG_OPTS
 edit_run=true
 if [ "$edit_run" = true ]; then
     echo "editing env_run.xml"
-    $casedir/xmlchange RUN_STARTDATE=2002-06-01
-    $casedir/xmlchange STOP_OPTION=nhours
-    $casedir/xmlchange STOP_N=1
+    $casedir/xmlchange RUN_STARTDATE=2000-01-01
+    $casedir/xmlchange STOP_OPTION=ndays
+    $casedir/xmlchange STOP_N=5
     $casedir/xmlchange DOUT_S=FALSE
     $casedir/xmlchange INFO_DBUG=1
-    #set physics time step ~ 10xconfig_dt in MPAS namelist :288 for 300s, 480 for 180s, 574 for 150s, 960 for 90s
-    $casedir/xmlchange ATM_NCPL=480   
-    $casedir/xmlchange OCN_NCPL=4
+    #$casedir/xmlchange ATM_NCPL=144   #set physics time step by this variable
     #$casedir/xmlchange REST_OPTION='$STOP_OPTION'
-    #$casedir/xmlchange REST_OPTION=never
+    $casedir/xmlchange REST_OPTION=never
     #$casedir/xmlchange REST_N='$STOP_N'
-    #$casedir/xmlchange HIST_OPTION=never
+    $casedir/xmlchange HIST_OPTION=never
 fi
 #check
 $casedir/xmlquery RUN_STARTDATE
 $casedir/xmlquery STOP_OPTION
 $casedir/xmlquery STOP_N
 $casedir/xmlquery DOUT_S
-$casedir/xmlquery HIST_OPTION
-$casedir/xmlquery REST_OPTION
-$casedir/xmlquery ATM_NCPL
-$casedir/xmlquery OCN_NCPL
+
 
 
 #env_batch.xml. 
@@ -147,7 +147,6 @@ if [ "$edit_batch" = true ]; then
 
     #change the automatic email message from default (Koichi) to your own email
     sed -i "s/Koichi.Sakaguchi@pnnl.gov/$myemail/g" env_batch.xml
-
 fi      
 #check
 $casedir/xmlquery JOB_WALLCLOCK_TIME
@@ -166,35 +165,25 @@ $casedir/xmlquery JOB_QUEUE
 # MPAS initial condition does not have aerosols, so need state_debug_checks=.false.
 # for prescribed aerosol (with MG2 only?), need  use_hetfrz_classnuc = .false.
 # and other MPAS specific input files need to be specified
-# the aerosol emission files are for year 2006 and later; transient & monthly 
-# based on CMIP6 specification and created by Yang Yang and Hailong Wang
 cat >| user_nl_cam <<HERE
-empty_htapes=.true.
-fincl1 = 'U:I','OMEGA:I','PRESSURE:I','Z3:I','PRECL:A'
-nhtfrq = -1
-mfilt = 1
 phys_loadbalance=0
-ncdata	='$MPAS_INPUT_DIR/x8.1830914_0.69S73.15E.CAM.L32.init.ERAI.top40km.2002-06-01_00.nc'
-bnd_topo='$MPAS_INPUT_DIR/mp1830914a_topo.nc'
-drydep_srf_file='$MPAS_INPUT_DIR/atmsrf_mp1830914a_20160406.nc'
 state_debug_checks=.false.
+empty_htapes=.true.
+fincl1 = 'U:I','OMEGA:I','PRESSURE:I','Z3:I'
+nhtfrq = -1
+mfilt = 24
+ncdata	='$MPAS_INPUT_DIR/x1.10242.CAM.L32.init.CFS.1999-01-01_00.nc'
+bnd_topo='$MPAS_INPUT_DIR/mp240a_topo_150210.nc'
+drydep_srf_file='$MPAS_INPUT_DIR/atmsrf_mp240a_150519.nc'
 HERE
-#for prescribed aerosol, add this:
-#use_hetfrz_classnuc = .false.  
-#for not using deep convection parameterization:
-#deep_scheme = 'off'
-#to change the constant convection time scale:
-#zmconv_tau = 1200.0D0
-
 
 # CLM namelist. CLM runs on the MPAS grid, so it requires regridded input data
 cat >| user_nl_clm <<HERE
 hist_empty_htapes=.true.
-finidat='$MPAS_LNDINPUT_DIR/clmi.BCN.2000-01-01_mp1830914a__gx1v6_simyr2000_c160415.nc'
+finidat='$MPAS_LNDINPUT_DIR/clmi.BCN.2000-01-01_mp240a_gx1v6_simyr2000_c150311.nc'
 flanduse_timeseries=''
-fsurdat='$MPAS_LNDINPUT_DIR/surfdata_mpas.1830914.chun_simyr2000_c160413.nc'
+fsurdat='$MPAS_LNDINPUT_DIR/surfdata_mp240a_simyr2000_c150311.nc'
 HERE
-
 
 #CPL namelist
 cat >| user_nl_cpl <<HERE
@@ -216,30 +205,30 @@ fi
 ###copy modified source codes into the local SourceMod directory for each case
 echo "copying modified source codes into $case/SourceMods/"
 #Take care of the number of advected scalars
-if [ $AERO_OPT = "none" ];then   #for prescribed aerosols
-    if [ $CAM_VER = "cam5" ];then  #MG1 (CAM5.3)
+#for prescribed aerosols with MG1 (CAM5.3)
+if [ $AERO_OPT = "none" ];then 
+    if [ $CAM_VER = "cam5" ];then 
        echo "copying mpas_atm_core_interface.f90 for prescribed aerosol with MG1 (CAM5.3)"
-       #older version, not considering rain/snow effect on moist air density
        /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/PM_MG1_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
-      
-    else #MG2 (CAM5.4 or later)
+
+    else
        echo "copying mpas_atm_core_interface.f90 for prescribed aerosol with MG2 (CAM5.4 or later)"
-       #older version, not considering rain/snow effect on moist air density
-       #/usr/bin/cp -f /global/u1/k/ksa/MPAS/model/mymods/rainmass_MG2_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
-       #fixed version by Colin Zarzycki
-       /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/rainmass_PM_MG2_MPASv4/src.cam/*90 $casedir/SourceMods/src.cam/
 
+       /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/PM_MG2_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
     fi
-else #for MAM4
-    #bug fixed version by Colin Zarzycki
-    /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/rainmass_MG2_MPASv4/src.cam/*90 $casedir/SourceMods/src.cam/
 
+else
+
+    if [ $CAM_VER = "cam5" ];then 
+       echo "copying mpas_atm_core_interface.f90 for MAM3 (CAM5.3)"
+       /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/MG1_MPASv4/src.cam/mpas_atm_core_interface.f90 $casedir/SourceMods/src.cam/
+
+    else
+       echo "copying mpas_atm_core_interface.f90 for MAM4 (CAM5.4 or later)"
+
+       /usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/rainmass_MG2_MPASv4/src.cam/*90 $casedir/SourceMods/src.cam/
+    fi
 fi
-
-#numerical filter
-echo "EXP5 with internal debug false"
-/usr/bin/cp -f /global/project/projectdirs/m1867/MPASinput/SourceMods/filter_exp5/src.cam/mpas_atm_time_integration.f90.exp5 $casedir/SourceMods/src.cam/mpas_atm_time_integration.f90
-
 
 
 #### run case.build ####
@@ -263,7 +252,7 @@ if [ "$cp_mpasin" = true ]; then
     ln -s ${MPAS_INPUT_DIR}/stream_list.atmosphere.output
     ln -s ${MPAS_INPUT_DIR}/stream_list.atmosphere.surface
     cp ${MPAS_INPUT_DIR}/streams.atmosphere .
-    cp ${MPAS_INPUT_DIR}/namelist.atmosphere_v4 ./namelist.atmosphere
+    cp ${MPAS_INPUT_DIR}/namelist.atmosphere .
 
 fi
 
