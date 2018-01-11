@@ -677,7 +677,6 @@ subroutine micro_mg_cam_init(pbuf2d)
       if (.not. do_cldice) &
            write(iulog,*) "MG prognostic cloud ice has been turned off via namelist."
       write(iulog,*) "Number of microphysics substeps is: ",num_steps
-
    end if
 
    select case (micro_mg_version)
