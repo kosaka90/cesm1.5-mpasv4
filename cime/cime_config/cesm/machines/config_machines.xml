@@ -385,9 +385,9 @@
     <mpirun mpilib="default">
       <executable>srun</executable>
       <arguments>
-	<arg name="label"> --label</arg>
-	<arg name="num_tasks" > -n $TOTALPES</arg>
-	<arg name="thread_count" > -c {{ cores_per_task }}</arg>
+	    <arg name="label"> --label</arg>
+	    <arg name="num_tasks" > -n $TOTALPES</arg>
+	    <arg name="thread_count" > -c {{ cores_per_task }}</arg>
         <arg name="cpu_bind"> --cpu_bind=cores</arg>
       </arguments>
     </mpirun>
@@ -743,7 +743,7 @@
     <OS>CNL</OS>
     <COMPILERS>intel,gnu,cray</COMPILERS>
     <MPILIBS>mpt,mpi-serial</MPILIBS>
-    <CIME_OUTPUT_ROOT>/global/cscratch1/sd/$LOGNAME/simulation/MPAS</CIME_OUTPUT_ROOT>
+    <CIME_OUTPUT_ROOT>/scratch1/scratchdirs/$LOGNAME/simulation/MPAS</CIME_OUTPUT_ROOT>
     <DIN_LOC_ROOT>/project/projectdirs/ccsm1/inputdata</DIN_LOC_ROOT>
     <DIN_LOC_ROOT_CLMFORC>/project/projectdirs/ccsm1/inputdata/atm/datm7</DIN_LOC_ROOT_CLMFORC>
     <DOUT_S_ROOT>$CIME_OUTPUT_ROOT/archive/$CASE</DOUT_S_ROOT>
@@ -758,9 +758,10 @@
     <mpirun mpilib="default">
       <executable>srun</executable>
       <arguments>
-	<arg name="label"> --label</arg>
-	<arg name="num_tasks" > -n $TOTALPES</arg>
+	    <arg name="label"> --label</arg>
+	    <arg name="num_tasks" > -n $TOTALPES</arg>
      	<arg name="thread_count" > -c $ENV{OMP_NUM_THREADS}</arg>
+        <arg name="cpu_bind"> --cpu_bind=cores</arg>
       </arguments>
     </mpirun>
     <module_system type="module">
@@ -795,15 +796,15 @@
 
       <modules compiler="intel">
 	<command name="load">PrgEnv-intel</command>
-	<command name="switch">intel intel/16.0.2.181</command>
+    <command name="switch">intel intel/16.0.3.210</command>
 	<command name="rm">cray-libsci</command>
 	<command name="use">/global/project/projectdirs/ccsm1/modulefiles/edison</command>
       </modules>
       <modules compiler="intel" mpilib="!mpi-serial" >
-	<command name="load">esmf/6.3.0rp1-defio-intel15.0-mpi-O</command>
+	<command name="load">esmf/6.3.0rp1-defio-intel17.0-mpi-O</command>
       </modules>
       <modules compiler="intel" mpilib="mpi-serial" >
-	<command name="load">esmf/6.3.0rp1-defio-intel15.0-mpiuni-O</command>
+	<command name="load">esmf/6.3.0rp1-defio-intel17.0-mpiuni-O</command>
       </modules>
       <modules compiler="cray">
 	<command name="load">PrgEnv-cray</command>
@@ -834,14 +835,17 @@
 	<command name="load">cray-parallel-netcdf/1.7.0</command>
       </modules>
       <modules>
-	<command name="load">perl/5.20.0</command>
-	<command name="load">cmake/3.3.2</command>
+	<!-- not available as module <command name="load">perl/5.20.0</command>-->
+	<command name="load">cmake</command>
     <command name="load">python/2.7-anaconda</command>
       </modules>
     </module_system>
 
     <environment_variables>
       <env name="OMP_STACKSIZE">64M</env>
+      <env name="OMP_PLACES">threads</env>
+      <env name="OMP_PROC_BIND">spread</env>
+      <env name="OMP_NUM_THREADS">1</env>
     </environment_variables>
 
   </machine>
