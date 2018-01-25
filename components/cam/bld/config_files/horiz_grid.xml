@@ -51,6 +51,7 @@
 <horiz_grid dyn="mpas"  hgrid="mp15a-120a-US"     ncol="195266"  />
 <horiz_grid dyn="mpas"  hgrid="mp34306a"          ncol="34306"  />
 <horiz_grid dyn="mpas"  hgrid="mp137218a"         ncol="137218"  />
+<horiz_grid dyn="mpas"  hgrid="mp12-46a-facets"   ncol="655362"  />
 <horiz_grid dyn="mpas"  hgrid="mp4-32a-mjo"       ncol="1830914"  />
 <horiz_grid dyn="mpas"  hgrid="mp4-32a-asiamon"   ncol="1830914"  />
 <horiz_grid dyn="mpas"  hgrid="mp4-32a-amazon"    ncol="1830914"  />
