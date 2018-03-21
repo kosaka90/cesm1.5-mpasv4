@@ -1003,6 +1003,8 @@ contains
       call outfld('OMEGA   ',state%omega,    pcols,   lchnk     )
     endif
 
+    ! BEH: Get vertical velocity in m/s for MPAS output (divide OMEGA by (rho*grav))
+
 #if (defined BFB_CAM_SCAM_IOP )
     call outfld('omega   ',state%omega,    pcols,   lchnk     )
 #endif
