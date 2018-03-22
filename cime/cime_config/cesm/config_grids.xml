@@ -583,6 +583,13 @@
       <grid name="rof">r05</grid>
     </model_grid>
 
+    <model_grid alias="mp12-46a-facets_g16">
+      <grid name="atm">mp12-46a-facets</grid>
+      <grid name="lnd">mp12-46a-facets</grid>
+      <grid name="ocnice">gx1v6</grid>
+      <grid name="rof">r05</grid>
+    </model_grid>
+
     <model_grid alias="mp4-32a-mjo_g16">
       <grid name="atm">mp4-32a-mjo</grid>
       <grid name="lnd">mp4-32a-mjo</grid>
@@ -918,6 +925,13 @@
       <file grid="atm|lnd">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/domain.lnd.mp137218a_gx1v6.170725.nc</file>
       <file grid="ocnice">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/domain.ocn.mp137218a_gx1v6.170725.nc</file>
       <desc>VR MPAS with CONUS refinment to 25 km (100km base) for FACETS</desc>
+    </domain>
+
+    <domain name="mp12-46a-facets">
+      <nx>655362</nx> <ny>1</ny>
+      <file grid="atm|lnd">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/domain.lnd.FACETS_12-46km_gx1v6.180115.nc</file>
+      <file grid="ocnice">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/domain.ocn.FACETS_12-46km_gx1v6.180115.nc</file>
+      <desc>VR MPAS with CONUS refinment to 12 km (46km base) for FACETS</desc>
     </domain>
 
     <domain name="mp4-32a-mjo">
@@ -1281,6 +1295,14 @@
       <map name="OCN2ATM_SMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/gridmaps/map_gx1v6_to_mp137218a_conserve.nc</map>
     </gridmap>
 
+    <gridmap atm_grid="mp12-46a-facets" ocn_grid="gx1v6">
+      <map name="ATM2OCN_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/FACETS_12-46km_TO_gx1v6_conserve.nc</map>
+      <map name="ATM2OCN_SMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/FACETS_12-46km_TO_gx1v6_bilinear.nc</map>
+      <map name="ATM2OCN_VMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/FACETS_12-46km_TO_gx1v6_bilinear.nc</map>
+      <map name="OCN2ATM_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/gx1v6_TO_FACETS_12-46km_conserve.nc</map>
+      <map name="OCN2ATM_SMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/gx1v6_TO_FACETS_12-46km_conserve.nc</map>
+    </gridmap>
+
     <gridmap atm_grid="mp4-32a-mjo" ocn_grid="gx1v6">
       <map name="ATM2OCN_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_0.69S73.15E/mpas.1830914.chun_to_gx1v6_conserve.nc</map>
       <map name="ATM2OCN_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_0.69S73.15E/mpas.1830914.chun_to_gx1v6_bilinear.nc</map>
@@ -1539,6 +1561,11 @@
     <gridmap lnd_grid="mp137218a" rof_grid="r05">
       <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/gridmaps/map_mp137218a_to_r05_conserve.nc</map>
       <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/gridmaps/map_r05_to_mp137218a_conserve.nc</map>
+    </gridmap>
+
+    <gridmap lnd_grid="mp12-46a-facets" rof_grid="r05">
+      <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/FACETS_12-46km_TO_r05_conserve.nc</map>
+      <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/r05_TO_FACETS_12-46km_conserve.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="mp4-32a-mjo" rof_grid="r05">
@@ -1813,6 +1840,13 @@
       <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/gridmaps/map_mp137218a_to_gland4km_bilinear.nc</map>
       <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/gridmaps/map_gland4km_to_mp137218a_conserve.nc</map>
       <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/gridmaps/map_gland4km_to_mp137218a_conserve.nc</map>
+    </gridmap>
+
+    <gridmap lnd_grid="mp12-46a-facets_g16" glc_grid="gland4" >
+      <map name="LND2GLC_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/FACETS_12-46km_TO_gland4km_conserve.nc</map>
+      <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/FACETS_12-46km_TO_gland4km_bilinear.nc</map>
+      <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/gland4km_TO_FACETS_12-46km_conserve.nc</map>
+      <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/gridmaps/gland4km_TO_FACETS_12-46km_conserve.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="mp4-32a-mjo" glc_grid="gland4" >
