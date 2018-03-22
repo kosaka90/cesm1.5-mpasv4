@@ -844,12 +844,16 @@
 <micro_mg_sub_version microphys="mg2">                                 0          </micro_mg_sub_version>
 <micro_mg_num_steps   microphys="mg2">                                 1          </micro_mg_num_steps>
 <micro_mg_dcs         microphys="mg2">                                 540.D-6    </micro_mg_dcs>
+<micro_mg_dcs         microphys="mg2" phys="cam5.4">                   400.D-6    </micro_mg_dcs>
+<!-- KSA changed from 540 to 400 for cam5.4 -->
 
 <micro_mg_precip_frac_method                        >  max_overlap </micro_mg_precip_frac_method>
 <micro_mg_precip_frac_method   clubb_sgs="1"        >  in_cloud    </micro_mg_precip_frac_method>
 
 <micro_mg_berg_eff_factor                  >  1.0D0    </micro_mg_berg_eff_factor>
 <micro_mg_berg_eff_factor microphys="mg2"  >  0.7D0    </micro_mg_berg_eff_factor>
+<micro_mg_berg_eff_factor microphys="mg2" phys="cam5.4"  >  1.0D0    </micro_mg_berg_eff_factor>
+<!-- KSA changed from 0.7 to 1.0 for cam5.4 -->
 
 <micro_do_sb_physics clubb_sgs="1"> .true. </micro_do_sb_physics>
 
@@ -871,11 +875,16 @@
 <use_hetfrz_classnuc phys="cam5.4">.true.</use_hetfrz_classnuc>
 
 <use_preexisting_ice              >.false.</use_preexisting_ice>
-<use_preexisting_ice phys="cam5.4">.true.</use_preexisting_ice>
+<use_preexisting_ice phys="cam5.4">.false.</use_preexisting_ice>
+<!-- KSA changed from true to false for cam5.4 -->
 
 <nucleate_ice_incloud                               >.true.</nucleate_ice_incloud>
 <nucleate_ice_incloud    phys="cam5.4" clubb_sgs="1">.false.</nucleate_ice_incloud>
+
 <nucleate_ice_strat                                 >1.0D0</nucleate_ice_strat>
+<nucleate_ice_strat     phys="cam5.4"               >0.3D0</nucleate_ice_strat>
+<!-- KSA changed from to 1.0 to 0.3 for cam5.4 -->
+
 <nucleate_ice_use_troplev                           >.true.</nucleate_ice_use_troplev>
 
 <chem_use_chemtrop>.true.</chem_use_chemtrop>
@@ -1055,7 +1064,9 @@
 <cldfrc_rhminl dyn="se"          phys="cam4"                          > 0.910D0 </cldfrc_rhminl>
 
 <cldfrc_rhminl_adj_land                                               > 0.100D0 </cldfrc_rhminl_adj_land>
-<cldfrc_rhminl_adj_land          phys="cam5.4"                        > 0.000D0 </cldfrc_rhminl_adj_land>
+<cldfrc_rhminl_adj_land          phys="cam5.4"                        > 0.100D0 </cldfrc_rhminl_adj_land>
+<!-- KSA changed from to 0.0 to 1.0 for cam5.4 -->
+
 <cldfrc_rhminl_adj_land                      carma="cirrus"           > 0.000D0 </cldfrc_rhminl_adj_land>
 
 <cldfrc_rhminh                                                        > 0.800D0 </cldfrc_rhminh>
@@ -1071,6 +1082,8 @@
 
 <cldfrc_sh1                                                           > 0.07D0 </cldfrc_sh1>
 <cldfrc_sh1 dyn="fv"                                                  > 0.04D0 </cldfrc_sh1>
+<cldfrc_sh1 dyn="fv"  phys="cam5.4"                                   > 0.07D0 </cldfrc_sh1>
+<!-- KSA changed from to 0.04 to 0.07 for fv when run with cam5.4 -->
 <cldfrc_sh1 dyn="fv"     hgrid="0.47x0.63"  phys="cam4"               > 0.10D0 </cldfrc_sh1>
 <cldfrc_sh1 dyn="se"                                                  > 0.04D0 </cldfrc_sh1>
 
@@ -1124,6 +1137,8 @@
 <cldfrc2m_rhmini clubb_sgs="1" >  0.80D0  </cldfrc2m_rhmini>
 
 <cldfrc2m_rhminis               >  1.0D0 </cldfrc2m_rhminis>
+<cldfrc2m_rhminis  phys="cam5.4"             >  0.8D0 </cldfrc2m_rhminis>
+<!-- KSA changed from to 1.0 to 0.8 for cam5.4 -->
 <cldfrc2m_rhminis  unicon="1"   >  0.85D0 </cldfrc2m_rhminis>
 
 <cldfrc2m_rhmaxi                                     >  1.1D0  </cldfrc2m_rhmaxi>
@@ -1189,6 +1204,8 @@
 
 <!-- uwshcu Moist Convection -->
 <uwshcu_rpen                                                       >  10.0 </uwshcu_rpen>
+<uwshcu_rpen phys="cam5.4"                                         >   5.0 </uwshcu_rpen>
+<!-- KSA changed to 5.0 for cam5.4 -->
 <uwshcu_rpen hgrid="1.9x2.5"                                       >   5.0 </uwshcu_rpen>
 
 <uwshcu_rpen dyn="se"                                              >   5.0 </uwshcu_rpen>

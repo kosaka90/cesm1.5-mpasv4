@@ -1,0 +1,2 @@
+#some user_nl_* in cime/scripts directory, which are copied there when create_case or set-up shell script fails
+cime/scripts/user_nl*

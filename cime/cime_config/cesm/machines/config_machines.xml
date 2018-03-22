@@ -465,7 +465,7 @@
       </modules>
       <modules>
 	<command name="load">cmake/3.5.2</command>
-    <command name="load">python/2.7-anaconda</command>
+    <command name="load">python/2.7-anaconda-4.4</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -580,7 +580,7 @@
       </modules>
       <modules>
 	<command name="load">cmake/3.5.2</command>
-    <command name="load">python/2.7-anaconda</command>
+    <command name="load">python/2.7-anaconda-4.4</command>
       </modules>
     </module_system>
     <environment_variables>
@@ -837,7 +837,7 @@
       <modules>
 	<!-- not available as module <command name="load">perl/5.20.0</command>-->
 	<command name="load">cmake</command>
-    <command name="load">python/2.7-anaconda</command>
+    <command name="load">python/2.7-anaconda-4.4</command>
       </modules>
     </module_system>
 
