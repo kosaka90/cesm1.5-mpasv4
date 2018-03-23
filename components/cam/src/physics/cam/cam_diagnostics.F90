@@ -179,7 +179,8 @@ contains
     ! SHP-MPAS
     if ( dycore_is('MPAS') ) then
       call addfld ('PRESSURE',   (/ 'lev' /), 'A','Pa',         'Pressure')
-      call addfld ('PRESSUREi',  (/ 'ilev' /),'A','Pa',         'Pressure')
+      call addfld ('PRESSUREi',  (/ 'ilev' /),'A','Pa',         'Pressure at interface')
+      call addfld ('Z3i',        (/ 'ilev' /),'A', 'm',         'Geopotential Height at interface (above sea level)')
     end if
 !--CMZ
 
@@ -228,6 +229,7 @@ contains
     call addfld ('WSPDSRFAV',  horiz_only,  'A', 'm/s',       'Horizontal total wind speed average at the surface' )
 
     call addfld ('OMEGA',      (/ 'lev' /), 'A', 'Pa/s',      'Vertical velocity (pressure)')
+    call addfld ('W    ',      (/ 'lev' /), 'A', 'm/s',       'Vertical velocity')
     call addfld ('OMEGAT',     (/ 'lev' /), 'A', 'K Pa/s  ',  'Vertical heat flux' )
     call addfld ('OMEGAU',     (/ 'lev' /), 'A', 'm Pa/s2 ',  'Vertical flux of zonal momentum' )
     call addfld ('OMEGA850',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 850 mbar pressure surface')
@@ -888,6 +890,7 @@ contains
     real(r8) :: ftem2(pcols,pver) ! another temporary workspace
     real(r8) :: psl_tmp(pcols)    ! Sea Level Pressure
     real(r8) :: z3(pcols,pver)    ! geo-potential height
+    real(r8) :: z3i(pcols,pver+1) ! geo-potential height at interface
     real(r8) :: p_surf(pcols)     ! data interpolated to a pressure surface
     real(r8) :: tem2(pcols,pver)  ! temporary workspace
     real(r8) :: timestep(pcols)   ! used for outfld call
@@ -909,8 +912,15 @@ contains
 
     !SHP-MPAS
     if (dycore_is('MPAS')) then
-       call outfld('PRESSURE',state%pmid, pcols, lchnk )
+       call outfld('PRESSURE', state%pmid, pcols, lchnk )
        call outfld('PRESSUREi',state%pint, pcols, lchnk )
+       !
+       ! Add height of surface to interface height above surface
+       !
+       do k = 1, pver+1
+          z3i(:ncol,k) = state%zi(:ncol,k) + state%phis(:ncol)*rga
+       end do
+       call outfld('Z3i', z3i, pcols, lchnk )
     end if
 
     call outfld ('NSTEP   ',timestep, pcols, lchnk)
@@ -1003,7 +1013,11 @@ contains
       call outfld('OMEGA   ',state%omega,    pcols,   lchnk     )
     endif
 
-    ! BEH: Get vertical velocity in m/s for MPAS output (divide OMEGA by (rho*grav))
+    ! Get vertical velocity in m/s for MPAS output (multipl OMEGA by (-pdel*zdel))
+    if (.not. single_column) then
+      ftem(:ncol,:) = -state%omega(:ncol,:) * ((state%zi(:ncol,1:pver-1) - state%zi(:ncol,2:pver)) / state%pdel(:ncol,:))
+      call outfld('W       ',ftem,  pcols, lchnk   )
+    endif
 
 #if (defined BFB_CAM_SCAM_IOP )
     call outfld('omega   ',state%omega,    pcols,   lchnk     )
