@@ -234,6 +234,9 @@ contains
     call addfld ('OMEGAU',     (/ 'lev' /), 'A', 'm Pa/s2 ',  'Vertical flux of zonal momentum' )
     call addfld ('OMEGA850',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 850 mbar pressure surface')
     call addfld ('OMEGA500',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 500 mbar pressure surface')
+!++KSA
+    call addfld ('OMEGA700',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 700 mbar pressure surface')
+!--KSA
 
     call addfld ('PSL',        horiz_only,  'A', 'Pa','Sea level pressure')
 
@@ -267,6 +270,15 @@ contains
     call addfld ('V500',       horiz_only,  'A', 'm/s','Meridional wind at 500 mbar pressure surface')
     call addfld ('V250',       horiz_only,  'A', 'm/s','Meridional wind at 250 mbar pressure surface')
     call addfld ('V200',       horiz_only,  'A', 'm/s','Meridional wind at 200 mbar pressure surface')
+
+!++KSA
+    call addfld ('U700',       horiz_only,  'A', 'm/s','Zonal wind at 700 mbar pressure surface')
+    call addfld ('V700',       horiz_only,  'A', 'm/s','Meridional wind at 700 mbar pressure surface')
+    call addfld ('U300',       horiz_only,  'A', 'm/s','Zonal wind at 300 mbar pressure surface')
+    call addfld ('V300',       horiz_only,  'A', 'm/s','Meridional wind at 300 mbar pressure surface')
+    call register_vector_field('U700', 'V700')
+    call register_vector_field('U300', 'V300')
+!--KSA
 
     call register_vector_field('U850', 'V850')
     call register_vector_field('U500', 'V500')
@@ -409,6 +421,16 @@ contains
 
     call addfld ('PDELDRY',(/ 'lev' /), 'A','Pa','Dry pressure difference between levels')
     call addfld ('PSDRY',  horiz_only,  'A','Pa','Surface pressure')
+
+!++KSA
+    call addfld ('Q700',       horiz_only,  'A', 'kg/kg','Specific Humidity at 700 mbar pressure surface')
+    call addfld ('SREFL3GHZ',  horiz_only,  'A', 'dBZ','Radar reflectivity (lamda = 10 cm = 3GHz)')
+    call addfld ('UTMQ',       horiz_only,  'A', 'kg/m/s','Total (vertically integrated) U flux of q')
+    call addfld ('VTMQ',       horiz_only,  'A', 'kg/m/s','Total (vertically integrated) V flux of q')
+    call register_vector_field('UTMQ', 'VTMQ')
+
+!--KSA
+
 
     ! outfld calls in diag_conv
 
@@ -1042,6 +1064,13 @@ contains
       call vertinterp(ncol, pcols, pver, state%pmid, 50000._r8, state%omega, p_surf)
       call outfld('OMEGA500', p_surf, pcols, lchnk)
     end if
+
+!++KSA
+    if (hist_fld_active('OMEGA700')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 70000._r8, state%omega, p_surf)
+      call outfld('OMEGA700', p_surf, pcols, lchnk)
+    end if
+!--KSA
     !
     ! Sea level pressure
     !
@@ -1111,6 +1140,25 @@ contains
       call vertinterp(ncol, pcols, pver, state%pmid, 20000._r8, state%v, p_surf)
       call outfld('V200    ', p_surf, pcols, lchnk )
     end if
+
+!++KSA
+    if (hist_fld_active('U700')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 70000._r8, state%u, p_surf)
+      call outfld('U700    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('U300')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 30000._r8, state%u, p_surf)
+      call outfld('U300    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('V700')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 70000._r8, state%v, p_surf)
+      call outfld('V700    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('V300')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 30000._r8, state%v, p_surf)
+      call outfld('V300    ', p_surf, pcols, lchnk )
+    end if
+!--KSA
 
     ftem(:ncol,:) = state%t(:ncol,:)*state%t(:ncol,:)
     call outfld('TT      ',ftem    ,pcols   ,lchnk   )
@@ -1294,6 +1342,26 @@ contains
     end do
     call outfld ('TMQ     ',ftem, pcols   ,lchnk     )
 
+
+!++KSA
+    ! U flux of q, vertically integrated
+    ! rga     =  1._r8/gravit
+    ftem(:ncol,:) = state%u(:ncol,:)*state%q(:ncol,:,1) * state%pdel(:ncol,:) * rga
+    do k=2,pver
+      ftem(:ncol,1) = ftem(:ncol,1) + ftem(:ncol,k)
+    end do
+    call outfld ('UTMQ     ',ftem, pcols   ,lchnk     )
+
+    ! V flux of q, vertically integrated
+    ftem(:ncol,:) = state%v(:ncol,:)*state%q(:ncol,:,1) * state%pdel(:ncol,:) * rga
+    do k=2,pver
+      ftem(:ncol,1) = ftem(:ncol,1) + ftem(:ncol,k)
+    end do
+    call outfld ('VTMQ     ',ftem, pcols   ,lchnk     )
+
+!--KSA
+
+
     ! Relative humidity
     if (hist_fld_active('RELHUM')) then
       call qsat(state%t(:ncol,:), state%pmid(:ncol,:), &
@@ -1351,6 +1419,19 @@ contains
       call vertinterp(ncol, pcols, pver, state%pmid, 20000._r8, state%q(1,1,1), p_surf)
       call outfld('Q200    ', p_surf, pcols, lchnk )
     end if
+
+!++KSA
+    if (hist_fld_active('Q700')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 70000._r8, state%q(1,1,1), p_surf)
+      call outfld('Q700    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('SREFL3GHZ')) then
+      ! likely calculate and write this as a sum of microphyiscs, shallow conv, 
+      ! and deep conv. parameterizations
+    end if
+
+!--KSA
+
     !
     ! Output Q at bottom level
     !

@@ -651,6 +651,7 @@ contains
 
     ! Hydrology
 
+
     call hist_addfld1d (fname='SoilAlpha',  units='unitless',  &
          avgflag='A', long_name='factor limiting ground evap', &
          ptr_col=cws%soilalpha, set_urb=spval)
@@ -768,6 +769,12 @@ contains
     call hist_addfld1d (fname='QSNWCPICE',  units='mm/s',  &
          avgflag='A', long_name='excess snowfall due to snow capping', &
          ptr_lnd=gwf%qflx_snwcp_iceg)
+
+!++KSA, moved from L4436, inside if(use_cn) block
+    call hist_addfld1d (fname='QFLX_SUB_SNOW', units='mm H2O/s', &
+            avgflag='A', long_name='sublimation rate from snow pack', &
+            ptr_pft=pwf%qflx_sub_snow, default='inactive', c2l_scale_type='urbanf')
+!--KSA
 
     call hist_addfld1d (fname='QDRAI',  units='mm/s',  &
          avgflag='A', long_name='sub-surface drainage', &
@@ -4426,15 +4433,15 @@ contains
             avgflag='A', long_name='ground surface dew formation', &
             ptr_pft=pwf%qflx_dew_grnd, default='inactive', c2l_scale_type='urbanf')
 
-       call hist_addfld1d (fname='QFLX_SUB_SNOW', units='mm H2O/s', &
-            avgflag='A', long_name='sublimation rate from snow pack', &
-            ptr_pft=pwf%qflx_sub_snow, default='inactive', c2l_scale_type='urbanf')
+       !call hist_addfld1d (fname='QFLX_SUB_SNOW', units='mm H2O/s', &
+       !     avgflag='A', long_name='sublimation rate from snow pack', &
+       !     ptr_pft=pwf%qflx_sub_snow, default='inactive', c2l_scale_type='urbanf')
 
        call hist_addfld1d (fname='QFLX_DEW_SNOW', units='mm H2O/s', &
             avgflag='A', long_name='surface dew added to snow pacK', &
             ptr_pft=pwf%qflx_dew_snow, default='inactive', c2l_scale_type='urbanf')
 
-    end if
+    end if !end of if(use_cn) in L1003 ? (KSA)
 
     call hist_addfld1d (fname='SNORDSL', units='m^-6', &
          avgflag='A', long_name='top snow layer effective grain radius', &
