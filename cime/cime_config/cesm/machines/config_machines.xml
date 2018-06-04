@@ -796,7 +796,7 @@
 
       <modules compiler="intel">
 	<command name="load">PrgEnv-intel</command>
-    <command name="switch">intel intel/16.0.3.210</command>
+        <!--<command name="switch">intel intel/16.0.3.210</command>-->
 	<command name="rm">cray-libsci</command>
 	<command name="use">/global/project/projectdirs/ccsm1/modulefiles/edison</command>
       </modules>
