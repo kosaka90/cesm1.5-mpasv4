@@ -48,6 +48,7 @@ module check_energy
   public :: check_energy_fix       ! add global mean energy difference as a heating
   public :: check_tracers_init      ! initialize tracer integrals and cumulative boundary fluxes
   public :: check_tracers_chng      ! check changes in integrals against cumulative boundary fluxes
+  public :: calc_energy_terms       ! BEH: calculate and return the energy and water budget terms
 
 
 ! Private module data
@@ -803,5 +804,74 @@ end subroutine check_energy_get_integrals
     return
   end subroutine check_tracers_chng
 
+!BEH: Added the following subroutine "calc_energy_terms"
+!===============================================================================
+  subroutine calc_energy_terms(state, ke, se, wv, wl, wi)
+    use physconst, only: rga, cpair
+
+!------------------------------Arguments--------------------------------
+
+    type(physics_state), intent(in   ) :: state
+
+!---------------------------Local storage-------------------------------
+    real(r8), intent(out  ) :: se(pcols)      ! Dry Static energy (J/m2)
+    real(r8), intent(out  ) :: ke(pcols)      ! kinetic energy    (J/m2)
+    real(r8), intent(out  ) :: wv(pcols)      ! column integrated vapor       (kg/m2)
+    real(r8), intent(out  ) :: wl(pcols)      ! column integrated liquid      (kg/m2)
+    real(r8), intent(out  ) :: wi(pcols)      ! column integrated ice         (kg/m2)
+
+    integer ncol                              ! number of atmospheric columns
+    integer  i,k                              ! column, level indices
+    integer :: ixcldice, ixcldliq             ! CLDICE and CLDLIQ indices
+    integer :: ixrain, ixsnow                 ! RAIN and SNOW indices
+!-----------------------------------------------------------------------
+
+    ncol  = state%ncol
+    call cnst_get_ind('CLDICE', ixcldice, abort=.false.)
+    call cnst_get_ind('CLDLIQ', ixcldliq, abort=.false.)
+    call cnst_get_ind('RAINQM', ixrain,   abort=.false.)
+    call cnst_get_ind('SNOWQM', ixsnow,   abort=.false.)
+
+    ! Frozen static energy is computed in 3 parts:  KE, SE, and energy associated with vapor and liquid
+      
+    se     = 0._r8
+    ke     = 0._r8
+    wv     = 0._r8
+    wl     = 0._r8
+    wi     = 0._r8
+
+    !BEH: Integrate static and kinetic energies, plus water terms
+    do k = 1,pver
+       do i = 1,ncol
+          se(i) = se(i) +    cpair*state%t(i,k)                        * state%pdel(i,k)*rga
+          ke(i) = ke(i) + (0.5_r8*(state%u(i,k)**2 + state%v(i,k)**2)) * state%pdel(i,k)*rga
+          wv(i) = wv(i) +          state%q(i,k,1)                      * state%pdel(i,k)*rga
+       end do
+    end do
+
+    do i = 1,ncol
+       se(i) = se(i) + state%phis(i)*state%ps(i)*rga
+    end do
+
+    if (ixcldliq > 1 .and. ixcldice > 1) then
+       do k = 1,pver
+          do i = 1,ncol
+             wl(i) = wl(i) + state%q(i,k,ixcldliq) * state%pdel(i,k)*rga
+             wi(i) = wi(i) + state%q(i,k,ixcldice) * state%pdel(i,k)*rga
+          end do
+       end do
+    end if
+
+    if (ixrain > 1 .and. ixsnow > 1) then
+       do k = 1,pver
+          do i = 1,ncol
+             wl(i) = wl(i) + state%q(i,k,ixrain) * state%pdel(i,k)*rga
+             wi(i) = wi(i) + state%q(i,k,ixsnow) * state%pdel(i,k)*rga
+          end do
+       end do
+    end if
+    
+    return
+  end subroutine calc_energy_terms
 
 end module check_energy
