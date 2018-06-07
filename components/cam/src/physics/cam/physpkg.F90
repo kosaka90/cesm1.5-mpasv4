@@ -1716,7 +1716,7 @@ contains
     use time_manager,    only: is_first_step, get_nstep
     use convect_shallow, only: convect_shallow_tend
     use check_energy,    only: check_energy_chng, check_energy_fix, check_energy_timestep_init
-    use check_energy,    only: check_tracers_data, check_tracers_init, check_tracers_chng
+    use check_energy,    only: check_tracers_data, check_tracers_init, check_tracers_chng, calc_energy_terms !BEH - added calc_energy_terms
     use dycore,          only: dycore_is
     use aero_model,      only: aero_model_wetdep
     use carma_intr,      only: carma_wetdep_tend, carma_timestep_tend

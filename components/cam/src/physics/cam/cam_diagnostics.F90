@@ -74,9 +74,6 @@ logical          :: history_budget                 ! output tendencies and state
                                                    ! liquid budgets.
 integer          :: history_budget_histfile_num    ! output history file number for budget fields
 logical          :: history_waccm                  ! outputs typically used for WACCM
-!++BEH
-logical          :: history_energy_budget          ! outputs for the complete energy and water budgets
-!--BEH
 
 !Physics buffer indices
 integer  ::      qcwat_idx  = 0 
@@ -668,25 +665,25 @@ contains
     end if
 
 !++BEH
-    ! Add in defaults for history_energy_budget
-    if (history_energy_budget) then
-       call add_default ('DTENDKE', 1, ' ')
-       call add_default ('DTENDSE', 1, ' ')
-       call add_default ('DTENDWV', 1, ' ')
-       call add_default ('DTENDWL', 1, ' ')
-       call add_default ('DTENDWI', 1, ' ')
-       call add_default ('ATENDKE', 1, ' ')
-       call add_default ('ATENDSE', 1, ' ')
-       call add_default ('TUQ',     1, ' ')
-       call add_default ('TVQ',     1, ' ')
-       call add_default ('TUH',     1, ' ')
-       call add_default ('TVH',     1, ' ')
-       call add_default ('TMKE',    1, ' ')
-       call add_default ('TMSE',    1, ' ')
-       call add_default ('TMWV',    1, ' ')
-       call add_default ('TMWL',    1, ' ')
-       call add_default ('TMWI',    1, ' ')
-       call add_default ('EFIX',    1, ' ')
+    ! Add these new budgets as defaults for history_budget
+    if (history_budget) then
+       call add_default ('DTENDKE', history_budget_histfile_num, ' ')
+       call add_default ('DTENDSE', history_budget_histfile_num, ' ')
+       call add_default ('DTENDWV', history_budget_histfile_num, ' ')
+       call add_default ('DTENDWL', history_budget_histfile_num, ' ')
+       call add_default ('DTENDWI', history_budget_histfile_num, ' ')
+       call add_default ('ATENDKE', history_budget_histfile_num, ' ')
+       call add_default ('ATENDSE', history_budget_histfile_num, ' ')
+       call add_default ('TUQ',     history_budget_histfile_num, ' ')
+       call add_default ('TVQ',     history_budget_histfile_num, ' ')
+       call add_default ('TUH',     history_budget_histfile_num, ' ')
+       call add_default ('TVH',     history_budget_histfile_num, ' ')
+       call add_default ('TMKE',    history_budget_histfile_num, ' ')
+       call add_default ('TMSE',    history_budget_histfile_num, ' ')
+       call add_default ('TMWV',    history_budget_histfile_num, ' ')
+       call add_default ('TMWL',    history_budget_histfile_num, ' ')
+       call add_default ('TMWI',    history_budget_histfile_num, ' ')
+       call add_default ('EFIX',    history_budget_histfile_num, ' ')
     end if
 !--BEH
 
