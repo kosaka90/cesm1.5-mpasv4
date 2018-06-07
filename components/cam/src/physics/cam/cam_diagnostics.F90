@@ -74,6 +74,9 @@ logical          :: history_budget                 ! output tendencies and state
                                                    ! liquid budgets.
 integer          :: history_budget_histfile_num    ! output history file number for budget fields
 logical          :: history_waccm                  ! outputs typically used for WACCM
+!++BEH
+logical          :: history_energy_budget          ! outputs for the complete energy and water budgets
+!--BEH
 
 !Physics buffer indices
 integer  ::      qcwat_idx  = 0 
@@ -425,11 +428,28 @@ contains
 !++KSA
     call addfld ('Q700',       horiz_only,  'A', 'kg/kg','Specific Humidity at 700 mbar pressure surface')
     call addfld ('SREFL3GHZ',  horiz_only,  'A', 'dBZ','Radar reflectivity (lamda = 10 cm = 3GHz)')
-    call addfld ('UTMQ',       horiz_only,  'A', 'kg/m/s','Total (vertically integrated) U flux of q')
-    call addfld ('VTMQ',       horiz_only,  'A', 'kg/m/s','Total (vertically integrated) V flux of q')
-    call register_vector_field('UTMQ', 'VTMQ')
-
 !--KSA
+
+!++BEH
+    call addfld ('DTENDKE',    horiz_only,  'A', 'W/m2',   'Dynamic Tendency of Total (vertically integrated) kinetic energy')
+    call addfld ('DTENDSE',    horiz_only,  'A', 'W/m2',   'Dynamic Tendency of Total (vertically integrated) static energy')
+    call addfld ('DTENDWV',    horiz_only,  'A', 'kg/m2/s','Dynamic Tendency of Total (vertically integrated) water vapor')
+    call addfld ('DTENDWL',    horiz_only,  'A', 'kg/m2/s','Dynamic Tendency of Total (vertically integrated) water liquid')
+    call addfld ('DTENDWI',    horiz_only,  'A', 'kg/m2/s','Dynamic Tendency of Total (vertically integrated) water ice')
+    call addfld ('ATENDKE',    horiz_only,  'A', 'W/m2',   'Adjustment Tendency of Total (vertically integrated) kinetic energy')
+    call addfld ('ATENDSE',    horiz_only,  'A', 'W/m2',   'Adjustment Tendency of Total (vertically integrated) static energy')
+    call addfld ('TUQ',        horiz_only,  'A', 'kg/m2','Total (vertically integrated) zonal water vapor flux')
+    call addfld ('TVQ',        horiz_only,  'A', 'kg/m/s','Total (vertically integrated) meridional water vapor flux')
+    call addfld ('TUH',        horiz_only,  'A', 'W/m',   'Total (vertically integrated) zonal moist static energy flux')
+    call addfld ('TVH',        horiz_only,  'A', 'W/m',   'Total (vertically integrated) meridional moist static energy flux')
+    call register_vector_field('TUQ', 'TVQ')
+    call register_vector_field('TUH', 'TVH')
+    call addfld ('TMKE',    horiz_only,  'A', 'J/m2',   'Total (vertically integrated) kinetic energy')
+    call addfld ('TMSE',    horiz_only,  'A', 'J/m2',   'Total (vertically integrated) static energy')
+    call addfld ('TMWV',    horiz_only,  'A', 'kg/m2',  'Total (vertically integrated) water vapor')
+    call addfld ('TMWL',    horiz_only,  'A', 'kg/m2',  'Total (vertically integrated) water liquid')
+    call addfld ('TMWI',    horiz_only,  'A', 'kg/m2',  'Total (vertically integrated) water ice')
+!--BEH
 
 
     ! outfld calls in diag_conv
@@ -646,6 +666,29 @@ contains
       call add_default ('KVH&IC     ',0, 'I')
       call add_default ('KVM&IC     ',0, 'I')
     end if
+
+!++BEH
+    ! Add in defaults for history_energy_budget
+    if (history_energy_budget) then
+       call add_default ('DTENDKE', 1, ' ')
+       call add_default ('DTENDSE', 1, ' ')
+       call add_default ('DTENDWV', 1, ' ')
+       call add_default ('DTENDWL', 1, ' ')
+       call add_default ('DTENDWI', 1, ' ')
+       call add_default ('ATENDKE', 1, ' ')
+       call add_default ('ATENDSE', 1, ' ')
+       call add_default ('TUQ',     1, ' ')
+       call add_default ('TVQ',     1, ' ')
+       call add_default ('TUH',     1, ' ')
+       call add_default ('TVH',     1, ' ')
+       call add_default ('TMKE',    1, ' ')
+       call add_default ('TMSE',    1, ' ')
+       call add_default ('TMWV',    1, ' ')
+       call add_default ('TMWL',    1, ' ')
+       call add_default ('TMWI',    1, ' ')
+       call add_default ('EFIX',    1, ' ')
+    end if
+!--BEH
 
     ! determine number of constituents for which convective tendencies must be computed
     if (history_budget) then
@@ -1267,12 +1310,14 @@ contains
     ! Purpose: record dynamics variables on physics grid
     !
     !-----------------------------------------------------------------------
-    use physconst,          only: gravit, rga, rair, cpair, latvap, rearth, pi, cappa
+    use physconst,          only: gravit, rga, rair, cpair, latvap, rearth, pi, cappa, latice !BEH added latice
     use time_manager,       only: get_nstep
     use interpolate_data,   only: vertinterp
     use constituent_burden, only: constituent_burden_comp
+    use constituents,       only: cnst_get_ind  ! BEH added cnst_get_ind to get the hydrometeor indices
     use cam_control_mod,    only: moist_physics
     use co2_cycle,          only: c_i, co2_transport
+    use check_energy,       only: calc_energy_terms !BEH added calc_energy_terms
     !-----------------------------------------------------------------------
     !
     ! Arguments
@@ -1294,6 +1339,13 @@ contains
     real(r8) :: esi(pcols,pver)   !
     real(r8) :: dlon(pcols)      ! width of grid cell (meters)
     integer ::  plon             ! number of longitudes
+    real(r8) :: se_tmp(pcols)    ! temp static energy !BEH
+    real(r8) :: ke_tmp(pcols)    ! temp kinetic energy !BEH
+    real(r8) :: wv_tmp(pcols)    ! temp water vapor !BEH
+    real(r8) :: wl_tmp(pcols)    ! temp liquid water !BEH
+    real(r8) :: wi_tmp(pcols)    ! temp ice water !BEH
+    integer :: ixcldice, ixcldliq   ! BEH constituent indices for cloud liquid and ice water.
+    integer :: ixrain, ixsnow       ! BEH added constituent indices for rain and snow.
 
     integer :: i, k, m, lchnk, ncol
     !
@@ -1342,25 +1394,52 @@ contains
     end do
     call outfld ('TMQ     ',ftem, pcols   ,lchnk     )
 
+!++BEH
+    ! Get the indices for cloud liquid and ice, rain, and snow for total energy and water calculations
+    call cnst_get_ind('CLDLIQ', ixcldliq)
+    call cnst_get_ind('CLDICE', ixcldice)
+    call cnst_get_ind('RAINQM', ixrain)
+    call cnst_get_ind('SNOWQM', ixsnow)
 
-!++KSA
-    ! U flux of q, vertically integrated
-    ! rga     =  1._r8/gravit
-    ftem(:ncol,:) = state%u(:ncol,:)*state%q(:ncol,:,1) * state%pdel(:ncol,:) * rga
+    ! Mass of vertically integrated q flux
+    ftem(:ncol,:) = state%u(:ncol,:)*state%q(:ncol,:,1)*state%pdel(:ncol,:)*rga
     do k=2,pver
-      ftem(:ncol,1) = ftem(:ncol,1) + ftem(:ncol,k)
+       ftem(:ncol,1) = ftem(:ncol,1) + ftem(:ncol,k)
     end do
-    call outfld ('UTMQ     ',ftem, pcols   ,lchnk     )
+    call outfld ('TUQ     ',ftem, pcols   ,lchnk     )
 
-    ! V flux of q, vertically integrated
-    ftem(:ncol,:) = state%v(:ncol,:)*state%q(:ncol,:,1) * state%pdel(:ncol,:) * rga
+    ftem(:ncol,:) = state%v(:ncol,:)*state%q(:ncol,:,1)*state%pdel(:ncol,:)*rga
     do k=2,pver
-      ftem(:ncol,1) = ftem(:ncol,1) + ftem(:ncol,k)
+       ftem(:ncol,1) = ftem(:ncol,1) + ftem(:ncol,k)
     end do
-    call outfld ('VTMQ     ',ftem, pcols   ,lchnk     )
+    call outfld ('TVQ     ',ftem, pcols   ,lchnk     )
 
-!--KSA
+    ! Mass of vertically integrated MSE flux
+    ftem(:ncol,:) = state%u(:ncol,:)*(state%s(:ncol,:)+latvap*state%q(:ncol,:,1))*state%pdel(:ncol,:)*rga
+    do k=2,pver
+       ftem(:ncol,1) = ftem(:ncol,1) + ftem(:ncol,k)
+    end do
+    call outfld ('TUH     ',ftem, pcols   ,lchnk     )
 
+    ftem(:ncol,:) = state%v(:ncol,:)*(state%s(:ncol,:)+latvap*state%q(:ncol,:,1))*state%pdel(:ncol,:)*rga
+    do k=2,pver
+       ftem(:ncol,1) = ftem(:ncol,1) + ftem(:ncol,k)
+    end do
+    call outfld ('TVH     ',ftem, pcols   ,lchnk     )
+
+    ! Get vertically integrated energy and water terms
+    se_tmp = 0._r8
+    ke_tmp = 0._r8
+    wv_tmp = 0._r8
+    wl_tmp = 0._r8
+    wi_tmp = 0._r8
+    call calc_energy_terms(state, ke_tmp, se_tmp, wv_tmp, wl_tmp, wi_tmp)
+    call outfld ('TMKE    ', ke_tmp, pcols   , lchnk     )
+    call outfld ('TMSE    ', se_tmp, pcols   , lchnk     )
+    call outfld ('TMWV    ', wv_tmp, pcols   , lchnk     )
+    call outfld ('TMWL    ', wl_tmp, pcols   , lchnk     )
+    call outfld ('TMWI    ', wi_tmp, pcols   , lchnk     )
+!--BEH
 
     ! Relative humidity
     if (hist_fld_active('RELHUM')) then

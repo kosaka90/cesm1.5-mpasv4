@@ -70,6 +70,13 @@ module physpkg
   integer ::  qini_idx           = 0 
   integer ::  cldliqini_idx      = 0 
   integer ::  cldiceini_idx      = 0 
+!++BEH
+  integer ::  kine_ener_ac_idx   = 0
+  integer ::  stat_ener_ac_idx   = 0
+  integer ::  water_vap_ac_idx   = 0
+  integer ::  water_liq_ac_idx   = 0
+  integer ::  water_ice_ac_idx   = 0
+!--BEH
 
   integer ::  prec_str_idx       = 0
   integer ::  snow_str_idx       = 0
@@ -188,6 +195,13 @@ contains
     call pbuf_add_field('QINI',      'physpkg', dtype_r8, (/pcols,pver/), qini_idx)
     call pbuf_add_field('CLDLIQINI', 'physpkg', dtype_r8, (/pcols,pver/), cldliqini_idx)
     call pbuf_add_field('CLDICEINI', 'physpkg', dtype_r8, (/pcols,pver/), cldiceini_idx)
+!++BEH
+    call pbuf_add_field('kine_ener_ac', 'global', dtype_r8, (/pcols/), kine_ener_ac_idx)
+    call pbuf_add_field('stat_ener_ac', 'global', dtype_r8, (/pcols/), stat_ener_ac_idx)
+    call pbuf_add_field('water_vap_ac', 'global', dtype_r8, (/pcols/), water_vap_ac_idx)
+    call pbuf_add_field('water_liq_ac', 'global', dtype_r8, (/pcols/), water_liq_ac_idx)
+    call pbuf_add_field('water_ice_ac', 'global', dtype_r8, (/pcols/), water_ice_ac_idx)
+!--BEH
 
     ! check energy package
     call check_energy_register
@@ -1218,12 +1232,12 @@ contains
     use majorsp_diffusion,  only: mspd_intr  ! WACCM-X major diffusion
     use ionosphere,         only: ionos_tend ! WACCM-X ionosphere
     use aoa_tracers,        only: aoa_tracers_timestep_tend
-    use physconst,          only: rhoh2o, latvap,latice
+    use physconst,          only: rhoh2o, latvap, latice, rga, cpair !BEH - added rga & cpair
     use aero_model,         only: aero_model_drydep
     use carma_intr,         only: carma_emission_tend, carma_timestep_tend
     use carma_flags_mod,    only: carma_do_aerosol, carma_do_emission
     use check_energy,       only: check_energy_chng
-    use check_energy,       only: check_tracers_data, check_tracers_init, check_tracers_chng
+    use check_energy,       only: check_tracers_data, check_tracers_init, check_tracers_chng, calc_energy_terms !BEH - added calc_energy_terms
     use time_manager,       only: get_nstep
     use cam_abortutils,     only: endrun
     use dycore,             only: dycore_is
@@ -1236,7 +1250,7 @@ contains
     use perf_mod
     use flux_avg,           only: flux_avg_run
     use unicon_cam,         only: unicon_cam_org_diags
-    use cam_history,        only: hist_fld_active
+    use cam_history,        only: hist_fld_active, outfld !BEH - added outfld
     !
     ! Arguments
     !
@@ -1264,6 +1278,10 @@ contains
     integer i,k,m                 ! Longitude, level indices
     integer :: yr, mon, day, tod       ! components of a date
     integer :: ixcldice, ixcldliq      ! constituent indices for cloud liquid and ice water.
+!++BEH
+    integer :: ixrain, ixsnow          ! constituent indicecs for rain and snow
+    real(r8) rtdt                      ! 1./ztodt inverse of timestep for dynamic tendencies
+!--BEH
 
     logical :: labort                            ! abort flag
 
@@ -1279,6 +1297,21 @@ contains
     real(r8) :: tmp_trac  (pcols,pver,pcnst) ! tmp space
     real(r8) :: tmp_pdel  (pcols,pver) ! tmp space
     real(r8) :: tmp_ps    (pcols)      ! tmp space
+!++BEH
+    real(r8) :: se_tmp    (pcols)      ! tmp static energy
+    real(r8) :: ke_tmp    (pcols)      ! tmp kinetic energy
+    real(r8) :: wv_tmp    (pcols)      ! tmp water vapor
+    real(r8) :: wl_tmp    (pcols)      ! tmp liquid water
+    real(r8) :: wi_tmp    (pcols)      ! tmp ice water
+    real(r8) :: se_tmp2   (pcols)      ! tmp static energy
+    real(r8) :: ke_tmp2   (pcols)      ! tmp kinetic energy
+    real(r8), pointer, dimension(:) :: kine_ener_ac_2d   ! Vertically integrated kinetic energy
+    real(r8), pointer, dimension(:) :: stat_ener_ac_2d   ! Vertically integrated static energy
+    real(r8), pointer, dimension(:) :: water_vap_ac_2d   ! Vertically integrated water vapor
+    real(r8), pointer, dimension(:) :: water_liq_ac_2d   ! Vertically integrated water liquid
+    real(r8), pointer, dimension(:) :: water_ice_ac_2d   ! Vertically integrated water ice
+    real(r8) :: CIDiff(pcols)                            ! Difference in vertically integrated terms
+!--BEH
 
     ! physics buffer fields for total energy and mass adjustment
     integer itim_old, ifld
@@ -1295,6 +1328,8 @@ contains
     ncol  = state%ncol
 
     nstep = get_nstep()
+
+    rtdt = 1._r8/ztodt  !BEH inverse of timestep for dynamic tendencies 
     
     ! Adjust the surface fluxes to reduce instabilities in near sfc layer
     if (phys_do_flux_avg()) then 
@@ -1487,6 +1522,8 @@ contains
 
     call physics_update(state, ptend, ztodt, tend)
     call calc_tot_energy(state, 'pAP')
+    !BEH: get energy and water terms after physics/before adjustment
+    call calc_energy_terms(state, ke_tmp, se_tmp, wv_tmp, wl_tmp, wi_tmp)
 
     !---------------------------------------------------------------------------------
     ! Enforce charge neutrality after O+ change from ionos_tend
@@ -1531,12 +1568,17 @@ contains
     ! Scale dry mass and energy (does nothing if dycore is EUL or SLD)
     call cnst_get_ind('CLDLIQ', ixcldliq)
     call cnst_get_ind('CLDICE', ixcldice)
+!++BEH
+    call cnst_get_ind('RAINQM', ixrain)
+    call cnst_get_ind('SNOWQM', ixsnow)
+!--BEH
     tmp_q     (:ncol,:pver) = state%q(:ncol,:pver,1)
     tmp_cldliq(:ncol,:pver) = state%q(:ncol,:pver,ixcldliq)
     tmp_cldice(:ncol,:pver) = state%q(:ncol,:pver,ixcldice)
     ! For 'SE', physics_dme_adjust is called for energy diagnostic purposes only.  So, save off tracers
     if (hist_fld_active('SE_pAM').or.hist_fld_active('KE_pAM').or.hist_fld_active('WV_pAM').or.&
-         hist_fld_active('WL_pAM').or.hist_fld_active('WI_pAM')) then
+         hist_fld_active('WL_pAM').or.hist_fld_active('WI_pAM').or.hist_fld_active('ATENDKE').or.&
+         hist_fld_active('ATENDSE')) then !BEH added ATENDKE and ATENDSE
       tmp_trac(:ncol,:pver,:pcnst) = state%q(:ncol,:pver,:pcnst)
       tmp_pdel(:ncol,:pver)        = state%pdel(:ncol,:pver)
       tmp_ps(:ncol)                = state%ps(:ncol)
@@ -1547,6 +1589,15 @@ contains
       if (dycore_is('SE')) call set_dry_to_wet(state)
       call physics_dme_adjust(state, tend, qini, ztodt)
       call calc_tot_energy(state, 'pAM')
+!++BEH
+      !get energy and water terms after adjustment
+      call calc_energy_terms(state, ke_tmp2, se_tmp2, wv_tmp, wl_tmp, wi_tmp)
+      !difference and output energy and water terms before and after fixer
+      CIDiff(:ncol) = (ke_tmp2(:ncol) - ke_tmp(:ncol))*rtdt
+      call outfld('ATENDKE', CIDiff, pcols, lchnk )
+      CIDiff(:ncol) = (se_tmp2(:ncol) - se_tmp(:ncol))*rtdt
+      call outfld('ATENDSE', CIDiff, pcols, lchnk )
+!--BEH
       ! Restore pre-"physics_dme_adjust" tracers
       state%q(:ncol,:pver,:pcnst) = tmp_trac(:ncol,:pver,:pcnst)
       state%pdel(:ncol,:pver)     = tmp_pdel(:ncol,:pver)
@@ -1582,6 +1633,34 @@ contains
          qini, cldliqini, cldiceini)
 
     call clybry_fam_set( ncol, lchnk, map2chm, state%q, pbuf )
+
+!++BEH
+    !Store energy and moisture terms before dynamics is called
+    kine_ener_ac_idx   = pbuf_get_index('kine_ener_ac')
+    call pbuf_get_field(pbuf, kine_ener_ac_idx, kine_ener_ac_2d )
+    stat_ener_ac_idx   = pbuf_get_index('stat_ener_ac')
+    call pbuf_get_field(pbuf, stat_ener_ac_idx, stat_ener_ac_2d )
+    water_vap_ac_idx   = pbuf_get_index('water_vap_ac')
+    call pbuf_get_field(pbuf, water_vap_ac_idx, water_vap_ac_2d )
+    water_liq_ac_idx   = pbuf_get_index('water_liq_ac')
+    call pbuf_get_field(pbuf, water_liq_ac_idx, water_liq_ac_2d )
+    water_ice_ac_idx   = pbuf_get_index('water_ice_ac')
+    call pbuf_get_field(pbuf, water_ice_ac_idx, water_ice_ac_2d )
+
+    se_tmp = 0._r8
+    ke_tmp = 0._r8
+    wv_tmp = 0._r8
+    wl_tmp = 0._r8
+    wi_tmp = 0._r8
+    call calc_energy_terms(state, ke_tmp, se_tmp, wv_tmp, wl_tmp, wi_tmp)
+
+    !Store column energy and water terms !BEH
+    kine_ener_ac_2d(:ncol) = ke_tmp(:ncol)
+    stat_ener_ac_2d(:ncol) = se_tmp(:ncol)
+    water_vap_ac_2d(:ncol) = wv_tmp(:ncol)
+    water_liq_ac_2d(:ncol) = wl_tmp(:ncol)
+    water_ice_ac_2d(:ncol) = wi_tmp(:ncol)
+!--BEH
 
   end subroutine tphysac
 
@@ -1695,6 +1774,10 @@ contains
 
     integer :: i                               ! column indicex
     integer :: ixcldice, ixcldliq              ! constituent indices for cloud liquid and ice water.
+!++BEH
+    integer :: ixrain, ixsnow                  ! constituent indices for rain and snow.
+    real(r8) rtdt                              ! 1./ztodt inverse of timestep for dynamic tendencies
+!--BEH
     ! for macro/micro co-substepping
     integer :: macmic_it                       ! iteration variables
     real(r8) :: cld_macmic_ztodt               ! modified timestep
@@ -1751,6 +1834,21 @@ contains
     real(r8) :: zero_tracers(pcols,pcnst)
 
     logical   :: lq(pcnst)
+!++BEH
+    real(r8) :: se_tmp(pcols)          ! tmp static energy
+    real(r8) :: ke_tmp(pcols)          ! tmp kinetic energy
+    real(r8) :: wv_tmp(pcols)          ! tmp water vapor
+    real(r8) :: wl_tmp(pcols)          ! tmp liquid water
+    real(r8) :: wi_tmp(pcols)          ! tmp ice water
+    real(r8) :: se_tmp2(pcols)         ! tmp static energy
+    real(r8) :: ke_tmp2(pcols)         ! tmp kinetic energy
+    real(r8), pointer, dimension(:) :: kine_ener_ac_2d ! Vertically integrated kinetic energy
+    real(r8), pointer, dimension(:) :: stat_ener_ac_2d ! Vertically integrated static energy
+    real(r8), pointer, dimension(:) :: water_vap_ac_2d ! Vertically integrated water vapor
+    real(r8), pointer, dimension(:) :: water_liq_ac_2d ! Vertically integrated water liquid
+    real(r8), pointer, dimension(:) :: water_ice_ac_2d ! Vertically integrated water ice
+    real(r8) :: CIDiff(pcols)            ! Difference in vertically integrated terms
+!--BEH
     !-----------------------------------------------------------------------
 
     call t_startf('bc_init')
@@ -1762,7 +1860,69 @@ contains
     lchnk = state%lchnk
     ncol  = state%ncol
 
+    rtdt = 1._r8/ztodt  !BEH inverse of timestep for dynamic tendencies 
+
     nstep = get_nstep()
+
+!++BEH
+    !moved up getting the cldliq and cldice indexes for the dynamic tendency calculations
+    call cnst_get_ind('CLDLIQ', ixcldliq)
+    call cnst_get_ind('CLDICE', ixcldice)
+    call cnst_get_ind('RAINQM', ixrain)  !added for total water calculation
+    call cnst_get_ind('SNOWQM', ixsnow)  !added for total water calculation
+
+    !BEH
+    kine_ener_ac_idx   = pbuf_get_index('kine_ener_ac')
+    call pbuf_get_field(pbuf, kine_ener_ac_idx, kine_ener_ac_2d )
+    stat_ener_ac_idx   = pbuf_get_index('stat_ener_ac')
+    call pbuf_get_field(pbuf, stat_ener_ac_idx, stat_ener_ac_2d )
+    water_vap_ac_idx   = pbuf_get_index('water_vap_ac')
+    call pbuf_get_field(pbuf, water_vap_ac_idx, water_vap_ac_2d )
+    water_liq_ac_idx   = pbuf_get_index('water_liq_ac')
+    call pbuf_get_field(pbuf, water_liq_ac_idx, water_liq_ac_2d )
+    water_ice_ac_idx   = pbuf_get_index('water_ice_ac')
+    call pbuf_get_field(pbuf, water_ice_ac_idx, water_ice_ac_2d )
+
+    ! Integrate and compute the difference for energy and water terms
+    ! CIDiff = difference of column integrated values
+    if( nstep == 0 ) then
+       CIDiff(:ncol) = 0.0_r8
+       call outfld('DTENDKE', CIDiff, pcols, lchnk )
+       call outfld('DTENDSE', CIDiff, pcols, lchnk )
+       call outfld('DTENDWV', CIDiff, pcols, lchnk )
+       call outfld('DTENDWL', CIDiff, pcols, lchnk )
+       call outfld('DTENDWI', CIDiff, pcols, lchnk )
+    else
+       CIDiff(:ncol) = 0.0_r8
+       se_tmp = 0._r8
+       ke_tmp = 0._r8
+       wv_tmp = 0._r8
+       wl_tmp = 0._r8
+       wi_tmp = 0._r8
+       call calc_energy_terms(state, ke_tmp, se_tmp, wv_tmp, wl_tmp, wi_tmp)
+
+       !difference and output KE
+       CIDiff(:ncol) = (ke_tmp(:ncol) - kine_ener_ac_2d(:ncol))*rtdt
+       call outfld('DTENDKE', CIDiff, pcols, lchnk )
+
+       !difference and output SE
+       CIDiff(:ncol) = (se_tmp(:ncol) - stat_ener_ac_2d(:ncol))*rtdt
+       call outfld('DTENDSE', CIDiff, pcols, lchnk )
+
+       !difference and output WV
+       CIDiff(:ncol) = (wv_tmp(:ncol) - water_vap_ac_2d(:ncol))*rtdt
+       call outfld('DTENDWV', CIDiff, pcols, lchnk )
+
+       !difference and output WL
+       CIDiff(:ncol) = (wl_tmp(:ncol) - water_liq_ac_2d(:ncol))*rtdt
+       call outfld('DTENDWL', CIDiff, pcols, lchnk )
+
+       !difference and output WI
+       CIDiff(:ncol) = (wi_tmp(:ncol) - water_ice_ac_2d(:ncol))*rtdt
+       call outfld('DTENDWI', CIDiff, pcols, lchnk )
+
+    end if
+!--BEH
 
     ! Associate pointers with physics buffer fields
     itim_old = pbuf_old_tim_idx()
@@ -1829,8 +1989,8 @@ contains
     ! Save state for convective tendency calculations.
     call diag_conv_tend_ini(state, pbuf)
 
-    call cnst_get_ind('CLDLIQ', ixcldliq)
-    call cnst_get_ind('CLDICE', ixcldice)
+!    call cnst_get_ind('CLDLIQ', ixcldliq) ! BEH moved up
+!    call cnst_get_ind('CLDICE', ixcldice) ! BEH moved up
     qini     (:ncol,:pver) = state%q(:ncol,:pver,       1)
     cldliqini(:ncol,:pver) = state%q(:ncol,:pver,ixcldliq)
     cldiceini(:ncol,:pver) = state%q(:ncol,:pver,ixcldice)
