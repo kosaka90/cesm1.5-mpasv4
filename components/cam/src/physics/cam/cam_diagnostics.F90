@@ -683,7 +683,6 @@ contains
        call add_default ('TMWV',    history_budget_histfile_num, ' ')
        call add_default ('TMWL',    history_budget_histfile_num, ' ')
        call add_default ('TMWI',    history_budget_histfile_num, ' ')
-       call add_default ('EFIX',    history_budget_histfile_num, ' ')
     end if
 !--BEH
 

@@ -195,6 +195,7 @@ end subroutine check_energy_get_integrals
 
     if ( history_budget ) then
        call add_default ('DTCORE   '  , history_budget_histfile_num, ' ')
+       call add_default ('EFIX',    history_budget_histfile_num, ' ') !BEH
     end if
 
   end subroutine check_energy_init
