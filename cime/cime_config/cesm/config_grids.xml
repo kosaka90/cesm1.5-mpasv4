@@ -548,6 +548,13 @@
       <grid name="rof">r05</grid>
    </model_grid>
 
+   <model_grid alias="mp120a_t12">
+      <grid name="atm">mp120a</grid>
+      <grid name="lnd">mp120a</grid>
+      <grid name="ocnice">tx0.1v2</grid>
+      <grid name="rof">r05</grid>
+   </model_grid>
+
    <model_grid alias="mp60a_g16">
       <grid name="atm">mp60a</grid>
       <grid name="lnd">mp60a</grid>
