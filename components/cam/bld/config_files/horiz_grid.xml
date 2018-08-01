@@ -56,5 +56,11 @@
 <horiz_grid dyn="mpas"  hgrid="mp4-32a-asiamon"   ncol="1830914"  />
 <horiz_grid dyn="mpas"  hgrid="mp4-32a-amazon"    ncol="1830914"  />
 <horiz_grid dyn="mpas"  hgrid="mp4-32a-ctrus"     ncol="1830914"  />
+<horiz_grid dyn="mpas"  hgrid="mp15a-120a-US"     ncol="195266"  />
+<horiz_grid dyn="mpas"  hgrid="mp30a-120a-EP"     ncol="81810"  />
+<horiz_grid dyn="mpas"  hgrid="mp30a-120a-TR"     ncol="102402"  />
+<horiz_grid dyn="mpas"  hgrid="mp15a-60a-WP"      ncol="535554"  />
+<horiz_grid dyn="mpas"  hgrid="mp3a-15a-US"       ncol="6488066"  />
+
  
 </config_horiz_grid>

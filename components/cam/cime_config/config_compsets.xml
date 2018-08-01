@@ -238,6 +238,13 @@
     <lname>AMIP_CAM60_CLM50%SP_CICE%PRES_DOCN%DOM_MOSART_CISM2%NOEVOLVE_SWAV</lname>
   </compset>
 
+<!-- KSA FACETS -->
+
+   <compset>
+    <alias>FAMIPC5SROF</alias>
+    <lname>AMIP_CAM50_CLM40%SP_CICE%PRES_DOCN%DOM_SROF_SGLC_SWAV</lname>
+   </compset>
+
 <!-- FG compsets -->
 
   <compset grid="g%gland">

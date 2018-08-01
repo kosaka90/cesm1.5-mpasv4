@@ -4,5 +4,11 @@
 
 <entry id="dyn"   value="mpas"  />
 <entry id="hgrid" value="mp240a" />
+<entry id="hgrid" value="mp120a" />
+<entry id="hgrid" value="mp60a" />
+<entry id="hgrid" value="mp30a-120a-EP" />
+<entry id="hgrid" value="mp30a-120a-TR" />
+<entry id="hgrid" value="mp15a-120a-US" />
+<entry id="hgrid" value="mp3a-15a-US" />
 
 </config_definition>
