@@ -590,7 +590,23 @@
       <mask>tx0.1v2</mask>
     </model_grid>
 
-    <model_grid alias="mp137218a_g16">
+    <model_grid alias="mp137218a_mp137218a" not_compset="_POP">
+      <grid name="atm">mp137218a</grid>
+      <grid name="lnd">mp137218a</grid>
+      <grid name="ocnice">mp137218a</grid>
+      <grid name="rof">r05</grid>
+      <mask>tx0.1v2</mask>
+    </model_grid>
+
+    <model_grid alias="mp12-46a-facets_mp12-46a-facets" not_compset="_POP">
+      <grid name="atm">mp12-46a-facets</grid>
+      <grid name="lnd">mp12-46a-facets</grid>
+      <grid name="ocnice">mp12-46a-facets</grid>
+      <grid name="rof">r05</grid>
+      <mask>tx0.1v2</mask>
+    </model_grid>
+
+     <model_grid alias="mp137218a_g16">
       <grid name="atm">mp137218a</grid>
       <grid name="lnd">mp137218a</grid>
       <grid name="ocnice">gx1v6</grid>
@@ -631,6 +647,15 @@
       <grid name="ocnice">gx1v6</grid>
       <grid name="rof">r05</grid>
     </model_grid>
+
+    <model_grid alias="mp4-32a-ctrus_mp4-32a-ctrus" not_compset="_POP">
+      <grid name="atm">mp4-32a-ctrus</grid>
+      <grid name="lnd">mp4-32a-ctrus</grid>
+      <grid name="ocnice">mp4-32a-ctrus</grid>
+      <grid name="rof">r05</grid>
+      <mask>tx0.1v2</mask>
+    </model_grid>
+
 
     <!-- new runoff grids for data runoff model DROF -->
 
@@ -936,15 +961,15 @@
 
     <domain name="mp137218a">
       <nx>137218</nx> <ny>1</ny>
-      <file grid="atm|lnd">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/domain.lnd.mp137218a_gx1v6.170725.nc</file>
-      <file grid="ocnice">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/domain.ocn.mp137218a_gx1v6.170725.nc</file>
+      <file grid="atm|lnd">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/domain.lnd.mp137218a_tx0.1v2.180803.nc</file>
+      <file grid="ocnice">/global/project/projectdirs/m2645/MPAS/FACETS_25-100km/domain.ocn.mp137218a_tx0.1v2.180803.nc</file>
       <desc>VR MPAS with CONUS refinment to 25 km (100km base) for FACETS</desc>
     </domain>
 
     <domain name="mp12-46a-facets">
       <nx>655362</nx> <ny>1</ny>
-      <file grid="atm|lnd">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/domain.lnd.FACETS_12-46km_gx1v6.180115.nc</file>
-      <file grid="ocnice">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/domain.ocn.FACETS_12-46km_gx1v6.180115.nc</file>
+      <file grid="atm|lnd">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/domain.lnd.FACETS_12-46km_tx0.1v2.180823.nc</file>
+      <file grid="ocnice">/global/project/projectdirs/m2645/MPAS/FACETS_12-46km/domain.ocn.FACETS_12-46km_tx0.1v2.180823.nc</file>
       <desc>VR MPAS with CONUS refinment to 12 km (46km base) for FACETS</desc>
     </domain>
 
@@ -1598,8 +1623,8 @@
     </gridmap>
 
     <gridmap lnd_grid="mp4-32a-ctrus" rof_grid="r05">
-      <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mpas.1830914.chun_to_r05_conserve.nc</map>
-      <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/r05_to_mpas.1830914.chun_conserve.nc</map>
+      <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gridmaps/mpas.1830914.chun_to_r05_conserve.nc</map>
+      <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gridmaps/r05_to_mpas.1830914.chun_conserve.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="ne0np4conus30x8" rof_grid="r8th">
@@ -1885,10 +1910,10 @@
     </gridmap>
 
     <gridmap lnd_grid="mp4-32a-ctrus" glc_grid="gland4" >
-      <map name="LND2GLC_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mp4-32a-ctrus_TO_gland4km_conserve.nc</map>
-      <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/mp4-32a-ctrus_TO_gland4km_bilinear.nc</map>
-      <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gland4km_TO_mp4-32a-ctrus_conserve.nc</map>
-      <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gland4km_TO_mp4-32a-ctrus_conserve.nc</map>
+      <map name="LND2GLC_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gridmaps/mp4-32a-ctrus_TO_gland4km_conserve.nc</map>
+      <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gridmaps/mp4-32a-ctrus_TO_gland4km_bilinear.nc</map>
+      <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gridmaps/gland4km_TO_mp4-32a-ctrus_conserve.nc</map>
+      <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/rotated_1830914_4-32km_36N97W/gridmaps/gland4km_TO_mp4-32a-ctrus_conserve.nc</map>
     </gridmap>
 
     <gridmap lnd_grid="mp15a-120a-US" glc_grid="gland4" >
