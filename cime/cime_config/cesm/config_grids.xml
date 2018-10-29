@@ -502,35 +502,35 @@
       <grid name="atm">mp120a</grid>
       <grid name="lnd">mp120a</grid>
       <grid name="ocnice">mp120a</grid>
-      <mask>gx1v6</mask>
+      <mask>tx0.1v2</mask>
    </model_grid>
 
    <model_grid alias="mp60a_mp60a" not_compset="_POP">
       <grid name="atm">mp60a</grid>
       <grid name="lnd">mp60a</grid>
       <grid name="ocnice">mp60a</grid>
-      <mask>gx1v6</mask>
+      <mask>tx0.1v2</mask>
    </model_grid>
 
    <model_grid alias="mp30a_mp30a" not_compset="_POP">
       <grid name="atm">mp30a</grid>
       <grid name="lnd">mp30a</grid>
       <grid name="ocnice">mp30a</grid>
-      <mask>gx1v6</mask>
+      <mask>tx0.1v2</mask>
    </model_grid>
 
    <model_grid alias="mp10a_mp10a" not_compset="_POP">
       <grid name="atm">mp10a</grid>
       <grid name="lnd">mp10a</grid>
       <grid name="ocnice">mp10a</grid>
-      <mask>gx1v6</mask>
+      <mask>tx0.1v2</mask>
    </model_grid>
 
    <model_grid alias="mp4a_mp4a" not_compset="_POP">
       <grid name="atm">mp4a</grid>
       <grid name="lnd">mp4a</grid>
       <grid name="ocnice">mp4a</grid>
-      <mask>gx1v6</mask>
+      <mask>tx0.1v2</mask>
    </model_grid>
 
    <model_grid alias="mp240a_g16">
@@ -925,8 +925,8 @@
 
     <domain name="mp120a">
       <nx>40962</nx> <ny>1</ny>
-      <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/mp120a/domain.lnd.mp40962a_gx1v6.150722.nc</file>
-      <file grid="ocnice">/global/project/projectdirs/m1867/MPASinput/mp120a/domain.ocn.mp40962a_gx1v6.150722.nc</file>
+      <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/mp120a/domain.lnd.mp120a_tx0.1v2.180808.nc</file>
+      <file grid="ocnice">/global/project/projectdirs/m1867/MPASinput/mp120a/domain.ocn.mp120a_tx0.1v2.180808.nc</file>
       <desc>mp120a is MPAS-A 120km grid:</desc>
     </domain>
 
@@ -939,8 +939,8 @@
 
     <domain name="mp30a">
       <nx>655362</nx> <ny>1</ny>
-      <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/mp30a/domain.lnd.mp30a_gx1v6.150511.nc</file>
-      <file grid="ocnice">/global/project/projectdirs/m1867/MPASinput/mp30a/domain.ocn.mp30a_gx1v6.150511.nc</file>
+      <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/mp30a/domain.lnd.mp30a_tx0.1v2.181029.nc</file>
+      <file grid="ocnice">/global/project/projectdirs/m1867/MPASinput/mp30a/domain.ocn.mp30a_tx0.1v2.181029.nc</file>
       <desc>mp30a is MPAS-A 30km grid:</desc>
     </domain>
 
