@@ -774,7 +774,7 @@ module mpas_cam_interface
    
    
    subroutine mpas_to_cam(Numcols, Plev, Pcnst, Psd, Phis, Pint, Pmid, Zint, Zmid, &
-                          T, Ux, Uy, Omega, Tracer)
+                          T, Ux, Uy, Omega, Tracer, Div, Vor) !KSA, Div and Vor added
    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
    ! SUBROUTINE MPAS_TO_CAM
    !
@@ -812,6 +812,10 @@ module mpas_cam_interface
       real (kind=RKIND), dimension(Numcols,Plev), intent(out) :: Uy
       real (kind=RKIND), dimension(Numcols,Plev), intent(out) :: Omega
       real (kind=RKIND), dimension(Numcols,Plev,Pcnst), intent(out) :: Tracer
+!++KSA
+      real (kind=RKIND), dimension(Numcols,Plev), intent(out) :: Div
+      real (kind=RKIND), dimension(Numcols,Plev), intent(out) :: Vor
+!--KSA
 
       type (mpas_pool_type), pointer :: mesh, state, diag
 
@@ -819,6 +823,10 @@ module mpas_cam_interface
       real (kind=RKIND), dimension(:), pointer :: latCell, lonCell
       real (kind=RKIND), dimension(:,:), pointer :: theta, pressure_base, pressure_p, ww, uReconstZonal, uReconstMeridional, east, north
       real (kind=RKIND), dimension(:,:), pointer :: w, rho_p, rho_base, zz, zgrid, theta_m
+!++KSA
+      real (kind=RKIND), dimension(:,:), pointer :: divergence, vor_cell
+!--KSA
+
       real (kind=RKIND), dimension(:,:,:), pointer :: scalars
 
       integer :: iCell, k, iScalar
@@ -852,6 +860,10 @@ module mpas_cam_interface
       call mpas_pool_get_array(diag, 'rho_p', rho_p)
       call mpas_pool_get_array(diag, 'rho_base', rho_base)
 
+!++KSA
+      call mpas_pool_get_array(diag, 'vor_cell', vor_cell)
+      call mpas_pool_get_array(diag, 'divergence', divergence)
+!--KSA
       !
       !  Perform basic sanity check on expected and available field dimensions
       !
@@ -887,6 +899,10 @@ module mpas_cam_interface
 
             Omega(iCell,k) = -1.0 * gravity * (rho_p(k,iCell)+rho_base(k,iCell)) * zz(k,iCell) * (w(k,iCell)+w(k+1,iCell)) * 0.5
 
+!++KSA
+            Div(iCell,k) = divergence(k,iCell)
+            Vor(iCell,k) = vor_cell(k,iCell)
+!--KSA
             !
             ! NOTE: Eventually, we need to ensure that the moisture variables we return to CAM
             !       are what CAM expects, rather than simply what we have in our scalars array

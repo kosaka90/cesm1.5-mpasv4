@@ -44,6 +44,10 @@ Module dyn_comp
        real(r8), dimension(:,:   ), pointer     :: omega  ! Omega                     (ncol,nver+1)
        real(r8), dimension(:,:,: ), pointer     :: tracer ! Tracers                   (ncol,nver,nq)
        real(r8), dimension(:,:   ), pointer     :: pressure! Pressure                 (ncol,nver)
+!++KSA
+       real(r8), dimension(:,:   ), pointer     :: div    ! divergence at center       (ncol,nver)
+       real(r8), dimension(:,:   ), pointer     :: vor    ! vorticity at center       (ncol,nver)
+!--KSA
    end type dyn_export_t
 
 ! Note: when operating without dynamics, psd will be the total surface pressure
@@ -189,6 +193,10 @@ end subroutine dyn_readnl
     allocate ( dyn_out%omega  (numcols,plev+1) )
     allocate ( dyn_out%tracer (numcols,plev,pcnst) )
     allocate ( dyn_out%pressure(numcols,plev) )
+!++KSA
+    allocate ( dyn_out%div     (numcols,plev) )
+    allocate ( dyn_out%vor     (numcols,plev) )
+!--KSA
 
     dyn_out%phis(:)       = 0._r8
     dyn_out%psd(:)        = 0._r8
@@ -203,6 +211,10 @@ end subroutine dyn_readnl
     dyn_out%omega(:,:)    = 0._r8
     dyn_out%tracer(:,:,:) = 0._r8
     dyn_out%pressure(:,:) = 0._r8
+!++KSA
+    dyn_out%div(:,:)      = 0._r8
+    dyn_out%vor(:,:)      = 0._r8
+!--KSA
 
     call mpas_init2
 
@@ -274,6 +286,10 @@ end subroutine dyn_readnl
     deallocate ( dyn_out%t )
     deallocate ( dyn_out%omega )
     deallocate ( dyn_out%tracer )
+!++KSA
+    deallocate ( dyn_out%div )
+    deallocate ( dyn_out%vor )
+!--KSA
 
     call mpas_final()
 

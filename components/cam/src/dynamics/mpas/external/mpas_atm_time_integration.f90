@@ -3783,7 +3783,9 @@ module atm_time_integration
       real (kind=RKIND), dimension(:), pointer :: fVertex, fEdge, dvEdge, dcEdge, areaCell, areaTriangle, invAreaCell
       real (kind=RKIND), dimension(:,:), pointer :: vh, weightsOnEdge, kiteAreasOnVertex, h_edge, h, u, v, &
                                                     circulation, vorticity, ke, pv_edge, pv_vertex, pv_cell, gradPVn, gradPVt, &
-                                                    divergence
+                                                    divergence, vor_cell
+      !vor_cell added by KSA 
+
       integer, dimension(:,:), pointer :: cellsOnEdge, cellsOnVertex, verticesOnEdge, edgesOnCell, edgesOnEdge, edgesOnVertex
       integer, dimension(:), pointer :: nEdgesOnCell, nEdgesOnEdge
 
@@ -3791,6 +3793,7 @@ module atm_time_integration
       real (kind=RKIND), allocatable, dimension(:,:) :: ke_vertex
       real (kind=RKIND) :: ke_fact
       real (kind=RKIND), pointer :: config_apvm_upwinding
+
 
 
       call mpas_pool_get_config(configs, 'config_apvm_upwinding', config_apvm_upwinding)
@@ -3810,6 +3813,7 @@ module atm_time_integration
       call mpas_pool_get_array(diag, 'pv_cell', pv_cell)
       call mpas_pool_get_array(diag, 'gradPVn', gradPVn)
       call mpas_pool_get_array(diag, 'gradPVt', gradPVt)
+      call mpas_pool_get_array(diag, 'vor_cell', vor_cell) !++KSA 
 
       call mpas_pool_get_array(mesh, 'weightsOnEdge', weightsOnEdge)
       call mpas_pool_get_array(mesh, 'kiteAreasOnVertex', kiteAreasOnVertex)
@@ -4002,11 +4006,16 @@ module atm_time_integration
       !    ( this computes pv_cell for all real cells )
       !
       pv_cell(:,:) = 0.0
+      vor_cell(:,:) = 0.0 !++KSA also computes relative vorticity at cell centers
+
       do iVertex = 1, nVertices
          do i=1,vertexDegree
             iCell = cellsOnVertex(i,iVertex)
             do k = 1,nVertLevels
                pv_cell(k,iCell) = pv_cell(k,iCell) + kiteAreasOnVertex(i, iVertex) * pv_vertex(k, iVertex) * invAreaCell(iCell)
+               !++KSA vorticity at cell centers
+               vor_cell(k,iCell) = vor_cell(k,iCell) + kiteAreasOnVertex(i, iVertex) * vorticity(k, iVertex) * invAreaCell(iCell)
+               !--KSA
             end do
          end do
       end do

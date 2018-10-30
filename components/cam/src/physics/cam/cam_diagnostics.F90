@@ -181,6 +181,11 @@ contains
       call addfld ('PRESSURE',   (/ 'lev' /), 'A','Pa',         'Pressure')
       call addfld ('PRESSUREi',  (/ 'ilev' /),'A','Pa',         'Pressure at interface')
       call addfld ('Z3i',        (/ 'ilev' /),'A', 'm',         'Geopotential Height at interface (above sea level)') !BEH
+    !++KSA
+      call addfld ('DIV',   (/ 'lev' /), 'A','1/s',         'Divergence')
+      call addfld ('VOR',   (/ 'lev' /), 'A','1/s',         'Vorticity')
+    ! outfld calls in subroutine d_p_coupling
+    !--KSA
     end if
 !--CMZ
 

@@ -71,6 +71,10 @@ module physics_types
           t,       &! temperature (K)
           u,       &! zonal wind (m/s)
           v,       &! meridional wind (m/s)
+!++KSA
+          div,     &! divergence (1/s)
+          vor,     &! vorticity (1/s)
+!--KSA
           s,       &! dry static energy
           omega,   &! vertical pressure velocity (Pa/s) 
           pmid,    &! midpoint pressure (Pa) 
@@ -582,7 +586,12 @@ contains
          varname="state%exner",     msg=msg)
     call shr_assert_in_domain(state%zm(:ncol,:),        is_nan=.false., &
          varname="state%zm",        msg=msg)
-
+!++KSA
+    call shr_assert_in_domain(state%div(:ncol,:),         is_nan=.false., &
+         varname="state%div",         msg=msg)
+    call shr_assert_in_domain(state%vor(:ncol,:),         is_nan=.false., &
+         varname="state%vor",         msg=msg)
+!--KSA
     ! 2-D variables (at interfaces)
     call shr_assert_in_domain(state%pint(:ncol,:),      is_nan=.false., &
          varname="state%pint",      msg=msg)
@@ -656,6 +665,12 @@ contains
          varname="state%exner",     msg=msg)
     call shr_assert_in_domain(state%zm(:ncol,:),        lt=posinf_r8, gt=neginf_r8, &
          varname="state%zm",        msg=msg)
+!++KSA
+    call shr_assert_in_domain(state%div(:ncol,:),         lt=posinf_r8, gt=neginf_r8, &
+         varname="state%div",         msg=msg)
+    call shr_assert_in_domain(state%vor(:ncol,:),         lt=posinf_r8, gt=neginf_r8, &
+         varname="state%vor",         msg=msg)
+!--KSA
 
     ! 2-D variables (at interfaces)
     call shr_assert_in_domain(state%pint(:ncol,:),      lt=posinf_r8, gt=0._r8, &
@@ -1576,6 +1591,13 @@ subroutine physics_state_alloc(state,lchnk,psetcols)
   allocate(state%zm(psetcols,pver), stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%zm')
   
+!++KSA
+allocate(state%div(psetcols,pver), stat=ierr)
+  if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%div')
+allocate(state%vor(psetcols,pver), stat=ierr)
+  if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%vor')
+!--KSA
+
   allocate(state%q(psetcols,pver,pcnst), stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_alloc error: allocation error for state%q')
   
@@ -1638,6 +1660,10 @@ subroutine physics_state_alloc(state,lchnk,psetcols)
   state%exner(:,:) = inf
   state%zm(:,:) = inf
   state%q(:,:,:) = inf
+!++KSA
+  state%div(:,:) = inf
+  state%vor(:,:) = inf
+!--KSA
       
   state%pint(:,:) = inf
   state%pintdry(:,:) = inf
@@ -1727,6 +1753,13 @@ subroutine physics_state_dealloc(state)
   deallocate(state%zm, stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_dealloc error: deallocation error for state%zm')
   
+!++KSA
+  deallocate(state%div, stat=ierr)
+  if ( ierr /= 0 ) call endrun('physics_state_dealloc error: deallocation error for state%div')
+  deallocate(state%vor, stat=ierr)
+  if ( ierr /= 0 ) call endrun('physics_state_dealloc error: deallocation error for state%vor')
+!--KSA
+
   deallocate(state%q, stat=ierr)
   if ( ierr /= 0 ) call endrun('physics_state_dealloc error: deallocation error for state%q')
   
