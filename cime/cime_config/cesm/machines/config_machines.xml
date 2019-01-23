@@ -521,77 +521,82 @@
       <cmd_path lang="python">/opt/modules/default/bin/modulecmd python</cmd_path>
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
-      <modules>
-	<command name="rm">craype-mic-knl</command>
-	<command name="rm">craype-haswell</command>
-	<command name="rm">PrgEnv-intel</command>
-	<command name="rm">PrgEnv-cray</command>
-	<command name="rm">PrgEnv-gnu</command>
-	<command name="rm">intel</command>
-	<command name="rm">cce</command>
-	<command name="rm">cray-parallel-netcdf</command>
-	<command name="rm">cray-parallel-hdf5</command>
-	<command name="rm">pmi</command>
-	<command name="rm">cray-libsci</command>
-	<command name="rm">cray-mpich2</command>
-	<command name="rm">cray-mpich</command>
-	<command name="rm">cray-hdf5</command>
-    <!-- KSA: don't run module command yet for the two netcdf modules -->
-    <!-- to avoid error due to bug in 4.6.1.3 (default after Jan 2019) -->
-    <!--<command name="rm">cray-netcdf</command>-->
-    <!--<command name="rm">cray-netcdf-hdf5parallel</command>-->
-    <command name="rm">python</command>
-      </modules>
-      <modules compiler="intel">
-	<command name="load">PrgEnv-intel</command>
-	<!--<command name="switch">intel intel/17.0.1.132</command>-->
-    <command name="switch">intel intel/16.0.3.210</command>
-	<command name="rm">cray-libsci</command>
-	<command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
-      </modules>
-      <modules compiler="intel" mpilib="!mpi-serial" >
-	<command name="load">esmf/6.3.0rp1-defio-intel2016-mpi-O</command>
-      </modules>
-      <modules compiler="intel" mpilib="mpi-serial" >
-	<command name="load">esmf/6.3.0rp1-defio-intel2016-mpiuni-O</command>
-      </modules>
+    <modules>
+	  <command name="purge"/>
+    </modules>
 
-      <modules compiler="cray">
-	<command name="load">PrgEnv-cray</command>
-	<command name="switch">cce cce/8.5.4</command>
-      </modules>
-      <modules compiler="gnu">
-	<command name="load">PrgEnv-gnu</command>
-	<command name="switch">gcc gcc/6.2.0</command>
-      </modules>
-      <modules>
-	<command name="load">cray-memkind</command>
-	<command name="load">craype-mic-knl</command>
-	<command name="load">papi</command>
-	<!-- not available after 01/08/2018 <command name="swap">craype craype/2.5.7</command>-->
-      </modules>
-      <modules compiler="!intel">
-	<command name="switch">cray-libsci/16.09.1</command>
-      </modules>
-      <modules>
-	<command name="load">cray-mpich</command>
-      </modules>
-      <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.10.0</command>
-	<command name="load">cray-netcdf/4.4.1</command>
-      </modules>
-      <modules mpilib="!mpi-serial">
-     <!-- KSA: remove netCDF modules here to avoid the bug  -->
-    <command name="rm">cray-netcdf</command>
-    <command name="rm">cray-netcdf-hdf5parallel</command>
-	<command name="load">cray-netcdf-hdf5parallel</command>
-	<command name="load">cray-hdf5-parallel</command>
-	<command name="load">cray-parallel-netcdf</command>
-      </modules>
-      <modules>
-	<command name="load">cmake/3.5.2</command>
-    <command name="load">python/2.7-anaconda-4.4</command>
-      </modules>
+     <!-- KSA: follow E3SM, first load basic defaults  -->
+    <modules>
+      <command name="load">craype</command> <!-- KSA: need to load this first -->
+      <command name="load">craype-network-aries</command>
+      <command name="load">udreg</command>
+      <command name="load">ugni</command>
+      <command name="load">dmapp</command>
+      <command name="load">gni-headers</command>
+      <command name="load">xpmem</command>
+      <command name="load">job</command>
+      <command name="load">dvs</command>
+      <command name="load">alps</command>
+      <command name="load">rca</command>
+    </modules>
+
+    <!-- KSA: after NERSC July 2018 updates -->
+    <modules>
+      <command name="load">craype</command>
+      <!-- KSA: there is only one version for the following *.ari modules -->
+      <!-- udreg,ugni,dmapp, gni-headers, xpmem,job,dvs,alps, rca -->
+      <!-- craype-network-aries and cray-memkind also do not have multiple versions-->
+    </modules>
+
+      <!-- KSA: Compilers -->
+    <modules compiler="intel">
+      <command name="load">PrgEnv-intel/6.0.4</command>
+      <command name="switch">intel intel/16.0.3.210</command>
+      <command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
+    </modules>
+    <modules compiler="intel" mpilib="!mpi-serial" >
+	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpi-O</command>
+    </modules>
+    <modules compiler="intel" mpilib="mpi-serial" >
+	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpiuni-O</command>
+    </modules>
+
+    <modules compiler="cray">
+	  <command name="load">PrgEnv-cray</command>
+	  <command name="switch">cce cce/8.5.4</command>
+    </modules>
+    <modules compiler="gnu">
+	  <command name="load">PrgEnv-gnu</command>
+	  <command name="switch">gcc gcc/6.2.0</command>
+    </modules>
+    <modules compiler="!intel">
+	  <command name="switch">cray-libsci/16.09.1</command>
+    </modules>
+  
+    <modules>
+      <command name="load">cray-memkind</command>
+      <command name="load">craype-mic-knl</command>
+      <command name="load">papi</command>
+      <command name="load">cray-mpich</command>
+    </modules>
+
+    <!-- KSA: NetCDF and HDF5 -->
+    <modules mpilib="mpi-serial">
+	  <command name="load">cray-hdf5/1.10.0</command>
+	  <command name="load">cray-netcdf/4.4.1</command>
+    </modules>
+    <modules mpilib="!mpi-serial">
+	  <command name="load">cray-netcdf-hdf5parallel</command>
+	  <command name="load">cray-hdf5-parallel</command>
+	  <command name="load">cray-parallel-netcdf</command>
+    </modules>
+
+    <!-- KSA: even more modules -->      
+    <modules>
+	  <command name="load">cmake/3.5.2</command>
+      <command name="load">python/2.7-anaconda-4.4</command>
+    </modules>
+
     </module_system>
     <environment_variables>
       <env name="OMP_STACKSIZE">256M</env>
