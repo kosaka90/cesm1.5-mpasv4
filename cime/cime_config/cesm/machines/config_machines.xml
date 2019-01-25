@@ -401,78 +401,93 @@
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-	<command name="rm">PrgEnv-intel</command>
-	<command name="rm">PrgEnv-cray</command>
-	<command name="rm">PrgEnv-gnu</command>
-	<command name="rm">intel</command>
-	<command name="rm">cce</command>
-	<command name="rm">cray-parallel-netcdf</command>
-	<command name="rm">cray-parallel-hdf5</command>
-	<command name="rm">pmi</command>
-	<command name="rm">cray-libsci</command>
-	<command name="rm">cray-mpich2</command>
-	<command name="rm">cray-mpich</command>
-	<command name="rm">cray-hdf5</command>
-     <!-- KSA: don't run module command yet for the two netcdf modules -->
-      <!-- to avoid error due to bug in 4.6.1.3 (default after Jan 2019) -->
-      <!--<command name="rm">cray-netcdf</command>-->
-      <!--<command name="rm">cray-netcdf-hdf5parallel</command>-->
-	<command name="rm">craype-sandybridge</command>
-	<command name="rm">craype-ivybridge</command>
-	<command name="rm">craype</command>
-    <command name="rm">python</command>
+	    <command name="purge"/> <!-- KSA: unload all modules loaded by user default  -->
       </modules>
 
-      <modules compiler="intel">
-	<command name="load">PrgEnv-intel</command>
-	<!--<command name="switch">intel intel/17.0.1.132</command>-->
-    <command name="switch">intel intel/16.0.3.210</command>
-	<command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
-      </modules>
-      <modules compiler="intel" mpilib="!mpi-serial" >
-	<command name="load">esmf/6.3.0rp1-defio-intel2016-mpi-O</command>
-      </modules>
-      <modules compiler="intel" mpilib="mpi-serial" >
-	<command name="load">esmf/6.3.0rp1-defio-intel2016-mpiuni-O</command>
-      </modules>
+      <!-- KSA: follow E3SM, first load basic defaults  -->
+    <modules>
+      <command name="load">craype</command> <!-- KSA: need to load this first -->
+      <command name="load">craype-network-aries</command>
+      <command name="load">udreg</command>
+      <command name="load">ugni</command>
+      <command name="load">dmapp</command>
+      <command name="load">gni-headers</command>
+      <command name="load">xpmem</command>
+      <command name="load">job</command>
+      <command name="load">dvs</command>
+      <command name="load">alps</command>
+      <command name="load">rca</command>
+    </modules>
 
-      <modules compiler="cray">
-	<command name="load">PrgEnv-cray</command>
-	<command name="switch">cce cce/8.5.4</command>
-      </modules>
-      <modules compiler="gnu">
-	<command name="load">PrgEnv-gnu</command>
-	<command name="switch">gcc gcc/6.2.0</command>
-      </modules>
-      <modules>
-	<!--<command name="load">cray-memkind</command>-->
-	<command name="load">papi</command>
-	<!-- this version not available after 01/08/2018 <command name="swap">craype craype/2.5.7</command>-->
-	<command name="load">craype-haswell</command>
-      </modules>
-      <modules compiler="!intel">
-	<command name="switch">cray-libsci/16.09.1</command>
-      </modules>
-      <modules>
-	<command name="load">cray-mpich</command>
-      </modules>
-      <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.10.0</command>
-	<command name="load">cray-netcdf/4.4.1</command>
-      </modules>
-      <modules mpilib="!mpi-serial">
-     <!-- KSA: remove netCDF modules here to avoid the bug  -->
-    <command name="rm">cray-netcdf</command>
-    <command name="rm">cray-netcdf-hdf5parallel</command>
-	<command name="load">cray-netcdf-hdf5parallel</command>
-	<command name="load">cray-hdf5-parallel</command>
-	<command name="load">cray-parallel-netcdf</command>
-      </modules>
-      <modules>
-	<command name="load">cmake/3.5.2</command>
-    <command name="load">python/2.7-anaconda-4.4</command>
-      </modules>
+    <!-- KSA: FACETS production (JUL 2018 to JAN 2019) -->
+    <modules>
+      <command name="switch">craype craype/2.5.14</command>
+      <!-- KSA: there is only one version for the following *.ari modules -->
+      <!-- udreg,ugni,dmapp, gni-headers, xpmem,job,dvs,alps, rca -->
+      <!-- craype-network-aries and cray-memkind also do not have multiple versions-->
+    </modules>
+
+      <!-- KSA: Compilers -->
+    <modules compiler="intel">
+	  <command name="load">PrgEnv-intel/6.0.4</command>
+	 <!--<command name="switch">intel intel/17.0.1.132</command>-->
+     <!-- KSA: intel/17.0.1.132 does not work with the cam-mpas code (cesm2beta05)) -->
+      <command name="switch">intel intel/16.0.3.210</command>
+	  <command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
+      <command name="switch">pmi pmi/5.0.13</command>
+      <command name="switch">atp atp/2.1.1</command>
+    </modules>
+
+    <modules compiler="intel" mpilib="!mpi-serial" >
+	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpi-O</command>
+    </modules>
+    <modules compiler="intel" mpilib="mpi-serial" >
+	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpiuni-O</command>
+    </modules>
+
+    <modules compiler="cray">
+	  <command name="load">PrgEnv-cray</command>
+	  <command name="switch">cce cce/8.5.4</command>
+    </modules>
+    <modules compiler="gnu">
+	  <command name="load">PrgEnv-gnu</command>
+	  <command name="switch">gcc gcc/6.2.0</command>
+    </modules>
+
+    <modules compiler="!intel">
+	  <command name="switch">cray-libsci/16.09.1</command>
+    </modules>
+
+    <modules>
+      <command name="load">craype-haswell</command>
+      <!--<command name="load">papi/5.5.1.4</command> KSA does not work after Jan 2019--> 
+      <!-- dynamically linked path is directed to those of papi/5.6.0.3-->
+      <!-- neeed to edit ./case.submit to add path to 5.5.1.4 in LD_LIBRARY_PATH -->
+      <!-- or remove the flag -dynamic from compiler options in Macros.make -->
+      <!-- INC0133087 help email from NERSC help desk: KSA -->
+      <command name="load">papi/5.6.0.3</command>
+      <command name="load">cray-mpich/7.7.0</command>
+    </modules>
+
+    <modules mpilib="mpi-serial">
+	  <command name="load">cray-hdf5/1.10.0</command>
+	  <command name="load">cray-netcdf/4.4.1</command>
+    </modules>
+
+    <modules mpilib="!mpi-serial">
+	  <command name="load">cray-netcdf-hdf5parallel/4.4.1.1.6</command>
+	  <command name="load">cray-hdf5-parallel/1.10.1.1</command>
+	  <command name="load">cray-parallel-netcdf/1.8.1.3</command>
+    </modules>
+
+    <!-- KSA: even more modules -->      
+    <modules>
+	  <command name="load">cmake/3.5.2</command>
+      <command name="load">python/2.7-anaconda-4.4</command>
+    </modules>
+
     </module_system>
+
     <environment_variables>
       <env name="OMP_STACKSIZE">256M</env>
       <env name="OMP_PLACES">threads</env>
@@ -522,7 +537,7 @@
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
     <modules>
-	  <command name="purge"/>
+	  <command name="purge"/> <!-- KSA: unload all modules loaded by user default  -->
     </modules>
 
      <!-- KSA: follow E3SM, first load basic defaults  -->
@@ -540,9 +555,9 @@
       <command name="load">rca</command>
     </modules>
 
-    <!-- KSA: after NERSC July 2018 updates -->
+    <!-- KSA: FACETS production (JUL 2018 to JAN 2019) -->
     <modules>
-      <command name="load">craype</command>
+      <command name="switch">craype craype/2.5.14</command>
       <!-- KSA: there is only one version for the following *.ari modules -->
       <!-- udreg,ugni,dmapp, gni-headers, xpmem,job,dvs,alps, rca -->
       <!-- craype-network-aries and cray-memkind also do not have multiple versions-->
@@ -551,8 +566,12 @@
       <!-- KSA: Compilers -->
     <modules compiler="intel">
       <command name="load">PrgEnv-intel/6.0.4</command>
+      <!-- KSA: intel/17.0.1.132 does not work with the cam-mpas code (cesm2beta05)) -->
       <command name="switch">intel intel/16.0.3.210</command>
       <command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
+      <command name="switch">pmi pmi/5.0.13</command>
+      <command name="switch">atp atp/2.1.1</command>
+
     </modules>
     <modules compiler="intel" mpilib="!mpi-serial" >
 	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpi-O</command>
@@ -576,8 +595,10 @@
     <modules>
       <command name="load">cray-memkind</command>
       <command name="load">craype-mic-knl</command>
-      <command name="load">papi</command>
-      <command name="load">cray-mpich</command>
+      <!--<command name="load">papi/5.5.1.4</command> KSA does not work after Jan 2019--> 
+      <!-- see the comment for cori-haswell KSA-->
+      <command name="load">papi/5.6.0.3</command>
+      <command name="load">cray-mpich/7.7.0</command>
     </modules>
 
     <!-- KSA: NetCDF and HDF5 -->
@@ -586,9 +607,9 @@
 	  <command name="load">cray-netcdf/4.4.1</command>
     </modules>
     <modules mpilib="!mpi-serial">
-	  <command name="load">cray-netcdf-hdf5parallel</command>
-	  <command name="load">cray-hdf5-parallel</command>
-	  <command name="load">cray-parallel-netcdf</command>
+	  <command name="load">cray-netcdf-hdf5parallel/4.4.1.1.6</command>
+	  <command name="load">cray-hdf5-parallel/1.10.1.1</command>
+	  <command name="load">cray-parallel-netcdf/1.8.1.3</command>
     </modules>
 
     <!-- KSA: even more modules -->      
@@ -789,76 +810,88 @@
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-	<command name="rm">PrgEnv-intel</command>
-	<command name="rm">PrgEnv-cray</command>
-	<command name="rm">PrgEnv-gnu</command>
-	<command name="rm">intel</command>
-	<command name="rm">cce</command>
-	<command name="rm">cray-parallel-netcdf</command>
-	<command name="rm">cray-parallel-hdf5</command>
-	<command name="rm">pmi</command>
-	<command name="rm">cray-libsci</command>
-	<command name="rm">cray-mpich2</command>
-	<command name="rm">cray-mpich</command>
-    <!-- KSA: don't run module command yet for the two netcdf modules -->
-    <!-- to avoid error due to bug in 4.6.1.3 (default after Jan 2019) -->
-    <!--<command name="rm">cray-netcdf</command>-->
-    <!--<command name="rm">cray-netcdf-hdf5parallel</command>-->
-	<command name="rm">cray-hdf5</command>
-	<command name="rm">craype-sandybridge</command>
-	<command name="rm">craype-ivybridge</command>
-	<command name="rm">craype</command>
-    <command name="rm">python</command>
+	    <command name="purge"/> <!-- KSA: unload all modules loaded by user default  -->
       </modules>
 
-      <modules compiler="intel">
-	<command name="load">PrgEnv-intel</command>
-        <!--<command name="switch">intel intel/16.0.3.210</command>-->
-	<command name="rm">cray-libsci</command>
-	<command name="use">/global/project/projectdirs/ccsm1/modulefiles/edison</command>
-      </modules>
-      <modules compiler="intel" mpilib="!mpi-serial" >
-	<command name="load">esmf/6.3.0rp1-defio-intel17.0-mpi-O</command>
-      </modules>
-      <modules compiler="intel" mpilib="mpi-serial" >
-	<command name="load">esmf/6.3.0rp1-defio-intel17.0-mpiuni-O</command>
-      </modules>
-      <modules compiler="cray">
-	<command name="load">PrgEnv-cray</command>
-	<command name="switch">cce cce/8.5.1</command>
-      </modules>
-      <modules compiler="gnu">
-	<command name="load">PrgEnv-gnu</command>
-	<command name="switch">gcc gcc/6.1.0</command>
-      </modules>
-      <modules>
-	<command name="load">papi</command>
-	<!-- not available after 01/08/2018 <command name="swap">craype craype/2.5.5</command>-->
-	<command name="load">craype-ivybridge</command>
-      </modules>
-      <modules compiler="!intel">
-	<command name="switch">cray-libsci/16.07.1</command>
-      </modules>
-      <modules>
-	<command name="load">cray-mpich</command>
-      </modules>
-      <modules mpilib="mpi-serial">
-	<command name="load">cray-hdf5/1.8.16</command>
-	<command name="load">cray-netcdf/4.4.0</command>
-      </modules>
-      <modules mpilib="!mpi-serial">
-      <!-- KSA: remove netCDF modules here to avoid the bug  -->
-    <command name="rm">cray-netcdf</command>
-    <command name="rm">cray-netcdf-hdf5parallel</command>
-	<command name="load">cray-netcdf-hdf5parallel</command>
-	<command name="load">cray-hdf5-parallel</command>
-	<command name="load">cray-parallel-netcdf</command>
-      </modules>
-      <modules>
-	<!-- not available as module <command name="load">perl/5.20.0</command>-->
-	<command name="load">cmake</command>
-    <command name="load">python/2.7-anaconda-4.4</command>
-      </modules>
+      <!-- KSA: follow E3SM, first load basic defaults  -->
+    <modules>
+      <command name="load">craype</command> <!-- KSA: need to load this first -->
+      <command name="load">craype-network-aries</command>
+      <command name="load">udreg</command>
+      <command name="load">ugni</command>
+      <command name="load">dmapp</command>
+      <command name="load">gni-headers</command>
+      <command name="load">xpmem</command>
+      <command name="load">job</command>
+      <command name="load">dvs</command>
+      <command name="load">alps</command>
+      <command name="load">rca</command>
+    </modules>
+
+    <!-- KSA: FACETS production (JUL 2018 to JAN 2019) -->
+    <modules>
+      <command name="switch">craype craype/2.5.14</command>
+      <!-- KSA: there is only one version for the following *.ari modules -->
+      <!-- udreg,ugni,dmapp, gni-headers, xpmem,job,dvs,alps, rca -->
+      <!-- craype-network-aries and cray-memkind also do not have multiple versions-->
+    </modules>
+
+    <modules compiler="intel">
+	  <command name="load">PrgEnv-intel/6.0.4</command>
+	 <!--<command name="switch">intel intel/17.0.1.132</command>-->
+     <!-- KSA: intel/17.0.1.132 does not work with the cam-mpas code (cesm2beta05)) -->
+      <command name="switch">intel intel/16.0.3.210</command>
+	  <command name="rm">cray-libsci</command>  <!-- KSA: why this is removed on edison, not on cori? -->
+	  <command name="use">/global/project/projectdirs/ccsm1/modulefiles/edison</command>
+      <command name="switch">pmi pmi/5.0.13</command>
+      <command name="switch">atp atp/2.1.1</command>
+    </modules>
+
+    <modules compiler="intel" mpilib="!mpi-serial" >
+	  <command name="load">esmf/6.3.0rp1-defio-intel17.0-mpi-O</command>
+    </modules>
+    <modules compiler="intel" mpilib="mpi-serial" >
+	  <command name="load">esmf/6.3.0rp1-defio-intel17.0-mpiuni-O</command>
+    </modules>
+    <modules compiler="cray">
+	  <command name="load">PrgEnv-cray</command>
+	  <command name="switch">cce cce/8.5.1</command>
+    </modules>
+    <modules compiler="gnu">
+	  <command name="load">PrgEnv-gnu</command>
+	  <command name="switch">gcc gcc/6.1.0</command>
+    </modules>
+
+    <modules compiler="!intel">
+	  <command name="switch">cray-libsci/16.07.1</command>
+    </modules>
+
+    <modules>
+	  <command name="load">craype-ivybridge</command>
+     <!--<command name="load">papi/5.5.1.4</command> KSA does not work after Jan 2019--> 
+      <!-- see the comment for cori-haswell KSA-->
+      <command name="load">papi/5.6.0.3</command>
+	  <command name="load">cray-mpich/7.7.0</command>
+    </modules>
+
+    <modules mpilib="mpi-serial">
+	  <command name="load">cray-hdf5/1.8.16</command>
+	  <command name="load">cray-netcdf/4.4.0</command>
+    </modules>
+
+    <modules mpilib="!mpi-serial">
+	  <command name="load">cray-netcdf-hdf5parallel/4.4.1.1.6</command>
+	  <command name="load">cray-hdf5-parallel/1.10.1.1</command>
+	  <command name="load">cray-parallel-netcdf/1.8.1.3</command>
+    </modules>
+
+    <modules>
+      <!--<command name="load">cmake/3.5.2</command>-->
+      <!-- KSA: same cmake version not available on edison-->
+      <command name="load">cmake/3.8.1</command>
+      <command name="load">python/2.7-anaconda-4.4</command>
+    </modules>
+    
     </module_system>
 
     <environment_variables>
