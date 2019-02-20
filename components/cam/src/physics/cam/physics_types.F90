@@ -17,7 +17,12 @@ module physics_types
   implicit none
   private          ! Make default type private to the module
 
-  logical, parameter :: adjust_te = .FALSE.
+!++BEH hardcode adjust_te to TRUE
+! I suppose this could be made a namelist parameter and have the ATEND terms
+! output when adjust_te = .FALSE.
+!  logical, parameter :: adjust_te = .FALSE.
+  logical, parameter :: adjust_te = .TRUE.
+!--BEH
 
 ! Public types:
 
@@ -1182,6 +1187,9 @@ end subroutine physics_ptend_copy
 
     use constituents, only : cnst_get_type_byind
     use ppgrid,       only : begchunk, endchunk
+!++BEH: only add tend%dtdt for MPAS dycore
+    use dycore,       only: dycore_is
+!--BEH
 
     implicit none
     !
@@ -1199,6 +1207,9 @@ end subroutine physics_ptend_copy
     integer  :: i,k,m         ! Longitude, level indices
     real(r8) :: fdq(pcols)    ! mass adjustment factor
     real(r8) :: te(pcols)     ! total energy in a layer
+!++BEH
+    real(r8) :: ttmp(pcols)   ! temp variable for recalculating the initial t values
+!--BEH
     real(r8) :: utmp(pcols)   ! temp variable for recalculating the initial u values
     real(r8) :: vtmp(pcols)   ! temp variable for recalculating the initial v values
 
@@ -1211,9 +1222,11 @@ end subroutine physics_ptend_copy
     if (state%psetcols .ne. pcols) then
        call endrun('physics_dme_adjust: cannot pass in a state which has sub-columns')
     end if
-    if (adjust_te) then
-       call endrun('physics_dme_adjust: must update code based on the "correct" energy before turning on "adjust_te"')
-    end if
+!++BEH Don't end the run just for adjust_te
+!    if (adjust_te) then
+!       call endrun('physics_dme_adjust: must update code based on the "correct" energy before turning on "adjust_te"')
+!    end if
+!--BEH
 
     lchnk = state%lchnk
     ncol  = state%ncol
@@ -1221,6 +1234,23 @@ end subroutine physics_ptend_copy
     ! adjust dry mass in each layer back to input value, while conserving
     ! constituents, momentum, and total energy
     state%ps(:ncol) = state%pint(:ncol,1)
+
+!++BEH  Copied code portion from below to get cpairv_loc prior to the k loop
+          ! cpairv_loc needs to be allocated to a size which matches state and ptend
+          ! If psetcols == pcols, cpairv is the correct size and just copy into cpairv_loc
+          ! If psetcols > pcols and all cpairv match cpair, then assign the constant cpair
+
+          if (state%psetcols == pcols) then
+             allocate (cpairv_loc(state%psetcols,pver,begchunk:endchunk))
+             cpairv_loc(:,:,:) = cpairv(:,:,:)
+          else if (state%psetcols > pcols .and. all(cpairv(:,:,:) == cpair)) then
+             allocate(cpairv_loc(state%psetcols,pver,begchunk:endchunk))
+             cpairv_loc(:,:,:) = cpair
+          else
+             call endrun('physics_dme_adjust: cpairv is not allowed to vary when subcolumns are turned on')
+          end if
+!--BEH
+
     do k = 1, pver
 
        ! adjusment factor is just change in water vapor
@@ -1233,9 +1263,11 @@ end subroutine physics_ptend_copy
 
        if (adjust_te) then
           ! compute specific total energy of unadjusted state (J/kg)
-          te(:ncol) = state%s(:ncol,k) + 0.5_r8*(state%u(:ncol,k)**2 + state%v(:ncol,k)**2) 
+!          te(:ncol) = state%s(:ncol,k) + 0.5_r8*(state%u(:ncol,k)**2 + state%v(:ncol,k)**2)  ! BEH -- old
+          te(:ncol) = cpairv_loc(:ncol,k,lchnk)*state%t(:ncol,k) + 0.5_r8*(state%u(:ncol,k)**2 + state%v(:ncol,k)**2)  ! BEH -- new
 
           ! recompute initial u,v from the new values and the tendencies
+          ttmp(:ncol) = state%t(:ncol,k) - dt * tend%dtdt(:ncol,k) ! BEH add for tend%dtdt calculation
           utmp(:ncol) = state%u(:ncol,k) - dt * tend%dudt(:ncol,k)
           vtmp(:ncol) = state%v(:ncol,k) - dt * tend%dvdt(:ncol,k)
           ! adjust specific total energy and specific momentum (velocity) to conserve each
@@ -1247,7 +1279,13 @@ end subroutine physics_ptend_copy
           tend%dvdt(:ncol,k) = (state%v(:ncol,k) - vtmp(:ncol)) / dt
 
           ! compute adjusted static energy
-          state%s(:ncol,k) = te(:ncol) - 0.5_r8*(state%u(:ncol,k)**2 + state%v(:ncol,k)**2)
+!          state%s(:ncol,k) = te(:ncol) - 0.5_r8*(state%u(:ncol,k)**2 + state%v(:ncol,k)**2) ! BEH -- old
+          state%t(:ncol,k) = (te(:ncol) - 0.5_r8*(state%u(:ncol,k)**2 + state%v(:ncol,k)**2)) / cpairv_loc(:ncol,k,lchnk)  ! BEH -- new
+          !++BEH MPAS reads in phys_tend%dtdt in p_d_coupling
+          if(dycore_is('MPAS')) then
+             tend%dtdt(:ncol,k) = (state%t(:ncol,k) - ttmp(:ncol)) / dt
+          end if
+          !--BEH
        end if
 
 ! compute new total pressure variables
@@ -1258,36 +1296,48 @@ end subroutine physics_ptend_copy
        state%rpdel (:ncol,k  ) = 1._r8/ state%pdel(:ncol,k  )
     end do
 
+!++BEH
+    deallocate(cpairv_loc)
+!--BEH
+
     if ( waccmx_is('ionosphere') .or. waccmx_is('neutral') ) then 
       zvirv(:,:) = shr_const_rwv / rairv(:,:,state%lchnk) - 1._r8
     else
       zvirv(:,:) = zvir    
     endif
 
-! compute new T,z from new s,q,dp
+! compute new T,z from new s,q,dp ! BEH -- old
+! compute new  z  from new T,q,dp ! BEH -- new
     if (adjust_te) then
 
+!++BEH: do not need cpairv_loc because we should now use geopotential_t instead 
+!       of geopotential_dse.  double !! are new comments added by BEH
 ! cpairv_loc needs to be allocated to a size which matches state and ptend
 ! If psetcols == pcols, cpairv is the correct size and just copy into cpairv_loc
 ! If psetcols > pcols and all cpairv match cpair, then assign the constant cpair
 
-       if (state%psetcols == pcols) then
-          allocate (cpairv_loc(state%psetcols,pver,begchunk:endchunk))
-          cpairv_loc(:,:,:) = cpairv(:,:,:)
-       else if (state%psetcols > pcols .and. all(cpairv(:,:,:) == cpair)) then
-          allocate(cpairv_loc(state%psetcols,pver,begchunk:endchunk))
-          cpairv_loc(:,:,:) = cpair
-       else
-          call endrun('physics_dme_adjust: cpairv is not allowed to vary when subcolumns are turned on')
-       end if
+!!       if (state%psetcols == pcols) then
+!!          allocate (cpairv_loc(state%psetcols,pver,begchunk:endchunk))
+!!          cpairv_loc(:,:,:) = cpairv(:,:,:)
+!!       else if (state%psetcols > pcols .and. all(cpairv(:,:,:) == cpair)) then
+!!          allocate(cpairv_loc(state%psetcols,pver,begchunk:endchunk))
+!!          cpairv_loc(:,:,:) = cpair
+!!       else
+!!          call endrun('physics_dme_adjust: cpairv is not allowed to vary when subcolumns are turned on')
+!!       end if
 
-       call geopotential_dse(state%lnpint, state%lnpmid, state%pint,  &
-            state%pmid  , state%pdel    , state%rpdel,  &
-            state%s     , state%q(:,:,1), state%phis , rairv(:,:,state%lchnk), &
-            gravit, cpairv_loc(:,:,state%lchnk), zvirv, &
-            state%t     , state%zi      , state%zm   , ncol)
+       call geopotential_t(state%lnpint, state%lnpmid, state%pint,  &
+            state%pmid  ,  state%pdel    , state%rpdel,  &
+            state%t     ,  state%q(:,:,1), rairv(:,:,state%lchnk), &
+            gravit, zvirv, state%zi      , state%zm   , ncol)
+!!       call geopotential_dse(state%lnpint, state%lnpmid, state%pint,  &
+!!            state%pmid  , state%pdel    , state%rpdel,  &
+!!            state%s     , state%q(:,:,1), state%phis , rairv(:,:,state%lchnk), &
+!!            gravit, cpairv_loc(:,:,state%lchnk), zvirv, &
+!!            state%t     , state%zi      , state%zm   , ncol)
 
-       deallocate(cpairv_loc)
+!!       deallocate(cpairv_loc)
+!--BEH
 
     end if
 

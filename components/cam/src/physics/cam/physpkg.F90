@@ -1576,9 +1576,13 @@ contains
     tmp_cldliq(:ncol,:pver) = state%q(:ncol,:pver,ixcldliq)
     tmp_cldice(:ncol,:pver) = state%q(:ncol,:pver,ixcldice)
     ! For 'SE', physics_dme_adjust is called for energy diagnostic purposes only.  So, save off tracers
-    if (hist_fld_active('SE_pAM').or.hist_fld_active('KE_pAM').or.hist_fld_active('WV_pAM').or.&
+    if ((.not.dycore_is('LR').and..not.dycore_is('MPAS')).and.&
+         (hist_fld_active('SE_pAM').or.hist_fld_active('KE_pAM').or.hist_fld_active('WV_pAM').or.&
          hist_fld_active('WL_pAM').or.hist_fld_active('WI_pAM').or.hist_fld_active('ATENDKE').or.&
-         hist_fld_active('ATENDSE')) then !BEH added ATENDKE and ATENDSE
+         hist_fld_active('ATENDSE'))) then !BEH added ATENDKE and ATENDSE
+!++BEH
+      call endrun('tphysac: cannot run adjustment tendency diagnostics for dycores other than LR and MPAS currently') ! need to readjust t,u,v
+!--BEH
       tmp_trac(:ncol,:pver,:pcnst) = state%q(:ncol,:pver,:pcnst)
       tmp_pdel(:ncol,:pver)        = state%pdel(:ncol,:pver)
       tmp_ps(:ncol)                = state%ps(:ncol)
@@ -1606,7 +1610,20 @@ contains
 
 !    if (dycore_is('LR')) call physics_dme_adjust(state, tend, qini, ztodt)
 !Sang-Hun and Colin: if set_dry_to_wet is called than dme_adjust should be called:
-    if (dycore_is('LR').or.dycore_is('MPAS')) call physics_dme_adjust(state, tend, qini, ztodt)
+    if (dycore_is('LR').or.dycore_is('MPAS')) then
+       call physics_dme_adjust(state, tend, qini, ztodt)
+!++BEH
+      call calc_tot_energy(state, 'pAM')
+      !get energy and water terms after adjustment
+      call calc_energy_terms(state, ke_tmp2, se_tmp2, wv_tmp, wl_tmp, wi_tmp)
+      !difference and output energy and water terms before and after fixer
+      CIDiff(:ncol) = (ke_tmp2(:ncol) - ke_tmp(:ncol))*rtdt
+      call outfld('ATENDKE', CIDiff, pcols, lchnk )
+      CIDiff(:ncol) = (se_tmp2(:ncol) - se_tmp(:ncol))*rtdt
+      call outfld('ATENDSE', CIDiff, pcols, lchnk )
+!--BEH
+    endif
+
 !    if (masterproc) write(iulog,*) 'now calling dme_adjust'
 
 !!!   REMOVE THIS CALL, SINCE ONLY Q IS BEING ADJUSTED. WON'T BALANCE ENERGY. TE IS SAVED BEFORE THIS
