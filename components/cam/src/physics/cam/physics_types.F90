@@ -21,7 +21,8 @@ module physics_types
 ! I suppose this could be made a namelist parameter and have the ATEND terms
 ! output when adjust_te = .FALSE.
 !  logical, parameter :: adjust_te = .FALSE.
-  logical, parameter :: adjust_te = .TRUE.
+!  logical, parameter :: adjust_te = .TRUE.
+! Turning off the hard coded value of adjust_te in favor of a namelist variable
 !--BEH
 
 ! Public types:
@@ -1189,6 +1190,7 @@ end subroutine physics_ptend_copy
     use ppgrid,       only : begchunk, endchunk
 !++BEH: only add tend%dtdt for MPAS dycore
     use dycore,       only: dycore_is
+    use phys_control, only: phys_getopts
 !--BEH
 
     implicit none
@@ -1209,6 +1211,7 @@ end subroutine physics_ptend_copy
     real(r8) :: te(pcols)     ! total energy in a layer
 !++BEH
     real(r8) :: ttmp(pcols)   ! temp variable for recalculating the initial t values
+    logical  :: adjust_te     ! Namelist variable to control whether adjustment conserves energy (TRUE) or not (FALSE)
 !--BEH
     real(r8) :: utmp(pcols)   ! temp variable for recalculating the initial u values
     real(r8) :: vtmp(pcols)   ! temp variable for recalculating the initial v values
@@ -1261,8 +1264,15 @@ end subroutine physics_ptend_copy
           state%q(:ncol,k,m) = state%q(:ncol,k,m) / fdq(:ncol)
        end do
 
+!++BEH add in call to set adjust_te
+       call phys_getopts(adjust_te_out=adjust_te)
+!--BEH
+
        if (adjust_te) then
           ! compute specific total energy of unadjusted state (J/kg)
+          ! BEH -- switch to use the correct formulation of energy on a hybrid
+          !        pressure coordinate system (Cp*T in place of DSE).  See
+          !        Williamson et al. (2015) JAMES
 !          te(:ncol) = state%s(:ncol,k) + 0.5_r8*(state%u(:ncol,k)**2 + state%v(:ncol,k)**2)  ! BEH -- old
           te(:ncol) = cpairv_loc(:ncol,k,lchnk)*state%t(:ncol,k) + 0.5_r8*(state%u(:ncol,k)**2 + state%v(:ncol,k)**2)  ! BEH -- new
 
