@@ -71,6 +71,10 @@ logical           :: do_clubb_sgs
 ! Check validity of physics_state objects in physics_update.
 logical           :: state_debug_checks   = .false.
 
+!++BEH Add a flag to use energy-conserving adjustment procedure
+logical           :: adjust_te            = .false.
+!--BEH
+
 ! Macro/micro-physics co-substeps
 integer           :: cld_macmic_num_steps = 1
 
@@ -117,7 +121,7 @@ subroutine phys_ctl_readnl(nlfile)
       history_waccmx, history_chemistry, history_carma, history_clubb, &
       do_clubb_sgs, state_debug_checks, use_hetfrz_classnuc, use_gw_oro, use_gw_front, &
       use_gw_front_igw, use_gw_convect_dp, use_gw_convect_sh, cld_macmic_num_steps, &
-      offline_driver, convproc_do_aer
+      offline_driver, convproc_do_aer, adjust_te ! BEH --  added adjust_te
    !-----------------------------------------------------------------------------
 
    if (masterproc) then
@@ -170,6 +174,9 @@ subroutine phys_ctl_readnl(nlfile)
    call mpi_bcast(cld_macmic_num_steps,        1,                     mpi_integer,   masterprocid, mpicom, ierr)
    call mpi_bcast(offline_driver,              1,                     mpi_logical,   masterprocid, mpicom, ierr)
    call mpi_bcast(convproc_do_aer,             1,                     mpi_logical,   masterprocid, mpicom, ierr)
+!++BEH add in adjust_te
+   call mpi_bcast(adjust_te,                   1,                     mpi_logical,   masterprocid, mpicom, ierr)
+!--BEH
 
    use_spcam       = (     cam_physpkg_is('spcam_sam1mom') &
                       .or. cam_physpkg_is('spcam_m2005'))
@@ -265,7 +272,7 @@ subroutine phys_getopts(deep_scheme_out, shallow_scheme_out, eddy_scheme_out, mi
                         history_carma_out, history_clubb_out, &
                         cam_chempkg_out, prog_modal_aero_out, macrop_scheme_out, &
                         do_clubb_sgs_out, use_spcam_out, state_debug_checks_out, cld_macmic_num_steps_out, &
-                        offline_driver_out, convproc_do_aer_out)
+                        offline_driver_out, convproc_do_aer_out, adjust_te_out) ! BEH -- added adjust_te
 !-----------------------------------------------------------------------
 ! Purpose: Return runtime settings
 !          deep_scheme_out   : deep convection scheme
@@ -304,6 +311,9 @@ subroutine phys_getopts(deep_scheme_out, shallow_scheme_out, eddy_scheme_out, mi
    integer,           intent(out), optional :: cld_macmic_num_steps_out
    logical,           intent(out), optional :: offline_driver_out
    logical,           intent(out), optional :: convproc_do_aer_out
+!++BEH
+   logical,           intent(out), optional :: adjust_te_out
+!--BEH
 
    if ( present(deep_scheme_out         ) ) deep_scheme_out          = deep_scheme
    if ( present(shallow_scheme_out      ) ) shallow_scheme_out       = shallow_scheme
@@ -334,6 +344,9 @@ subroutine phys_getopts(deep_scheme_out, shallow_scheme_out, eddy_scheme_out, mi
    if ( present(cld_macmic_num_steps_out) ) cld_macmic_num_steps_out = cld_macmic_num_steps
    if ( present(offline_driver_out      ) ) offline_driver_out       = offline_driver
    if ( present(convproc_do_aer_out     ) ) convproc_do_aer_out      = convproc_do_aer
+!++BEH
+   if ( present(adjust_te_out           ) ) adjust_te_out            = adjust_te
+!--BEH
 
 end subroutine phys_getopts
 
