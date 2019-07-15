@@ -567,17 +567,19 @@
     <modules compiler="intel">
       <command name="load">PrgEnv-intel/6.0.4</command>
       <!-- KSA: intel/17.0.1.132 does not work with the cam-mpas code (cesm2beta05)) -->
-      <command name="switch">intel intel/16.0.3.210</command>
+      <command name="switch">intel intel/18.0.1.163</command>
       <command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
       <command name="switch">pmi pmi/5.0.13</command>
       <command name="switch">atp atp/2.1.1</command>
 
     </modules>
+    
     <modules compiler="intel" mpilib="!mpi-serial" >
-	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpi-O</command>
+	  <command name="load">esmf/7.1.0r-defio-intel18.0.1.163-mpi-O-cori-knl</command>
     </modules>
+    
     <modules compiler="intel" mpilib="mpi-serial" >
-	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpiuni-O</command>
+	  <command name="load">esmf/7.1.0r-netcdf-intel18.0.1.163-mpiuni-O-haswell</command>
     </modules>
 
     <modules compiler="cray">

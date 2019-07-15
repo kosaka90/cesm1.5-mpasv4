@@ -740,6 +740,10 @@ contains
     use solar_data,         only: solar_data_init
     use cam_abortutils,     only: endrun
 
+!++KSA  !for HighResMIP anthropogenic aerosol forcing
+    use prescribed_macv2,   only: macv2_rad_props_init
+!--KSA
+
     ! Input/output arguments
     type(physics_state), pointer       :: phys_state(:)
     type(physics_tend ), pointer       :: phys_tend(:)
@@ -824,6 +828,10 @@ contains
     call aircraft_emit_init()
     call prescribed_volcaero_init()
     call prescribed_strataero_init()
+
+!++KSA initialize MACv2-SP aerosol for HighResMIP 
+    call macv2_rad_props_init()
+!--KSA
 
     ! co2 cycle            
     if (co2_transport()) then

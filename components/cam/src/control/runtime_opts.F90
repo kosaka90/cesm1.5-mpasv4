@@ -95,7 +95,9 @@ subroutine read_namelist(nlfilename, single_column, scmlat, scmlon)
 !++cmz  !added to not readnl if MPAS dycore
    use dycore,              only: dycore_is
 !--cmz
-
+!++KSA
+   use prescribed_macv2,   only: prescribed_macv2_readnl
+!--KSA
    !---------------------------Arguments-----------------------------------
 
    character(len=*), intent(in) :: nlfilename
@@ -192,6 +194,9 @@ if (.not. dycore_is('MPAS')) then
    call dyn_readnl(nlfilename)
 end if
 !--cmz
+!++KSA, call subroutine to read namelist options for MACv2-SP aerosol scheme
+   call prescribed_macv2_readnl(nlfilename)
+!--KSA
 
 end subroutine read_namelist
 

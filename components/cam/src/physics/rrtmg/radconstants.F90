@@ -21,11 +21,13 @@ integer, parameter, public :: nbndsw = 14
 ! Note: Currently rad_solar_var extends the lowest band down to
 ! 100 cm^-1 if it is too high to cover the far-IR. Any changes meant
 ! to affect IR solar variability should take note of this.
-
-real(r8),parameter :: wavenum_low(nbndsw) = & ! in cm^-1
+! (KSA) making these two wavenum to be public for MACv2_SP aerosol for HighResMIP
+! it looks to be safe to have them as public variables; do not find any other public variables
+! with the same names under /components/cam/src (KSA)
+real(r8),parameter, public :: wavenum_low(nbndsw) = & ! in cm^-1
   (/2600._r8, 3250._r8, 4000._r8, 4650._r8, 5150._r8, 6150._r8, 7700._r8, &
     8050._r8,12850._r8,16000._r8,22650._r8,29000._r8,38000._r8,  820._r8/)
-real(r8),parameter :: wavenum_high(nbndsw) = & ! in cm^-1
+real(r8),parameter, public :: wavenum_high(nbndsw) = & ! in cm^-1
   (/3250._r8, 4000._r8, 4650._r8, 5150._r8, 6150._r8, 7700._r8, 8050._r8, &
    12850._r8,16000._r8,22650._r8,29000._r8,38000._r8,50000._r8, 2600._r8/)
 
