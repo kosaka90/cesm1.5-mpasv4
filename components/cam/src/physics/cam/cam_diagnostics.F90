@@ -241,7 +241,12 @@ contains
     call addfld ('OMEGA500',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 500 mbar pressure surface')
 !++KSA
     call addfld ('OMEGA700',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 700 mbar pressure surface')
-!--KSA
+    !--KSA
+    !++BEH -- add new outputs for HRMIP (high-frequency output)
+    call addfld ('OMEGA925',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 925 mbar pressure surface')
+    call addfld ('OMEGA250',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 250 mbar pressure surface')
+    call addfld ('Q250',       horiz_only,  'A', 'kg/kg','Specific Humidity at 250 mbar pressure surface')
+    !--BEH
 
     call addfld ('PSL',        horiz_only,  'A', 'Pa','Sea level pressure')
 
@@ -1115,6 +1120,22 @@ contains
       call outfld('OMEGA700', p_surf, pcols, lchnk)
     end if
 !--KSA
+
+    !++BEH
+    if (hist_fld_active('OMEGA925')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 92500._r8, state%omega, p_surf)
+      call outfld('OMEGA925', p_surf, pcols, lchnk)
+    end if
+    if (hist_fld_active('OMEGA250')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 25000._r8, state%omega, p_surf)
+      call outfld('OMEGA250', p_surf, pcols, lchnk)
+    end if
+    if (hist_fld_active('Q250')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 25000._r8, state%q(1,1,1), p_surf)
+      call outfld('Q250    ', p_surf, pcols, lchnk )
+    end if
+    !--BEH
+    
     !
     ! Sea level pressure
     !
