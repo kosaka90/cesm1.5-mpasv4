@@ -401,49 +401,52 @@
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
       <modules>
-	    <command name="purge"/> <!-- KSA: unload all modules loaded by user default  -->
+	     <!-- <command name="purge"/> -->
+	     <!-- KSA: purging everything, such as rca, alps. dvs, lead to an error   -->
+	    <command name="rm">cray-mpich</command>
+        <command name="rm">craype-mic-knl</command>
+        <command name="rm">craype-haswell</command>
+        <command name="rm">PrgEnv-intel</command>
+        <command name="rm">PrgEnv-cray</command>
+        <command name="rm">PrgEnv-gnu</command>
+        <command name="rm">intel</command>
+        <command name="rm">cce</command>
+        <command name="rm">cray-parallel-netcdf</command>
+        <command name="rm">cray-parallel-hdf5</command>
+        <command name="rm">pmi</command>
+        <command name="rm">cray-libsci</command>
+        <command name="rm">cray-mpich2</command>
+        <command name="rm">cray-hdf5</command>
+        <!-- KSA: do not remove netcdf module here... cause another module error   -->
       </modules>
 
-      <!-- KSA: follow E3SM, first load basic defaults  -->
+    <!-- KSA: After NERSC major OS update, July 2019 -->
+    <!-- KSA: And after Cori emergency update, August 9, 2019, which led to module rm/load error -->
     <modules>
-      <command name="load">craype</command> <!-- KSA: need to load this first -->
-      <command name="load">craype-network-aries</command>
-      <command name="load">udreg</command>
-      <command name="load">ugni</command>
-      <command name="load">dmapp</command>
-      <command name="load">gni-headers</command>
-      <command name="load">xpmem</command>
-      <command name="load">job</command>
-      <command name="load">dvs</command>
-      <command name="load">alps</command>
-      <command name="load">rca</command>
-    </modules>
-
-    <!-- KSA: FACETS production (JUL 2018 to JAN 2019) -->
-    <modules>
-      <command name="switch">craype craype/2.5.14</command>
-      <!-- KSA: there is only one version for the following *.ari modules -->
-      <!-- udreg,ugni,dmapp, gni-headers, xpmem,job,dvs,alps, rca -->
-      <!-- craype-network-aries and cray-memkind also do not have multiple versions-->
+      <command name="load">craype/2.5.18</command>
     </modules>
 
       <!-- KSA: Compilers -->
     <modules compiler="intel">
-	  <command name="load">PrgEnv-intel/6.0.4</command>
+	  <command name="load">PrgEnv-intel/6.0.5</command>
 	 <!--<command name="switch">intel intel/17.0.1.132</command>-->
      <!-- KSA: intel/17.0.1.132 does not work with the cam-mpas code (cesm2beta05)) -->
-      <command name="switch">intel intel/16.0.3.210</command>
+      <command name="switch">intel intel/18.0.1.163</command>
 	  <command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
-      <command name="switch">pmi pmi/5.0.13</command>
-      <command name="switch">atp atp/2.1.1</command>
+      <command name="switch">pmi pmi/5.0.14</command>
+      <command name="switch">atp atp/2.1.3</command>
     </modules>
 
-    <modules compiler="intel" mpilib="!mpi-serial" >
+
+    <!-- KSA: CESM not dependent on emsf; can be compiled and run without them  -->
+    <!-- better not using them because these libraries have to be built by the support from  -->
+    <!-- ESMF, not by the NERSC helpdesk -->
+    <!--<modules compiler="intel" mpilib="!mpi-serial" >
 	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpi-O</command>
     </modules>
     <modules compiler="intel" mpilib="mpi-serial" >
 	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpiuni-O</command>
-    </modules>
+    </modules>-->
 
     <modules compiler="cray">
 	  <command name="load">PrgEnv-cray</command>
@@ -460,13 +463,11 @@
 
     <modules>
       <command name="load">craype-haswell</command>
-      <!--<command name="load">papi/5.5.1.4</command> KSA does not work after Jan 2019--> 
-      <!-- dynamically linked path is directed to those of papi/5.6.0.3-->
-      <!-- neeed to edit ./case.submit to add path to 5.5.1.4 in LD_LIBRARY_PATH -->
-      <!-- or remove the flag -dynamic from compiler options in Macros.make -->
-      <!-- INC0133087 help email from NERSC help desk: KSA -->
-      <command name="load">papi/5.6.0.3</command>
-      <command name="load">cray-mpich/7.7.0</command>
+     <!-- KSA: removed dependency on papi; CESM runs without it,and this module always causes a problem --> 
+      <!-- when NERSC updates the modules, mainly by Cray introducing a bug (e.g., January and July 2019)-->
+      <!-- the -DHAVE_PAPI flag is removed from cori intel compilers in config_compilers.xml-->
+      <!--<command name="load">papi/5.6.0.3</command>-->
+      <command name="load">cray-mpich/7.7.6</command>
     </modules>
 
     <modules mpilib="mpi-serial">
@@ -475,14 +476,17 @@
     </modules>
 
     <modules mpilib="!mpi-serial">
-	  <command name="load">cray-netcdf-hdf5parallel/4.4.1.1.6</command>
-	  <command name="load">cray-hdf5-parallel/1.10.1.1</command>
-	  <command name="load">cray-parallel-netcdf/1.8.1.3</command>
+    <!-- KSA: need to remove netcdf here to avoid conflict with cray-netcdf-hdf5parallel --> 
+    <!-- KSA: again we cannot do this earlier; that causes another error --> 
+      <command name="rm">cray-netcdf</command>
+	  <command name="load">cray-netcdf-hdf5parallel/4.6.1.3</command>
+	  <command name="load">cray-hdf5-parallel/1.10.2.0</command>
+	  <command name="load">cray-parallel-netcdf/1.8.1.4</command>
     </modules>
 
     <!-- KSA: even more modules -->      
     <modules>
-	  <command name="load">cmake/3.5.2</command>
+	  <command name="load">cmake/3.14.4</command>
       <command name="load">python/2.7-anaconda-4.4</command>
     </modules>
 
@@ -537,50 +541,50 @@
       <cmd_path lang="sh">module</cmd_path>
       <cmd_path lang="csh">module</cmd_path>
     <modules>
-	  <command name="purge"/> <!-- KSA: unload all modules loaded by user default  -->
+	  <!-- <command name="purge"/> -->
+	  <!-- KSA: purging everything, such as rca, alps. dvs, lead to an error   -->
+	  <command name="rm">cray-mpich</command>
+      <command name="rm">craype-mic-knl</command>
+      <command name="rm">craype-haswell</command>
+      <command name="rm">PrgEnv-intel</command>
+      <command name="rm">PrgEnv-cray</command>
+      <command name="rm">PrgEnv-gnu</command>
+      <command name="rm">intel</command>
+      <command name="rm">cce</command>
+      <command name="rm">cray-parallel-netcdf</command>
+      <command name="rm">cray-parallel-hdf5</command>
+      <command name="rm">pmi</command>
+      <command name="rm">cray-libsci</command>
+      <command name="rm">cray-mpich2</command>
+      <command name="rm">cray-hdf5</command>
+       <!-- KSA: do not remove netcdf module here... cause another module error   -->
     </modules>
 
-     <!-- KSA: follow E3SM, first load basic defaults  -->
+    <!-- KSA: After NERSC major OS update, July 2019 -->
+    <!-- KSA: And after Cori emergency update, August 9, 2019, which led to module rm/load error -->
     <modules>
-      <command name="load">craype</command> <!-- KSA: need to load this first -->
-      <command name="load">craype-network-aries</command>
-      <command name="load">udreg</command>
-      <command name="load">ugni</command>
-      <command name="load">dmapp</command>
-      <command name="load">gni-headers</command>
-      <command name="load">xpmem</command>
-      <command name="load">job</command>
-      <command name="load">dvs</command>
-      <command name="load">alps</command>
-      <command name="load">rca</command>
-    </modules>
-
-    <!-- KSA: FACETS production (JUL 2018 to JAN 2019) -->
-    <modules>
-      <command name="switch">craype craype/2.5.14</command>
-      <!-- KSA: there is only one version for the following *.ari modules -->
-      <!-- udreg,ugni,dmapp, gni-headers, xpmem,job,dvs,alps, rca -->
-      <!-- craype-network-aries and cray-memkind also do not have multiple versions-->
+      <command name="load">craype/2.5.18</command>
     </modules>
 
       <!-- KSA: Compilers -->
     <modules compiler="intel">
-      <command name="load">PrgEnv-intel/6.0.4</command>
+      <command name="load">PrgEnv-intel/6.0.5</command>
       <!-- KSA: intel/17.0.1.132 does not work with the cam-mpas code (cesm2beta05)) -->
       <command name="switch">intel intel/18.0.1.163</command>
       <command name="use">/global/project/projectdirs/ccsm1/modulefiles/cori</command>
-      <command name="switch">pmi pmi/5.0.13</command>
-      <command name="switch">atp atp/2.1.1</command>
-
+      <command name="switch">pmi pmi/5.0.14</command>
+      <command name="switch">atp atp/2.1.3</command>
     </modules>
     
-    <modules compiler="intel" mpilib="!mpi-serial" >
-	  <command name="load">esmf/7.1.0r-defio-intel18.0.1.163-mpi-O-cori-knl</command>
+    <!-- KSA: CESM not dependent on emsf; can be compiled and run without them  -->
+    <!-- better not using them because these libraries have to be built by the support from  -->
+    <!-- ESMF, not by the NERSC helpdesk -->
+    <!--<modules compiler="intel" mpilib="!mpi-serial" >
+	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpi-O</command>
     </modules>
-    
     <modules compiler="intel" mpilib="mpi-serial" >
-	  <command name="load">esmf/7.1.0r-netcdf-intel18.0.1.163-mpiuni-O-haswell</command>
-    </modules>
+	  <command name="load">esmf/6.3.0rp1-defio-intel2016-mpiuni-O</command>
+    </modules>-->
 
     <modules compiler="cray">
 	  <command name="load">PrgEnv-cray</command>
@@ -597,10 +601,11 @@
     <modules>
       <command name="load">cray-memkind</command>
       <command name="load">craype-mic-knl</command>
-      <!--<command name="load">papi/5.5.1.4</command> KSA does not work after Jan 2019--> 
-      <!-- see the comment for cori-haswell KSA-->
-      <command name="load">papi/5.6.0.3</command>
-      <command name="load">cray-mpich/7.7.0</command>
+      <!-- KSA: removed dependency on papi; CESM runs without it,and this module always causes a problem --> 
+      <!-- when NERSC updates the modules, mainly by Cray introducing a bug (e.g., January and July 2019)-->
+      <!-- the -DHAVE_PAPI flag is removed from cori intel compilers in config_compilers.xml-->
+      <!--<command name="load">papi/5.6.0.3</command>-->
+      <command name="load">cray-mpich/7.7.6</command>
     </modules>
 
     <!-- KSA: NetCDF and HDF5 -->
@@ -609,14 +614,17 @@
 	  <command name="load">cray-netcdf/4.4.1</command>
     </modules>
     <modules mpilib="!mpi-serial">
-	  <command name="load">cray-netcdf-hdf5parallel/4.4.1.1.6</command>
-	  <command name="load">cray-hdf5-parallel/1.10.1.1</command>
-	  <command name="load">cray-parallel-netcdf/1.8.1.3</command>
+    <!-- KSA: need to remove netcdf here to avoid conflict with cray-netcdf-hdf5parallel --> 
+    <!-- KSA: again we cannot do this earlier; that causes another error --> 
+      <command name="rm">cray-netcdf</command>
+	  <command name="load">cray-netcdf-hdf5parallel/4.6.1.3</command>
+	  <command name="load">cray-hdf5-parallel/1.10.2.0</command>
+	  <command name="load">cray-parallel-netcdf/1.8.1.4</command>
     </modules>
 
     <!-- KSA: even more modules -->      
     <modules>
-	  <command name="load">cmake/3.5.2</command>
+	  <command name="load">cmake/3.14.4</command>
       <command name="load">python/2.7-anaconda-4.4</command>
     </modules>
 
