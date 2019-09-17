@@ -1025,7 +1025,7 @@ subroutine micro_mg_cam_init(pbuf2d)
 
 !++KSA output variables from MACv2-SP in MG2 scheme
    if(do_macv2sp) then
-       call addfld('dNovrN_MP'    ,   horiz_only,   'A', '-',   'normalized change in drop number due to anthropogenic aerosol, MACv2 in microphysics')
+       call addfld('MACv2_dNovrN'    ,   horiz_only,   'A', '-',   'normalized change in drop number due to anthropogenic aerosol, MACv2 in microphysics')
        call addfld('ICWNC_MACv2',     (/ 'lev' /), 'A', 'm-3',      'Prognostic in-cloud water number conc used by radiation with MACv2'             )
    end if
 !--KSA
@@ -1565,7 +1565,7 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
    real(r8), parameter    :: mons(nmon) = (/1., 2., 3., 4., 5., 6., 7., 8., 9.,10.,11.,12./)
    real(r8), parameter :: lambda  = 550.0_r8     !SW wavelengh input to MACv2-SP
    real(r8) :: year_fr, calday
-   real(r8), target :: dNovrN_grid(pcols)     ! fractional change of droplet concentration
+   real(r8) :: dNovrN_grid(pcols)     ! fractional change of droplet concentration
 !--KSA end of variables for MACv2-SP aerosol  --------------------
    
    logical  :: lq(pcnst)
@@ -1690,6 +1690,11 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
    psetcols = state%psetcols
    ngrdcol  = state%ngrdcol
 
+   !KSA
+   !ngrdcol = number of grid columns, 
+   !ncol = = ngrdcol * nsubcol, assuming nsubcol is same for all grid columns
+   !      = number of all active (sub)columns
+   
    itim_old = pbuf_old_tim_idx()
 
    call phys_getopts(use_subcol_microp_out=use_subcol_microp)
@@ -2585,22 +2590,19 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
 
 !++KSA for MACv2-SP aerosol, Twomey (1st indirect) effect
   if(do_macv2sp) then
-       ! initialize MACV2 profile variables
-       dNovrN_grid(:)    = 0._r8
-  
-
+       
        call get_curr_date(yr, mon, day, ncsec)
    
        calday = get_curr_calday()
        year_fr = yr + calday/365.0_r8
    
-       call get_rlat_all_p(lchnk, ncol, clat)
-       call get_rlon_all_p(lchnk, ncol, clon)
+       call get_rlat_all_p(lchnk, ngrdcol, clat)
+       call get_rlon_all_p(lchnk, ngrdcol, clon)
    
   
        if (masterproc .AND. localdebug) then !for debug/understanding
             write(iulog,*) 'micro_mg_cam_tend_pack (KSA): calling sp_aop_dNovrN'
-            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): pcols, ncol, mgncol,ngrdcol ', pcols, ncol, mgncol,ngrdcol
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): pcols, ncol, mgncol,ngrdcol,lchnk ', pcols, ncol, mgncol,ngrdcol,lchnk
             write(iulog,*) 'micro_mg_cam_tend_pack (KSA): yr, mon, day, ncsec', yr, mon, day, ncsec
             write(iulog,*) 'micro_mg_cam_tend_pack (KSA): calday', calday
             write(iulog,*) 'micro_mg_cam_tend_pack (KSA): year_fr:', year_fr
@@ -2608,13 +2610,23 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
     
        !get dNovrN, the fractional increase of droplet number concentration due to anthropogenic
        !aerosol, from MACv2-SP
-       call sp_aop_dNovrN (ncol ,lambda, state_loc%phis/gravit, clon, clat, year_fr, state_loc%zm, &
+       call sp_aop_dNovrN (ngrdcol ,lambda, state_loc%phis/gravit, clon, clat, year_fr, state_loc%zm, &
                        dNovrN_grid)
-
+      
+       if (masterproc .AND. localdebug) then !for debug/understanding
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): ncic_grid(:ngrdcol,10) before', ncic_grid(:ngrdcol,10)
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): dNovrN_grid(:ngrdcol)', dNovrN_grid(:ngrdcol)
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): state_loc%phis(:ngrdcol)', state_loc%phis(:ngrdcol)
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): clon(:ngrdcol)', clon(:ngrdcol)
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): clat(:ngrdcol)', clat(:ngrdcol)
+           !write(iulog,*) 'micro_mg_cam_tend_pack (KSA): max(dNovrN_grid(:ngrdcol)):', maxval(dNovrN_grid(:ngrdcol))
+           !write(iulog,*) 'micro_mg_cam_tend_pack (KSA): min(dNovrN_grid(:ngrdcol)):', minval(dNovrN_grid(:ngrdcol))
+       end if     
+       
        do k = top_lev, pver
           do i = 1, ngrdcol
              ncic_grid(i,k) = ncic_grid(i,k)*dNovrN_grid(i)!standard MACv2-SP
-             !sensitivity test for macv2_19 case
+             !sensitivity test
              !ncic_grid(i,k) = ncic_grid(i,k)* ( (dNovrN_grid(i)-1._r8)*2._r8  + 1._r8)
         
           end do
@@ -2625,6 +2637,11 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
        
        !in-cloud droplet number conc., used by radiation for MACv2-SP
         call outfld('ICWNC_MACv2',       ncic_grid,       pcols, lchnk)
+        
+        if (masterproc .AND. localdebug) then !for debug/understanding
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): ncic_grid(:ngrdcol,10) after', ncic_grid(:ngrdcol,10)
+        end if
+        
    end if
    
 !--KSA
@@ -3128,9 +3145,9 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
       call outfld("TROPF_RHADJ", cp_rh,       pcols, lchnk)
    end if
 
-!++KSA, writing dNovrN_MP for output
+!++KSA, writing MACv2_dNovrN for output
    if(do_macv2sp) then
-       call outfld('dNovrN_MP',    dNovrN_grid,      pcols, lchnk)
+       call outfld('MACv2_dNovrN',    dNovrN_grid,      pcols, lchnk)
    end if
 !--KSA
 

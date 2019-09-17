@@ -865,7 +865,6 @@ subroutine radiation_tend( &
    real(r8) :: itau
    real(r8) :: itauw(2)
    real(r8) :: itaug(2)
-   real(r8) :: dNovrN(pcols)         !< anthropogenic increase in cloud drop number concentration (factor)
    real(r8) :: aod_prof(pcols,pver,nswbands)  !< profile of aerosol optical depth
    real(r8) :: ssa_prof(pcols,pver,nswbands)  !< profile of single scattering albedo
    real(r8) :: asy_prof(pcols,pver,nswbands)  !< profile of asymmetry parameter
@@ -966,12 +965,22 @@ subroutine radiation_tend( &
    
    
        ! initialize MACv2-SP aerosol optical parameters
-        aod_prof(:,:,:) = 0._r8
-        ssa_prof(:,:,:)     = 0._r8
-        asy_prof(:,:,:)     = 0._r8
-        mac_tau_w(:,:,:)     = 0._r8
-        mac_tau_w_g(:,:,:)     = 0._r8
-        mac_tau_w_f(:,:,:)     = 0._r8
+       ! the first three are initialized inside the subroutine sp_aop_profile as 
+       ! intent-out variables -> with Intel compiler, initialization here will be ignored
+        !aod_prof(:,:,:) = 0._r8
+        !ssa_prof(:,:,:)     = 0._r8
+        !asy_prof(:,:,:)     = 0._r8
+        
+       ! initialize to conditions that would cause failure (for columns beyond ncol)
+        mac_tau_w(:,:,:)     = -100._r8
+        mac_tau_w_g(:,:,:)     = -100._r8
+        mac_tau_w_f(:,:,:)     = -100._r8
+        
+       ! and initialize 1:ncol with physical values
+        mac_tau_w(1:ncol,:,:)     = 0._r8
+        mac_tau_w_g(1:ncol,:,:)     = 0._r8
+        mac_tau_w_f(1:ncol,:,:)     = 0._r8
+        
    end if
    
 !--KSA
@@ -1016,9 +1025,6 @@ subroutine radiation_tend( &
                call slingo_liq_optics_sw(state, pbuf, liq_tau, liq_tau_w, liq_tau_w_g, liq_tau_w_f, oldliqwp=.true.)
             case ('gammadist')
             
-            if (masterproc .AND. localdebug) then
-                write(iulog,*) 'radiation_tend (KSA): starting gammadist'
-            end if
                call get_liquid_optics_sw(state, pbuf, liq_tau, liq_tau_w, liq_tau_w_g, liq_tau_w_f)
 
             case default
@@ -1168,17 +1174,17 @@ subroutine radiation_tend( &
              !those from CAM's own aerosol optical parameters
 
              do isw = 1, nswbands-1
+             
                 !get the bin-center wavelength from the wave number bin  (in the units of nm)
                 !this is an input to the sp_aop_profile subroutine of MACv2-SP
                 lambda = 10.0_r8**7*( wavenum_low(isw)**-1 + wavenum_high(isw)**-1 )/2.0_r8 
 
                 if (masterproc .AND. localdebug) then
                     write(iulog,*) 'radiation_tend (KSA): isw, lambda ', isw, lambda
-
                 end if
 
                 call sp_aop_profile (ncol ,lambda, state%phis/gravit, clon, clat, year_fr, state%zm, &
-                           dNovrN   ,aod_prof(:,:,isw)   ,ssa_prof(:,:,isw)   ,asy_prof(:,:,isw), lchnk, isw)
+                           aod_prof(:,:,isw)   ,ssa_prof(:,:,isw)   ,asy_prof(:,:,isw), lchnk, isw)
                 !state%phis for orography
                 !state%zm for z
 
@@ -1187,7 +1193,6 @@ subroutine radiation_tend( &
                     call outfld('MACv2_aod'//swbandnum(isw),  aod_prof(:,:,isw),  pcols, lchnk)
                     call outfld('MACv2_ssa'//swbandnum(isw),  ssa_prof(:,:,isw),  pcols, lchnk)
                     call outfld('MACv2_asy'//swbandnum(isw),  asy_prof(:,:,isw),  pcols, lchnk)
-                    call outfld('MACv2_dNovrN',  dNovrN,  pcols, lchnk)         
                 end if
 
                 !prepare arrays to be combined with CAM's aerosol optical parameters 
@@ -1197,6 +1202,7 @@ subroutine radiation_tend( &
                 mac_tau_w_f(:ncol,1:pver,isw) = mac_tau_w_g(:ncol,1:pver,isw)*asy_prof(:ncol,1:pver,isw)
 
              end do
+             
          end if
 !--KSA
 
@@ -1242,7 +1248,7 @@ subroutine radiation_tend( &
                               
                               ! aerosol forward scattered fraction
                               aer_tau_w_f(i,k,isw) = ( aer_tau_w_f(i,k,isw)*itaug(1) &
-                                            + mac_tau_w_f(i,k,isw)**itaug(2) )/(itaug(1) + itaug(2))
+                                            + mac_tau_w_f(i,k,isw)*itaug(2) )/(itaug(1) + itaug(2))
                                           
                               ! aerosol assymetry parameter  
                               aer_tau_w_g(i,k,isw) = ( aer_tau_w_g(i,k,isw)*itauw(1) &

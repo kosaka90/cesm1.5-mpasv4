@@ -3,23 +3,26 @@
 ! aerosols' radiative forcing for HighResMIP
 ! based on sp_driver_v1.f90 and modified to be ported into CAM physics,
 ! following cloud_rad_props.F90 and aer_rad_props.F90 as CAM code templates
+! technical details are summarized in MACv2SP.pdf
+! https://drive.google.com/open?id=1uYxPp5ytWELvLQ4Rm0ryc3iYjsOJFciO
 ! Koichi Sakaguchi
 !-------------------------------------------------------------------
 module prescribed_macv2
 
 !USE mo_simple_plumes, ONLY: sp_aop_profile
-use shr_kind_mod,     only : r8 => shr_kind_r8
+use shr_kind_mod,     only : r8 => shr_kind_r8, r4 => shr_kind_r4
 use cam_abortutils,   only : endrun
 use cam_logfile,      only: iulog
-use spmd_utils,       only: masterproc, mpi_logical, mpicom, mpir8
+use spmd_utils,       only: masterproc, mpi_logical, mpicom, mpir8, iam, masterprocid
 use cam_history,    only: addfld, horiz_only, outfld
 use shr_const_mod,  only: SHR_CONST_PI
-use ppgrid,         only: pcols,pver 
+use ppgrid,         only: pcols,pver,begchunk,endchunk,psubcols 
 use radconstants,   only: nswbands
-
+use time_manager,  only: get_nstep  !for debug
+ 
 IMPLICIT NONE
 private
-save !probably needed to retain the variables throughout the integration?
+!save !probably needed to retain the variables throughout the integration?
 
 !public interface
 public :: macv2_rad_props_init
@@ -66,7 +69,15 @@ character(len=256) :: datapath = ' '
 
 integer :: plume_number, plume_feature, year_fr, years 
 
-logical, PARAMETER :: localdebug = .TRUE.
+logical, PARAMETER :: localdebug = .FALSE.
+!MACv2-specific log file (fort.128); workaround for cesm2beta05 to let all processes to write into a log 
+integer, PARAMETER :: MACv2_errunit = 128  
+
+!With the unit number of "iulog", the master pcoc writes into atm.log, and other tasks write into cesm.log. 
+!If we use * for the unit number, all processes including master proc will write into cesm.log.
+!this is different from our cesm2beta code.
+!With iulog, the master proc writes to atm.log, but all other proces do not write into any log files
+!With *, the master proc writes to log.0000.out but all other proces do not write into any log files
 
 !use for output variable name
 character(len=5), public :: swbandnum(nswbands) =(/'_sw01','_sw02','_sw03','_sw04','_sw05','_sw06','_sw07','_sw08','_sw09','_sw10','_sw11','_sw12','_sw13','_sw14'/)
@@ -93,7 +104,6 @@ subroutine macv2_rad_props_init()
 
     if(do_macv2sp) then
         macv2file = trim(datapath) // "/" // trim(filename) !from the namelist
-        !macv2file = "/global/project/projectdirs/m1867/MPASinput/HighResMIP/atm/cam/chem/MACv2.0/MACv2.0-SP_v1.nc"
 
         ! masterproc opens the netcdf file and obtrains variable dimensions
         if(masterproc) then
@@ -123,25 +133,12 @@ subroutine macv2_rad_props_init()
             call handle_ncerr(nf90_inquire_dimension( ncid, dimid, len=year_fr), 'getting n plume_feature')
             if (year_fr /= ntimes) call endrun('ntimes does not match')
 
+            if (localdebug) then
+                write(iulog,*) 'macv2_rad_props_init (KSA): pcols,pver,begchunk,endchunk,psubcols :', pcols,pver,begchunk,endchunk,psubcols 
+            end if
+    
+    
         endif ! if (masterproc)
-
-
-        !broadcast the variable dimensions so that each task can allocate memory
-        !for MACv2 variables
-        !---> instead, defined them at the top of the module: no need for broadcast
-
-        !#if ( defined SPMD )
-        !   call mpibcast(plume_number, 1, mpiint, 0, mpicom, ierr)
-        !   !$CESMroot/components/cam/src/utils/wrap_mpi.F90
-        !   !mpiint and mpicom are read from the mpishorthand,=.F module
-        !#endif
-        !    if(localdebug) then
-        !         write(iulog,*)' macv2_rad_props_init: get plume_number ',plume_number
-        !    endif
-
-
-        !allocate memory (done on each task!) --> now done at the top of the module
-        !    allocate(plume_lat(plume_number))
 
         !master proc get variables from the input file
         if(masterproc) then
@@ -259,20 +256,7 @@ subroutine macv2_rad_props_init()
 
         #endif
 
-        !define output variables
-        call addfld ('MACv2_dNovrN',  horiz_only ,  'A', '-', 'normalized change in drop number due to anthropogenic aerosol, MACv2 in radiation')
-
-        !call addfld ('MACv2_lat',     horiz_only,  'A', 'degree north','latitude used by MACv2, for debug')
-        !call addfld ('MACv2_lon',     horiz_only,  'A', 'degree east','longitude used by MACv2, for debug')
-
-        !older version without wavelength dependance
-        !call addfld ('MACv2_aod',     (/ 'lev' /),  'A', '-','anthropogenic aerosol optical depth, MACv2')
-        !call addfld ('MACv2_ssa',     (/ 'lev' /),  'A', '-','anthropogenic aerosol single scattering albedo, MACv2')
-        !call addfld ('MACv2_asy',     (/ 'lev' /),  'A', '-','anthropogenic aerosol asymmetry parameter, MACv2')
-        !call addfld ('MACv2_aod_loc_2d',  horiz_only,  'A', '-', 'MACv2 anthropogenic aerosol optical depth with its vertical coordinate')
-        !call addfld ('MACv2_aod_2d',     horiz_only,  'A', '-', 'MACv2 anthropogenic aerosol optical depth after interpolation')
-
-        !new output variables for each wavelength
+        !define output variables for each wavelength
         !for now, do not indicate sampling sequence of field (see cam_history.F90) as done
         !for the other variables from the radiative transfer scheme
 
@@ -292,6 +276,7 @@ subroutine macv2_rad_props_init()
 
         end do
 
+        
     end if !(if do_macv2)
     
     
@@ -400,10 +385,11 @@ end subroutine set_time_weight
 
 subroutine sp_aop_profile (ncol           ,lambda    ,    &
    oro            ,lon            ,lat            , &
-   year_fr        ,z_in           ,dNovrN         ,aod_prof       ,ssa_prof       , &
+   year_fr        ,z_in           ,aod_prof       ,ssa_prof       , &
    asy_prof       ,lchnk          ,isw)
 
-
+    !the enhancement factor for cloud droplet number concentration, dNovrN, is now calculated
+    !in the separate subroutine sp_aop_dNovrN
     !
     ! ---------- 
     ! used dimsizes of pcols for in/out and variables to be written into history files
@@ -413,24 +399,28 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
     integer, intent(in)        :: lchnk  !to write out variables for debug
     integer, intent(in)        :: isw    !index for sw bands
 
+    ! advice from Balwinder to use (:) for in/out variables, which are defined in the parent subroutine
+    ! radiation_tend
+
     real(r8), intent(in)           :: &
          lambda   ,               & !< wavelength (nm)
          year_fr,                 & !< Fractional Year (1903.0 is the 0Z on the first of January 1903, Gregorian)
-         oro(pcols),               & !< orographic height (m)
-         lon(pcols),               & !< longitude (in radians)
-         lat(pcols),               & !< latitude (in radians)
-         z_in (pcols,pver)           !< height above the surface (m)
+         oro(:),               & !< orographic height (m)
+         lon(:),               & !< longitude (in radians)
+         lat(:),               & !< latitude (in radians)
+         z_in (:,:)           !< height above the surface (m)
 
 
     real(r8), intent(out)          :: &
-         dNovrN(pcols)           , & !< anthropogenic increase in cloud drop number concentration (factor)
-         aod_prof(pcols,pver) , & !< profile of aerosol optical depth
-         ssa_prof(pcols,pver) , & !< profile of single scattering albedo
-         asy_prof(pcols,pver)     !< profile of asymmetry parameter
+         !dNovrN(:)           , & !< anthropogenic increase in cloud drop number concentration (factor)
+         !dNovrN is now calculated in a separate subroutine sp_aop_dNovrN below
+         aod_prof(:,:) , & !< profile of aerosol optical depth
+         ssa_prof(:,:) , & !< profile of single scattering albedo
+         asy_prof(:,:)     !< profile of asymmetry parameter
 
-    integer                        :: iplume, icol, k, kin, ik
+    integer                        :: iplume, icol, k, kin, ik !loop indices
     integer, parameter             :: nlevels = 80  !for local vertical coordinate
-    real(r8), parameter            :: zmax = 15000.0 !aod = 0 above this height
+    real(r8), parameter            :: zmax = 15000.0_r8 !aod = 0 above this height
     real(r8), parameter            :: radtodeg = 180.0_r8/SHR_CONST_PI
 
     real(r8)                       ::  &
@@ -462,73 +452,70 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
          aod_550,                  & !< aerosol optical depth at 550nm
          aod_lmd,                  & !< aerosol optical depth at input wavelength
          lfactor                     !< factor to compute wavelength dependence of optical properties
-    !copied from sp_driver_v1.f90: local vertical coordinate
-          
-         !local variables added by KSA to use a ifferent vertical coordinate in MACV2sp
-         real(r8) :: z(ncol,nlevels)            !< heights by colums (ncolumns,level)
-         real(r8) :: dz(ncol,nlevels)           !< layer thicknesses (ncolumns,level)
+         
+         !local variables added by KSA to use a different vertical coordinate in MACv2SP
+         !copied and modified from mo_simple_plumes_v1.f90
+         !real(r8) :: z(ncol,nlevels)            !< heights by colums (ncolumns,level)
+         !real(r8) :: dz(ncol,nlevels)           !< layer thicknesses (ncolumns,level)
+         real(r8) :: z(nlevels)            !< mid-point heights by colums (level)
+         real(r8) :: dz(nlevels)           !< layer thicknesses (level)
+         real(r8) :: iz(nlevels+1)           !< interface height (level+1)
+         real(r8) :: zdiff(nlevels)           !< for debug; save z-tz as an array (get error in writing/minloc on z-tz)
+
          real(r8) :: aod_prof_loc(ncol,nlevels)  !< profile of aerosol optical depth in the local vertical coordinate
          real(r8) :: ssa_prof_loc(ncol,nlevels)  !< profile of single scattering albedo in the local vertical coordinate
          real(r8) :: asy_prof_loc(ncol,nlevels)  !< profile of asymmetry parameter in the local vertical coordinate
          real(r8) :: aod_int_loc(pcols)           !< vertically integrated aerosol optical depth from the local variable
          real(r8) :: aod_int(pcols)               !< same, but from the intermedaite, interpolated cam-level aod
-         real(r8) :: tz   !height of CAM vertical level inside the kin & icol loops
+         real(r8) :: tz   !height ASL of CAM vertical level inside the kin & icol loops
+         
 !         real(r8) :: x3(3), y3(3)       !for 3-point interpolation
-         real(r8) :: x2(2), y2(2)       !for 2-point interpolation
-         integer :: iknext(2), xind(2)  !for 2-point interpolation
+!         real(r8) :: x2(2), y2(2), iznext(2)       !for 2-point interpolation
+!         integer ::  xind(2)  !for 2-point interpolation
+         !decided to use optical values from the MACv2's vertical level that is the closest to 
+         !the target CAM model level, instead of interpolation
+         
+         real(r8) :: dblk   !convert integer index k to double precision
+         real(r8) :: interp_f  !factor to make the original and interpolated AOD to be the same
+         integer :: nstep      !timestep count
+         
+         !the following three variables (negct, tzneg, and tznegind) are to detect and record 
+         !the grid points with negative height ASL. But not fully utilized yet.
+         integer :: negct     !negative grid cell count (only once per column)        
+         real(r8) :: tzneg(ncol)  !< save tz if any grid column have negative height ASL (save the lowest level)
+         integer  :: tznegind(ncol)  !< to save the indices for negative tz columns
 
-         real(r8) :: interp_f           !factor to make the original and interpolated AOD to be the same
+
     !
     ! ---------- 
-
-    if (masterproc .AND. localdebug) then
-        !write(iulog,*) 'sp_aop_profile (KSA): sp_aop_profile started'
-        !write(iulog,*) 'sp_aop_profile (KSA): plume_lat: ', plume_lat
-        !write(iulog,*) 'sp_aop_profile (KSA): plume_lon: ', plume_lon
-        !write(iulog,*) 'sp_aop_profile (KSA): sig_lon_E: ', sig_lon_E
-
-
-        !DO icol=1,ncol
-        !    write(iulog,*) 'sp_aop_profile (KSA): icol: ', icol
-        !    write(iulog,*) 'sp_aop_profile (KSA): oro(icol): ', oro(icol)
-        !    write(iulog,*) 'sp_aop_profile (KSA): lat(icol)*radtodeg: ', lat(icol)*radtodeg
-        !    write(iulog,*) 'sp_aop_profile (KSA): lon(icol)*radtodeg: ', lon(icol)*radtodeg
-        !END DO
-
+    nstep = get_nstep()   !get model time step number
+    
+    if (localdebug) then
+        write(MACv2_errunit,*) 'sp_aop_profile (KSA): sp_aop_profile started, iam: ', iam
+        write(MACv2_errunit,*) 'sp_aop_profile (KSA): nstep: ', nstep
     end if
 
-    ! get time weights
-    !
-    call set_time_weight(year_fr)
 
+    !initialize local (pcol) variables -------------------------------------
+    ! initialize output variables (following aer_rad_props_sw)
+    ! initialize to conditions that would cause failure (for columns beyond ncol)
+    aod_prof(:,:) = -100._r8
+    ssa_prof(:,:) = -100._r8
+    asy_prof(:,:) = -100._r8
+    
+    aod_int_loc(:) = -100._r8
+    aod_int(:) = -100._r8
+    
+    ! also initialize rest of columns with physical values
+    aod_prof(1:ncol,:) = 0._r8
+    ssa_prof(1:ncol,:) = 0._r8
+    asy_prof(1:ncol,:) = 0._r8
 
-    if (masterproc .AND. localdebug) then
-        write(iulog,*) 'sp_aop_profile (KSA): year_fr:', year_fr
-        do iplume=1,nplumes
-            write(iulog,*) 'sp_aop_profile (KSA): iplume:', iplume        
-            write(iulog,*) 'sp_aop_profile (KSA): time_weight (1,iplume):', time_weight(1,iplume)
-            write(iulog,*) 'sp_aop_profile (KSA): time_weight (2,iplume):', time_weight(2,iplume)
-        end do
-    
-        !write(iulog,*) 'sp_aop_profile (KSA): time_weight (1,:):', time_weight(1,:)
-    end if
-    
-    
-    ! define the height array used locally in this subroutine
-   
-    z(:,1)  = 0.
-    DO k = 2,nlevels
-      dz(:,k) = 50. * exp(0.03*(k-1))
-      z(:,k) = z(:,k-1) + dz(:,k)
-    END DO
-    
-
-    ! initialize output variables
-    !
-    aod_prof(:,:) = 0._r8
-    ssa_prof(:,:) = 0._r8
-    asy_prof(:,:) = 0._r8
-
+    aod_int_loc(1:ncol) = 0._r8
+    aod_int(1:ncol) = 0._r8
+      
+!   The do loop is faster than (:,:,:) = 0.0, according to Balwinder. But for now
+!   follow aer_rad_props_sw which initialize the variables as above
 !    DO kin=1,pver
 !      DO icol=1,ncol
 !        aod_prof(icol,kin) = 0.0
@@ -536,35 +523,133 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
 !        asy_prof(icol,kin) = 0.0
 !      END DO
 !    END DO
-
-    ! initialize local variables
-    !z_beta is the Heaviside (step) function H in equation (8)
-
+        
+    !initialize local 1D height arrays, again lazy way
+    iz(:) = 0._r8
+    z(:) = 0._r8
+    dz(:) = 0._r8   
+    zdiff(:) = 0._r8 
+    
+    ! initialize local 2D variables
     DO k=1,nlevels
       DO icol=1,ncol
         aod_prof_loc(icol,k) = 0.0_r8
         ssa_prof_loc(icol,k) = 0.0_r8
         asy_prof_loc(icol,k) = 0.0_r8
-        z_beta(icol,k)   = MERGE(1.0, 0.0, z(icol,k) >= oro(icol))
-        eta(icol,k)      = MAX(0.0,MIN(1.0,z(icol,k)/15000.))
+        eta(icol,k) = 0.0_r8
+        z_beta(icol,k) = 0.0_r8
+        prof(icol,k) = 0.0_r8
+        
       END DO
     END DO
 
-    ! initialize 1D arrays
+    ! initialize 1D column arrays
     DO icol=1,ncol
-      !dNovrN(icol)   = 1.0_r8
       caod_sp(icol)  = 0.0_r8
-      caod_bg(icol)  = 0.02_r8
-
-      !aod_int_loc(icol) = 0.0_r8
-      !aod_int(icol) = 0.0_r8
-
+      caod_bg(icol)  = 0.02_r8   !not sure why 0.02, but without this dNovrN does not work (KSA)
+      beta_sum(icol) = 0.0_r8
+      ssa(icol) = 0.0_r8
+      asy(icol) = 0.0_r8
+      cw_an(icol) = 0.0_r8
+      cw_bg(icol) = 0.0_r8
+      caod_sp(icol) = 0.0_r8
+      caod_bg(icol) = 0.0_r8
+      caod_bg(icol) = 0.0_r8
+      tzneg(icol) = 0.0_r8
+      tznegind(icol) = 0
+      
     END DO
-    dNovrN(:)   = 1.0_r8
-    aod_int_loc(:) = 0.0_r8
-    aod_int(:) = 0.0_r8
+   
+    ! initialize smaller arrays  
+    !these are for linear interpolation between vertical coordinates
+    !x2(:) = 0.0_r8
+    !y2(:) = 0.0_r8
+    !iznext(:) = 0.0_r8
+    !xind(:) = 0
+    
+    ! initialize scalars
+    a_plume1 = 0.0_r8
+    a_plume2 = 0.0_r8
+    b_plume1 = 0.0_r8
+    b_plume2 = 0.0_r8
+    delta_lat = 0.0_r8
+    delta_lon = 0.0_r8
+    delta_lon_t = 0.0_r8
+    lon1 = 0.0_r8
+    lat1 = 0.0_r8
+    lon2 = 0.0_r8
+    lat2 = 0.0_r8
+    f1 = 0.0_r8
+    f2 = 0.0_r8
+    f3 = 0.0_r8
+    f4 = 0.0_r8
+    aod_550 = 0.0_r8
+    aod_lmd = 0.0_r8
+    lfactor = 0.0_r8
+    tz = 0.0_r8
+    dblk = 0.0_r8
+    interp_f = 0.0_r8
+    negct = 0
+    
+    ik = 1
 
-!
+    !------------------------------------------------------ initialization
+    
+    ! get time weights
+    !
+    call set_time_weight(year_fr)
+
+
+    if ((nstep .eq. 0) .AND. (masterproc) .AND. (localdebug)) then
+        write(MACv2_errunit,*) 'sp_aop_profile (KSA): year_fr:', year_fr
+        do iplume=1,nplumes
+            write(MACv2_errunit,*) 'sp_aop_profile (KSA): iplume:', iplume        
+            write(MACv2_errunit,*) 'sp_aop_profile (KSA): time_weight (1,iplume):', time_weight(1,iplume)
+            write(MACv2_errunit,*) 'sp_aop_profile (KSA): time_weight (2,iplume):', time_weight(2,iplume)
+        end do
+   
+        write(MACv2_errunit,*) 'sp_aop_profile (KSA): time_weight (1,:):', time_weight(1,:)
+    end if
+        
+    !define local vertical coordinate
+    !original way, leaving dz(1) uninitialized.
+    !z(1)  = 0.
+    !DO k = 2,nlevels
+    !  dz(k) = 50. * exp(0.03*(k-1))
+    !  z(k) = z(k-1) + dz(k)
+    !END DO
+    
+    !revised (KSA)
+     DO k = 1,nlevels
+      dz(k) = 50._r8 * exp(0.03_r8*(k-1))
+
+      dblk = dble(k)
+      dz(k) = 50._r8 * dexp(0.03_r8*(dblk-1.0_r8))
+
+      iz(k+1) = iz(k) + dz(k)
+      z(k) = iz(k) + 0.5_r8*dz(k)
+    END DO
+    
+    if ((nstep .eq. 0) .AND. (masterproc) .AND. (localdebug)) then
+         write(MACv2_errunit,*) 'sp_aop_profile (KSA): z:', z
+         write(MACv2_errunit,*) 'sp_aop_profile (KSA): dz:', dz
+         write(MACv2_errunit,*) 'sp_aop_profile (KSA): iz:', iz
+         write(MACv2_errunit,*) 'sp_aop_profile (KSA): ik:', ik  
+    end if
+    
+
+    !2D height-related variables
+    !z_beta is the Heaviside (step) function H in equation (8)
+    DO k=1,nlevels
+      DO icol=1,ncol
+        
+        z_beta(icol,k)   = MERGE(1.0_r8, 0.0_r8, z(k) >= oro(icol))
+        eta(icol,k)      = MAX(0.0_r8,MIN(1.0_r8,z(k)/15000._r8))  
+        
+      END DO
+    END DO
+    
+    
     ! sum contribution from plumes to construct composite profiles of aerosol optical properties
     !
     DO iplume=1,nplumes
@@ -579,7 +664,8 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
       ! beta_a = pi, beta_b = qi
       DO k=1,nlevels
         DO icol=1,ncol
-          prof(icol,k)   = (eta(icol,k)**(beta_a(iplume)-1.) * (1.-eta(icol,k))**(beta_b(iplume)-1.)) * dz(icol,k)
+          prof(icol,k)   = (eta(icol,k)**(beta_a(iplume)-1._r8) * (1._r8-eta(icol,k))**(beta_b(iplume)-1._r8)) * dz(k)
+          
           beta_sum(icol) = beta_sum(icol) + prof(icol,k) !beta function B(p,q),integal
         END DO
       END DO
@@ -612,8 +698,6 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
         delta_lat   = lat(icol)*radtodeg - plume_lat(iplume)  !y-yi in the paper
         delta_lon   = lon(icol)*radtodeg - plume_lon(iplume)  !x-xi in the paper
 
-        !delta_lat   = lat(icol) - plume_lat(iplume)  !y-yi in the paper
-        !delta_lon   = lon(icol) - plume_lon(iplume)  !x-xi in the paper
         ! apply threshold for the maximum longitudinal extent used for plume-
         ! centered coordinate
         ! express dela_lon with values smaller than abs(180)
@@ -622,15 +706,16 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
         ! fortan SIGN (a, b): Returns the absolute value of the first argument
         ! times the sign of the second argument.
 
-        delta_lon_t = MERGE (260., 180., iplume == 1)
-        delta_lon   = MERGE ( delta_lon-SIGN(360.,delta_lon) , delta_lon , ABS(delta_lon) > delta_lon_t)
+        delta_lon_t = MERGE (260._r8, 180._r8, iplume == 1)
+        delta_lon   = MERGE ( delta_lon - SIGN(360._r8,delta_lon) , delta_lon , ABS(delta_lon) > delta_lon_t)
 
         ! eqn(6), diagnal elements in the inverse of the covariance matrix, Aij^-1
         ! multipled by 0.5, which is the 1/2 in the argument for exp in eqn (4)
-        a_plume1  = 0.5 / (MERGE(sig_lon_E(1,iplume), sig_lon_W(1,iplume), delta_lon > 0)**2)
-        b_plume1  = 0.5 / (MERGE(sig_lat_E(1,iplume), sig_lat_W(1,iplume), delta_lon > 0)**2)
-        a_plume2  = 0.5 / (MERGE(sig_lon_E(2,iplume), sig_lon_W(2,iplume), delta_lon > 0)**2)
-        b_plume2  = 0.5 / (MERGE(sig_lat_E(2,iplume), sig_lat_W(2,iplume), delta_lon > 0)**2)
+        ! added _r8 (KSA)
+        a_plume1  = 0.5_r8 / (MERGE(sig_lon_E(1,iplume), sig_lon_W(1,iplume), delta_lon > 0._r8)**2)
+        b_plume1  = 0.5_r8 / (MERGE(sig_lat_E(1,iplume), sig_lat_W(1,iplume), delta_lon > 0._r8)**2)
+        a_plume2  = 0.5_r8 / (MERGE(sig_lon_E(2,iplume), sig_lon_W(2,iplume), delta_lon > 0._r8)**2)
+        b_plume2  = 0.5_r8 / (MERGE(sig_lat_E(2,iplume), sig_lat_W(2,iplume), delta_lon > 0._r8)**2)
         !
         ! adjust for a plume specific rotation which helps match plume state to climatology.
         ! Eqn (7), inverse of rotation matrix R times offset vector xi
@@ -653,13 +738,13 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
 
         ! lon1 and lat1 are squared to represent (xi^T*Rij)*(Rij^-1*xi)
         ! feature 1, anthropogenic
-        f1 = time_weight(1,iplume) * ftr_weight(1,iplume) * EXP(-1.* (a_plume1 * ((lon1)**2) + (b_plume1 * ((lat1)**2)))) 
+        f1 = time_weight(1,iplume) * ftr_weight(1,iplume) * EXP(-1._r8* (a_plume1 * ((lon1)**2) + (b_plume1 * ((lat1)**2)))) 
         !feature 2, anthropogenic
-        f2 = time_weight(2,iplume) * ftr_weight(2,iplume) * EXP(-1.* (a_plume2 * ((lon2)**2) + (b_plume2 * ((lat2)**2)))) 
+        f2 = time_weight(2,iplume) * ftr_weight(2,iplume) * EXP(-1._r8* (a_plume2 * ((lon2)**2) + (b_plume2 * ((lat2)**2)))) 
         !feature 1, background
-        f3 = time_weight_bg(1,iplume) * ftr_weight(1,iplume) * EXP(-1.* (a_plume1 * ((lon1)**2) + (b_plume1 * ((lat1)**2)))) 
+        f3 = time_weight_bg(1,iplume) * ftr_weight(1,iplume) * EXP(-1._r8* (a_plume1 * ((lon1)**2) + (b_plume1 * ((lat1)**2)))) 
         !feature 2, background
-        f4 = time_weight_bg(2,iplume) * ftr_weight(2,iplume) * EXP(-1.* (a_plume2 * ((lon2)**2) + (b_plume2 * ((lat2)**2))))
+        f4 = time_weight_bg(2,iplume) * ftr_weight(2,iplume) * EXP(-1._r8* (a_plume2 * ((lon2)**2) + (b_plume2 * ((lat2)**2))))
         ! f1 + f2 (and f3+f4) equals the summation in eqn4
 
         ! now multiply AOD at the plume center (anthropogenic and background)
@@ -668,12 +753,12 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
         cw_bg(icol) = f3 * aod_fmbg(iplume) + f4 * aod_fmbg(iplume) 
         !
         ! calculate wavelength-dependent scattering properties
-        !
-        lfactor   = MIN(1.0,700.0/lambda) !inverse of eqn.12
+        lfactor   = MIN(1.0_r8,700.0_r8/lambda) !inverse of eqn.12
+
         !single scattering albedo
         !see my slide to verify that this is equivalent to eqn (11)
-        ssa(icol) = (ssa550(iplume) * lfactor**4) / ((ssa550(iplume) * lfactor**4) + ((1-ssa550(iplume)) * lfactor))
-      
+        ssa(icol) = (ssa550(iplume) * lfactor**4) / ((ssa550(iplume) * lfactor**4) + ((1.0_r8-ssa550(iplume)) * lfactor))
+     
         !assymetry parameter
         asy(icol) =  asy550(iplume) * SQRT(lfactor) !eqn 13
 
@@ -682,8 +767,8 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
       ! distribute plume optical properties across its vertical profile weighting by optical depth and scaling for
       ! wavelength using the angstrom parameter. 
       !      
-      lfactor = EXP(-angstrom(iplume) * LOG(lambda/550.0)) !eqn 10
-      !lfactor = 1 for lamda = 550 (nm)
+      lfactor = EXP(-angstrom(iplume) * LOG(lambda/550.0_r8)) !eqn 10  !  added _r8 after sigterm error 190831-164930
+      !note that lfactor = 1 for lamda = 550 (nm)
 
       DO k=1,nlevels
         DO icol = 1,ncol
@@ -721,123 +806,121 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
     ! ssa is multiplied by aod to copy the vertical/horizontal pattern
     ! divide ssa by the integrated aod to normalize the vertical/horizontal pattern
     ! for asy this normalization is done using ssa (before introducing ssa = 1.0 for small aod locations)
+    ! for being "small", cime/share/csm_share/shr/shr_flux_mod.F90 has local parameters:
+    ! tiny = 1.0e-12_R8 and tiny2 = 1.0e-6_R8
+    ! follow tiny2 and use 1.0e-6_R8 instead of TINY(1.) in the original code
+        
     DO k=1,nlevels
       DO icol = 1,ncol
-        asy_prof_loc(icol,k) = MERGE(asy_prof_loc(icol,k)/ssa_prof_loc(icol,k), 0.0, ssa_prof_loc(icol,k) > TINY(1.))
-        ssa_prof_loc(icol,k) = MERGE(ssa_prof_loc(icol,k)/aod_prof_loc(icol,k), 1.0, aod_prof_loc(icol,k) > TINY(1.))
+        asy_prof_loc(icol,k) = MERGE(asy_prof_loc(icol,k)/ssa_prof_loc(icol,k), 0.0_r8, ssa_prof_loc(icol,k) > 1.0e-6_r8)
+        ssa_prof_loc(icol,k) = MERGE(ssa_prof_loc(icol,k)/aod_prof_loc(icol,k), 1.0_r8, aod_prof_loc(icol,k) > 1.0e-6_r8)
       END DO
     END DO
     !
+
     ! calculate effective radius normalization (divisor) factor
     ! equqtion (15)
     ! Also calculate vertically integrated AOD for scaling vertically interpolated values
     ! following sp_driver_v1.f90, L162 (done as a simple summation)
     DO icol=1,ncol
-      dNovrN(icol) = LOG((1000.0 * (caod_sp(icol) + caod_bg(icol))) + 1.0)/LOG((1000.0 * caod_bg(icol)) + 1.0)
+      !dNovrN(icol) = LOG((1000.0 * (caod_sp(icol) + caod_bg(icol))) + 1.0)/LOG((1000.0 * caod_bg(icol)) + 1.0)
       aod_int_loc(icol) = SUM(aod_prof_loc(icol,:))
     END DO
 
 
-    !vertical interpolation from zcol = 80 levels to CAM's 32 levels
-    !Z3, height above sea level as output, but the original variable state
+    !vertical interpolation/translation from zcol = 80 levels to CAM's 32 levels
+    !Z3, height above sea level as output, but the original variable 
     !zm is height above the surface
-    !MACV2 coordinate is also the height above sea level.
+    !MACV2 coordinate is the height above sea level.
     !need to add surface height in doing interpolation in the model
-    !code!!!!!
-    !The lowest CAM-MPAS level is always greater than ~55m, which is 
-    !higher than the second level of the MACV2 coordinate (same across lat/lon)
-    !so, we expect to always use 3-points interpolation for the
-    !lowest model level
+    !code
+    
+    !The lowest CAM-MPAS level is always greater than ~55m
+    
     !aerosol optical thickness (and asy and ssa, which are mulcipled by
-    !aod) are set to zero above 15,000m. Because MACv2 coordinate has 3 levels
-    !above 15,000m, it is expected that we always have 3 points to
-    !interpolate near 15,000 m level. 
-    !three-points, second-order interpolation (intrpf function)
-    !introduces new minima/maxima. Use two-points linear interpolation intrpf_2pt
-                        
+    !aod) are set to zero above 15,000m. 
+
+    ! do not include write function or endrun subroutine inside the do loops b/c
+    ! I/O processes for write is very slow
 
     DO kin=1,pver
       DO icol = 1,ncol
+        
+        !tz is the height above the surface for CAM's icol and kin level
+        
         tz = z_in(icol,kin) + oro(icol) !need to be the height above sea level 
 
         if (tz >= zmax) then  !zmax = 15000, as in Stevens et al. 2017
+
             aod_prof(icol,kin) = 0.0_r8
             ssa_prof(icol,kin) = 1.0_r8
             asy_prof(icol,kin) = 0.0_r8
 
+        else if (tz < 0.0_r8) then !if the model level is below sea level
+            if(tznegind(icol) < 1) then
+                negct = negct + 1
+            end if
+            tzneg(icol) = tz
+            tznegind(icol) = 1
+            
+            !use lowest level from the MACv2 profile
+            aod_prof(icol,kin) = aod_prof_loc(icol,1)
+            ssa_prof(icol,kin) = ssa_prof_loc(icol,1)
+            asy_prof(icol,kin) = asy_prof_loc(icol,1)
+            
         else
             !find the nearest level in the MACV2 coordinate
-            ik = minloc((tz - z(icol,:))**2,DIM=1)
-  
-            !and the next nearest level
-            iknext(1) = (tz - z(icol,ik+1) )**2;
-            iknext(2) = (tz - z(icol,ik-1) )**2;
-
-            if(iknext(1) < iknext(2)) then
-                !the height order is opposite between MACv2 and CAM
-                !follow CAM order, lower height with greater index, although
-                !it should not be matter for two-point linear interpolation
-                xind(1) = ik+1;
-                xind(2) = ik;
-            else
-                xind(1) = ik;
-                xind(2) = ik-1;
-            end if
-
-            !CAM level should lie somewhere between z(xind(1)) and z(xind(2))
-
-
-           if(tz >= z(icol,1)) then
-                x2 = z(icol,xind);
-
-                !AOD
-                y2 = aod_prof_loc(icol,xind);
-                aod_prof(icol,kin) = intrpf_2pt(tz,x2,y2);
-                !SSA
-                y2 = ssa_prof_loc(icol,xind);
-                ssa_prof(icol,kin) = intrpf_2pt(tz,x2,y2);
-                !ASY
-                y2 = asy_prof_loc(icol,xind);
-                asy_prof(icol,kin) = intrpf_2pt(tz,x2,y2);
-
-               !lowest model level
-
-           else !tz < 0 m
                 
-                write(iulog,*) 'sp_aop_profile (KSA): z_in(icol,kin): ', z_in(icol,kin)
-                write(iulog,*) 'sp_aop_profile (KSA): oro(icol): ', oro(icol)
+            zdiff = z - tz    
+             
+            ik = minloc(abs(zdiff),DIM=1) 
+             
+            !instead of vertical interpolation, take the closest level's value
+            aod_prof(icol,kin) = aod_prof_loc(icol,ik)
+            ssa_prof(icol,kin) = ssa_prof_loc(icol,ik)
+            asy_prof(icol,kin) = asy_prof_loc(icol,ik)
 
-                write(iulog,*) 'sp_aop_profile (KSA): tz: ', tz
-                write(iulog,*) 'sp_aop_profile (KSA): kin: ', kin
-                write(iulog,*) 'sp_aop_profile (KSA): ik: ', kin
-                write(iulog,*) 'sp_aop_profile (KSA): icol: ', icol
-                write(iulog,*) 'sp_aop_profile (KSA): lat(icol)*radtodeg: ', lat(icol)*radtodeg
-                write(iulog,*) 'sp_aop_profile (KSA): lon(icol)*radtodeg: ', lon(icol)*radtodeg
-
-                call endrun('sp_aop_profile (KSA): cannot find the closest MACv2 vertical level')
-
-           end if
-
-         
-        end if
+            !a bit of older code using linear interpolation, for record
+            !AOD
+            !y2 = aod_prof_loc(icol,xind)
+            !aod_prof(icol,kin) = intrpf_2pt(tz,x2,y2)
+            !SSA
+            !y2 = ssa_prof_loc(icol,xind)
+            !ssa_prof(icol,kin) = intrpf_2pt(tz,x2,y2)
+            !ASY
+            !y2 = asy_prof_loc(icol,xind)
+            !asy_prof(icol,kin) = intrpf_2pt(tz,x2,y2)            
+               
+                
+        end if !tz if conditioning
 
         !vertically integrate following sp_driver_v1.f90, L162
-        aod_int(icol) = aod_int(icol) + aod_prof(icol,kin);
+
+        aod_int(icol) = aod_int(icol) + aod_prof(icol,kin) 
 
 
       END DO
     END DO
+    
+ 
+    if((negct > 0) .AND. (localdebug)) then
+        write(MACv2_errunit,*) 'sp_aop_profile (KSA): iam:', iam  
+        write(MACv2_errunit,*) 'sp_aop_profile (KSA): tz is negative at some columns: negct =  ', negct
+        write(MACv2_errunit,*) 'sp_aop_profile (KSA): tzneg(1:ncol): ', tzneg(1:ncol)
+
+        !call endrun('sp_aop_profile (KSA): height above the surface is negative: check topography input and/or Z3')           
+    end if
+
 
     !scale to get the same optical depth - probably not needed for linear interpolation
     !do not apply to ssa and asy
     DO icol=1, ncol
         !2D integrated value as simple sum, following sp_driver_v1.f90
-        if (aod_int(icol) > TINY(1.) ) then
+        if (aod_int(icol) > 1.0e-6_r8 ) then
             interp_f = aod_int_loc(icol)/aod_int(icol)
-            aod_prof(icol,:) = aod_prof(icol,:)*interp_f;
+            aod_prof(icol,:) = aod_prof(icol,:)*interp_f
         else
-            !write(iulog,*) 'sp_aop_profile (KSA): sp_aop_profile integration very small -> 0.0'
-            aod_prof(icol,:) = 0.0_r8;
+            aod_prof(icol,:) = 0.0_r8
         end if
     END DO
 
@@ -845,32 +928,28 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
     DO kin=1,pver
       DO icol = 1,ncol
           if(aod_prof(icol,kin) < 0.0_r8) then
-             aod_prof(icol,kin) = 0.0_r8;
+             aod_prof(icol,kin) = 0.0_r8
           end if
           
           if(ssa_prof(icol,kin) < 0.0_r8) then
-             ssa_prof(icol,kin) = 0.0_r8;
+             ssa_prof(icol,kin) = 0.0_r8
           end if
           
           if(ssa_prof(icol,kin) > 1.0_r8) then
-             ssa_prof(icol,kin) = 1.0_r8;
+             ssa_prof(icol,kin) = 1.0_r8
           end if
           
           if(asy_prof(icol,kin) > 1.0_r8) then
-             asy_prof(icol,kin) = 1.0_r8;
+             asy_prof(icol,kin) = 1.0_r8
           end if
           
           if(asy_prof(icol,kin) < -1.0_r8) then
-             asy_prof(icol,kin) = -1.0_r8;
+             asy_prof(icol,kin) = -1.0_r8
           end if
           
       END DO
     END DO
 
-
-    if (masterproc .AND. localdebug) then
-    !      write(iulog,*) 'sp_aop_profile (KSA): dNovrN', dNovrN
-    end if
 
     !update the integrated AOD after scaling and negative value correction
     DO icol=1,ncol
@@ -883,7 +962,9 @@ subroutine sp_aop_profile (ncol           ,lambda    ,    &
     call outfld('MACv2_aod_loc_2d'//swbandnum(isw),  aod_int_loc,  pcols, lchnk)
     call outfld('MACv2_aod_2d'//swbandnum(isw),  aod_int,  pcols, lchnk)
 
+
     return
+    
 end subroutine sp_aop_profile
   
 !================================================================================================
@@ -903,15 +984,21 @@ subroutine sp_aop_dNovrN (ncol    ,lambda    ,    &
     real(r8), intent(in)           :: &
          lambda   ,               & !< wavelength (nm)
          year_fr,                 & !< Fractional Year (1903.0 is the 0Z on the first of January 1903, Gregorian)
-         oro(ncol),               & !< orographic height (m)
-         lon(ncol),               & !< longitude (in radians)
-         lat(ncol),               & !< latitude (in radians)
-         z_in (ncol,pver)           !< height above the surface (m)
+         oro(:),               & !< orographic height (m)
+         lon(:),               & !< longitude (in radians)
+         lat(:),               & !< latitude (in radians)
+         z_in (:,:)           !< height above the surface (m)
+        ! advice from Balwinder to use (:) for in/out variables
 
+        ! oro(ncol),               & !< orographic height (m)
+        ! lon(ncol),               & !< longitude (in radians)
+        ! lat(ncol),               & !< latitude (in radians)
+        ! z_in (ncol,pver)           !< height above the surface (m)
 
     real(r8), intent(out)          :: &
-         dNovrN(ncol)             !< anthropogenic increase in cloud drop number concentration (factor)
-  
+         !dNovrN(ncol)             !< anthropogenic increase in cloud drop number concentration (factor)
+         dNovrN(:)             !< anthropogenic increase in cloud drop number concentration (factor)
+
 
     integer                        :: iplume, icol, k, kin, ik
     integer, parameter             :: nlevels = 80  !for local vertical coordinate
@@ -947,51 +1034,108 @@ subroutine sp_aop_dNovrN (ncol    ,lambda    ,    &
          aod_550,                  & !< aerosol optical depth at 550nm
          aod_lmd,                  & !< aerosol optical depth at input wavelength
          lfactor                     !< factor to compute wavelength dependence of optical properties
-    !copied from sp_driver_v1.f90: local vertical coordinate
-          
-         !local variables added by KSA to use a ifferent vertical coordinate in MACV2sp
-         real(r8) :: z(ncol,nlevels)            !< heights by colums (ncolumns,level)
-         real(r8) :: dz(ncol,nlevels)           !< layer thicknesses (ncolumns,level)
-         real(r8) :: tz   !height of CAM vertical level inside the kin & icol loops
+         
+         !local vertical coordinate: copied from sp_driver_v1.f90
+         !real(r8) :: z(ncol,nlevels)            !< heights by colums (ncolumns,level)
+         !real(r8) :: dz(ncol,nlevels)           !< layer thicknesses (ncolumns,level)
+         real(r8) :: z(nlevels)            !< mid-point heights by colums (level)
+         real(r8) :: dz(nlevels)           !< layer thicknesses (level)
+         real(r8) :: iz(nlevels+1)           !< interface height (level+1)
+         real(r8) :: dblk   !convert integer index k to double precision (debug)
+         integer :: nstep      !timestep count
 
     !
     ! ---------- 
+    nstep = get_nstep()   !get model time step number
 
-    if (masterproc .AND. localdebug) then
-        write(iulog,*) 'sp_aop_dNovrN (KSA): sp_aop_dNovrN started'
+    if ((nstep .eq. 0) .AND. (localdebug)) then
+        write(MACv2_errunit,*) 'sp_aop_dNovrN (KSA): sp_aop_dNovrN started, iam: ', iam
     end if
 
+    !initialize local 1D height arrays, lazy way
+    iz(:) = 0._r8
+    z(:) = 0._r8
+    dz(:) = 0._r8   
+    
+    ! initialize dNovrN to conditions that would cause failure (for columns beyond ncol but <= pcol)
+    dNovrN(:) = -100._r8
+    
+    ! initialize local 2D variables
+    DO k=1,nlevels
+      DO icol=1,ncol
+        eta(icol,k) = 0.0_r8
+        z_beta(icol,k) = 0.0_r8
+        prof(icol,k) = 0.0_r8
+      END DO
+    END DO
+    
+    ! initialize 1D column arrays
+    DO icol=1,ncol
+      dNovrN(icol)   = 1.0_r8
+      caod_sp(icol)  = 0.0_r8
+      caod_bg(icol)  = 0.0_r8      
+      beta_sum(icol) = 0.0_r8
+      cw_an(icol) = 0.0_r8
+      cw_bg(icol) = 0.0_r8
+      caod_sp(icol) = 0.0_r8
+      caod_bg(icol) = 0.02_r8  !don't change! dNovrN won't work! (KSA)
+      
+    END DO
+    
+    
+    ! initialize scalars
+    a_plume1 = 0.0_r8
+    a_plume2 = 0.0_r8
+    b_plume1 = 0.0_r8
+    b_plume2 = 0.0_r8
+    delta_lat = 0.0_r8
+    delta_lon = 0.0_r8
+    delta_lon_t = 0.0_r8
+    lon1 = 0.0_r8
+    lat1 = 0.0_r8
+    lon2 = 0.0_r8
+    lat2 = 0.0_r8
+    f1 = 0.0_r8
+    f2 = 0.0_r8
+    f3 = 0.0_r8
+    f4 = 0.0_r8
+    aod_550 = 0.0_r8
+    aod_lmd = 0.0_r8
+    lfactor = 0.0_r8
+    dblk = 0.0_r8
+        
+    ik = 1
+    
     ! get time weights
     !
     call set_time_weight(year_fr)
 
 
-    ! define the height array used locally in this subroutine
-   
-    z(:,1)  = 0.
-    DO k = 2,nlevels
-      dz(:,k) = 50. * exp(0.03*(k-1))
-      z(:,k) = z(:,k-1) + dz(:,k)
+    !define the height array used locally in this subroutine
+    !original way, leaving dz(1) uninitialized.
+    !z(1)  = 0.
+    !DO k = 2,nlevels
+    !  dz(k) = 50. * exp(0.03*(k-1))
+    !  z(k) = z(k-1) + dz(k)
+    !END DO
+
+    DO k = 1,nlevels
+      dblk = dble(k)
+      dz(k) = 50._r8 * dexp(0.03_r8*(dblk-1.0_r8))
+
+      iz(k+1) = iz(k) + dz(k)
+      z(k) = iz(k) + 0.5_r8*dz(k)
     END DO
     
-    ! initialize local variables
+    
     !z_beta is the Heaviside (step) function H in equation (8)
-
     DO k=1,nlevels
       DO icol=1,ncol
-        z_beta(icol,k)   = MERGE(1.0, 0.0, z(icol,k) >= oro(icol))
-        eta(icol,k)      = MAX(0.0,MIN(1.0,z(icol,k)/15000.))
+        z_beta(icol,k)   = MERGE(1.0_r8, 0.0_r8, z(k) >= oro(icol))
+        eta(icol,k)      = MAX(0.0_r8,MIN(1.0_r8,z(k)/15000._r8))  
       END DO
     END DO
 
-    ! initialize 1D arrays
-    DO icol=1,ncol
-      dNovrN(icol)   = 1.0_r8
-      caod_sp(icol)  = 0.0_r8
-      caod_bg(icol)  = 0.02_r8
-    END DO
- 
-!
     ! sum contribution from plumes to construct composite profiles of aerosol optical properties
     !
     DO iplume=1,nplumes
@@ -1006,7 +1150,7 @@ subroutine sp_aop_dNovrN (ncol    ,lambda    ,    &
       ! beta_a = pi, beta_b = qi
       DO k=1,nlevels
         DO icol=1,ncol
-          prof(icol,k)   = (eta(icol,k)**(beta_a(iplume)-1.) * (1.-eta(icol,k))**(beta_b(iplume)-1.)) * dz(icol,k)
+          prof(icol,k)   = (eta(icol,k)**(beta_a(iplume)-1._r8) * (1._r8-eta(icol,k))**(beta_b(iplume)-1._r8)) * dz(k)
           beta_sum(icol) = beta_sum(icol) + prof(icol,k) !beta function B(p,q),integal
         END DO
       END DO
@@ -1049,15 +1193,15 @@ subroutine sp_aop_dNovrN (ncol    ,lambda    ,    &
         ! fortan SIGN (a, b): Returns the absolute value of the first argument
         ! times the sign of the second argument.
 
-        delta_lon_t = MERGE (260., 180., iplume == 1)
-        delta_lon   = MERGE ( delta_lon-SIGN(360.,delta_lon) , delta_lon , ABS(delta_lon) > delta_lon_t)
+        delta_lon_t = MERGE (260._r8, 180._r8, iplume == 1)
+        delta_lon   = MERGE ( delta_lon - SIGN(360._r8,delta_lon) , delta_lon , ABS(delta_lon) > delta_lon_t)
 
         ! eqn(6), diagnal elements in the inverse of the covariance matrix, Aij^-1
         ! multipled by 0.5, which is the 1/2 in the argument for exp in eqn (4)
-        a_plume1  = 0.5 / (MERGE(sig_lon_E(1,iplume), sig_lon_W(1,iplume), delta_lon > 0)**2)
-        b_plume1  = 0.5 / (MERGE(sig_lat_E(1,iplume), sig_lat_W(1,iplume), delta_lon > 0)**2)
-        a_plume2  = 0.5 / (MERGE(sig_lon_E(2,iplume), sig_lon_W(2,iplume), delta_lon > 0)**2)
-        b_plume2  = 0.5 / (MERGE(sig_lat_E(2,iplume), sig_lat_W(2,iplume), delta_lon > 0)**2)
+        a_plume1  = 0.5_r8 / (MERGE(sig_lon_E(1,iplume), sig_lon_W(1,iplume), delta_lon > 0._r8)**2)
+        b_plume1  = 0.5_r8 / (MERGE(sig_lat_E(1,iplume), sig_lat_W(1,iplume), delta_lon > 0._r8)**2)
+        a_plume2  = 0.5_r8 / (MERGE(sig_lon_E(2,iplume), sig_lon_W(2,iplume), delta_lon > 0._r8)**2)
+        b_plume2  = 0.5_r8 / (MERGE(sig_lat_E(2,iplume), sig_lat_W(2,iplume), delta_lon > 0._r8)**2)
         !
         ! adjust for a plume specific rotation which helps match plume state to climatology.
         ! Eqn (7), inverse of rotation matrix R times offset vector xi
@@ -1080,13 +1224,13 @@ subroutine sp_aop_dNovrN (ncol    ,lambda    ,    &
 
         ! lon1 and lat1 are squared to represent (xi^T*Rij)*(Rij^-1*xi)
         ! feature 1, anthropogenic
-        f1 = time_weight(1,iplume) * ftr_weight(1,iplume) * EXP(-1.* (a_plume1 * ((lon1)**2) + (b_plume1 * ((lat1)**2)))) 
+        f1 = time_weight(1,iplume) * ftr_weight(1,iplume) * EXP(-1._r8* (a_plume1 * ((lon1)**2) + (b_plume1 * ((lat1)**2)))) 
         !feature 2, anthropogenic
-        f2 = time_weight(2,iplume) * ftr_weight(2,iplume) * EXP(-1.* (a_plume2 * ((lon2)**2) + (b_plume2 * ((lat2)**2)))) 
+        f2 = time_weight(2,iplume) * ftr_weight(2,iplume) * EXP(-1._r8* (a_plume2 * ((lon2)**2) + (b_plume2 * ((lat2)**2)))) 
         !feature 1, background
-        f3 = time_weight_bg(1,iplume) * ftr_weight(1,iplume) * EXP(-1.* (a_plume1 * ((lon1)**2) + (b_plume1 * ((lat1)**2)))) 
+        f3 = time_weight_bg(1,iplume) * ftr_weight(1,iplume) * EXP(-1._r8* (a_plume1 * ((lon1)**2) + (b_plume1 * ((lat1)**2)))) 
         !feature 2, background
-        f4 = time_weight_bg(2,iplume) * ftr_weight(2,iplume) * EXP(-1.* (a_plume2 * ((lon2)**2) + (b_plume2 * ((lat2)**2))))
+        f4 = time_weight_bg(2,iplume) * ftr_weight(2,iplume) * EXP(-1._r8* (a_plume2 * ((lon2)**2) + (b_plume2 * ((lat2)**2))))
         ! f1 + f2 (and f3+f4) equals the summation in eqn4
 
         ! now multiply AOD at the plume center (anthropogenic and background)
@@ -1096,15 +1240,15 @@ subroutine sp_aop_dNovrN (ncol    ,lambda    ,    &
         !
         ! calculate wavelength-dependent scattering properties
         !
-        lfactor   = MIN(1.0,700.0/lambda) !inverse of eqn.12
+        lfactor   = MIN(1.0_r8,700.0_r8/lambda) !inverse of eqn.12
 
       END DO !icol
       !
       ! distribute plume optical properties across its vertical profile weighting by optical depth and scaling for
       ! wavelength using the angstrom parameter. 
       !      
-      lfactor = EXP(-angstrom(iplume) * LOG(lambda/550.0)) !eqn 10
-      !lfactor = 1 for lamda = 550 (nm)
+      lfactor = EXP(-angstrom(iplume) * LOG(lambda/550.0_r8)) !eqn 10  !  added _r8 after sigterm error 190831-164930
+      !note that lfactor = 1 for lamda = 550 (nm)
 
       DO k=1,nlevels
         DO icol = 1,ncol
@@ -1116,7 +1260,7 @@ subroutine sp_aop_dNovrN (ncol    ,lambda    ,    &
 
           ! integrate ei across vertical levels:
           ! add column simple plume anthropogenic AOD at 550 nm
-          ! from this plume; used for cloud droplet scaling
+          ! from this plume used for cloud droplet scaling
           caod_sp(icol)    = caod_sp(icol)    + aod_550
           ! same but for the background aerosol optical depth (only used for
           ! cloud droplet scaling, therefore consider only 550nm)
@@ -1129,19 +1273,20 @@ subroutine sp_aop_dNovrN (ncol    ,lambda    ,    &
 
     ! calculate effective radius normalization (divisor) factor
     ! equqtion (15)
-    ! Also calculate vertically integrated AOD for scaling vertically interpolated values
-    ! following sp_driver_v1.f90, L162 (done as a simple summation)
+    
+    if (masterproc .AND. localdebug) then
+          write(MACv2_errunit,*) 'sp_aop_dNovrN (KSA): dNovrN(:) before', dNovrN(:)
+    end if
+    
     DO icol=1,ncol
-      dNovrN(icol) = LOG((1000.0 * (caod_sp(icol) + caod_bg(icol))) + 1.0)/LOG((1000.0 * caod_bg(icol)) + 1.0)
-      !aod_int_loc(icol) = SUM(aod_prof_loc(icol,:))
+      dNovrN(icol) = LOG((1000.0_r8 * (caod_sp(icol) + caod_bg(icol))) + 1.0_r8)/LOG((1000.0_r8 * caod_bg(icol)) + 1.0_r8)
     END DO
    
     if (masterproc .AND. localdebug) then
-          write(iulog,*) 'sp_aop_dNovrN (KSA): finished'
+          write(MACv2_errunit,*) 'sp_aop_dNovrN (KSA): dNovrN(:) after', dNovrN(:)
+          write(MACv2_errunit,*) 'sp_aop_dNovrN (KSA): finished'
     end if
 
-    !call outfld('MACv2_lat',  lat*radtodeg,  pcols, lchnk)
-    !call outfld('MACv2_lon',  lon*radtodeg,  pcols, lchnk)
 
     return
 end subroutine sp_aop_dNovrN
