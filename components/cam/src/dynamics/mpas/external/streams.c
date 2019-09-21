@@ -10,12 +10,9 @@
 #include <unistd.h>
 
 #define UNDERSCORE
-
-#ifdef MPAS_DEBUG
-#ifndef MPAS_ALL_TASKS_PRINT
+#define MPAS_NO_LOG_REDIRECT
 #define MPAS_ALL_TASKS_PRINT
-#endif
-#endif
+
 
 #ifdef UNDERSCORE
 #define open_streams open_streams_
