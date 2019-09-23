@@ -5,17 +5,23 @@
 // Additional copyright and license information can be found in the LICENSE file
 // distributed with this code, or at http://mpas-dev.github.com/license.html
 //
+// KSA, 09/23/2019 define MPAS_NO_LOG_REDIRECT and MPAS_ALL_TASKS_PRINT 
+// so that MPAS does not alter the standard CESM logging and all processes
+// can write into cesm.log
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
 
 #define UNDERSCORE
-
-#ifdef MPAS_DEBUG
-#ifndef MPAS_ALL_TASKS_PRINT
+#define MPAS_NO_LOG_REDIRECT
 #define MPAS_ALL_TASKS_PRINT
-#endif
-#endif
+
+//#ifdef MPAS_DEBUG
+//#ifndef MPAS_ALL_TASKS_PRINT
+//#define MPAS_ALL_TASKS_PRINT
+//#endif
+//#endif
 
 #ifdef UNDERSCORE
 #define open_streams open_streams_
