@@ -3213,7 +3213,7 @@ write(stderrUnit,*) ' '
       end if
 
 !++KSA      
-      write(stderrUnit,*) 'KSA1 numConstituents: ', index_counter
+      !write(stderrUnit,*) 'KSA1 numConstituents: ', index_counter
 !--KSA
 
 ! Defining time level 1
@@ -3385,7 +3385,7 @@ write(stderrUnit,*) ' '
 
 
 !++KSA      
-      write(stderrUnit,*) 'KSA2 numConstituents'
+!      write(stderrUnit,*) 'KSA2 numConstituents'
 !--KSA
 
 
