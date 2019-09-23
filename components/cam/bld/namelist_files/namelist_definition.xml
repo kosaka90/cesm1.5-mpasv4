@@ -3450,6 +3450,14 @@ source of invalid data in state.
 Default: .false.
 </entry>
 
+<!-- BEH: Add in flag for using energy-conserving adjustment -->
+<entry id="adjust_te" type="logical"  category="dry_mass_adjust"
+       group="phys_ctl_nl" valid_values="">
+If set to .true., use energy-conserving formulation of dme_adjust.
+If set to .false., only conserve dry air mass and water content
+Default: .false.
+</entry>
+
 
 <!-- Planetary Boundary Layer and Vertical Diffusion -->
 
