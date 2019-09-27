@@ -661,7 +661,7 @@ contains
 
     ! Write out clump and proc info, one pe at a time, 
     ! barrier to control pes overwriting each other on stdout
-
+    ! (KSA) comment out these write statement to speed up initialization for high-res simulations
     call shr_sys_flush(iulog)
     call mpi_barrier(mpicom,ier)
     npmin = 0
@@ -685,39 +685,39 @@ contains
        pid = min(pid,npes-1)
 
        if (iam == pid) then
-          write(iulog,*)
-          write(iulog,*)'proc= ',pid,&
-               ' beg gridcell= ',procinfo%begg, &
-               ' end gridcell= ',procinfo%endg,                   &
-               ' total gridcells per proc= ',procinfo%ncells
-          write(iulog,*)'proc= ',pid,&
-               ' beg landunit= ',procinfo%begl, &
-               ' end landunit= ',procinfo%endl,                   &
-               ' total landunits per proc= ',procinfo%nlunits
-          write(iulog,*)'proc= ',pid,&
-               ' beg column  = ',procinfo%begc, &
-               ' end column  = ',procinfo%endc,                   &
-               ' total columns per proc  = ',procinfo%ncols
-          write(iulog,*)'proc= ',pid,&
-               ' beg pft     = ',procinfo%begp, &
-               ' end pft     = ',procinfo%endp,                   &
-               ' total pfts per proc     = ',procinfo%npfts
-          write(iulog,*)'proc= ',pid,&
-               ' lnd ngseg   = ',mct_gsMap_ngseg(gsMap_lnd_gdc2glo), &
-               ' lnd nlseg   = ',mct_gsMap_nlseg(gsMap_lnd_gdc2glo,iam)
-          write(iulog,*)'proc= ',pid,&
-               ' gce ngseg   = ',mct_gsMap_ngseg(gsMap_gce_gdc2glo), &
-               ' gce nlseg   = ',mct_gsMap_nlseg(gsMap_gce_gdc2glo,iam)
-          write(iulog,*)'proc= ',pid,&
-               ' lun ngseg   = ',mct_gsMap_ngseg(gsMap_lun_gdc2glo), &
-               ' lun nlseg   = ',mct_gsMap_nlseg(gsMap_lun_gdc2glo,iam)
-          write(iulog,*)'proc= ',pid,&
-               ' col ngseg   = ',mct_gsMap_ngseg(gsMap_col_gdc2glo), &
-               ' col nlseg   = ',mct_gsMap_nlseg(gsMap_col_gdc2glo,iam)
-          write(iulog,*)'proc= ',pid,&
-               ' pft ngseg   = ',mct_gsMap_ngseg(gsMap_pft_gdc2glo), &
-               ' pft nlseg   = ',mct_gsMap_nlseg(gsMap_pft_gdc2glo,iam)
-          write(iulog,*)'proc= ',pid,' nclumps = ',procinfo%nclumps
+!          write(iulog,*)
+!          write(iulog,*)'proc= ',pid,&
+!               ' beg gridcell= ',procinfo%begg, &
+!               ' end gridcell= ',procinfo%endg,                   &
+!               ' total gridcells per proc= ',procinfo%ncells
+!          write(iulog,*)'proc= ',pid,&
+!               ' beg landunit= ',procinfo%begl, &
+!               ' end landunit= ',procinfo%endl,                   &
+!               ' total landunits per proc= ',procinfo%nlunits
+!          write(iulog,*)'proc= ',pid,&
+!               ' beg column  = ',procinfo%begc, &
+!               ' end column  = ',procinfo%endc,                   &
+!               ' total columns per proc  = ',procinfo%ncols
+!          write(iulog,*)'proc= ',pid,&
+!               ' beg pft     = ',procinfo%begp, &
+!               ' end pft     = ',procinfo%endp,                   &
+!               ' total pfts per proc     = ',procinfo%npfts
+!          write(iulog,*)'proc= ',pid,&
+!               ' lnd ngseg   = ',mct_gsMap_ngseg(gsMap_lnd_gdc2glo), &
+!               ' lnd nlseg   = ',mct_gsMap_nlseg(gsMap_lnd_gdc2glo,iam)
+!          write(iulog,*)'proc= ',pid,&
+!               ' gce ngseg   = ',mct_gsMap_ngseg(gsMap_gce_gdc2glo), &
+!               ' gce nlseg   = ',mct_gsMap_nlseg(gsMap_gce_gdc2glo,iam)
+!          write(iulog,*)'proc= ',pid,&
+!               ' lun ngseg   = ',mct_gsMap_ngseg(gsMap_lun_gdc2glo), &
+!               ' lun nlseg   = ',mct_gsMap_nlseg(gsMap_lun_gdc2glo,iam)
+!          write(iulog,*)'proc= ',pid,&
+!               ' col ngseg   = ',mct_gsMap_ngseg(gsMap_col_gdc2glo), &
+!               ' col nlseg   = ',mct_gsMap_nlseg(gsMap_col_gdc2glo,iam)
+!          write(iulog,*)'proc= ',pid,&
+!               ' pft ngseg   = ',mct_gsMap_ngseg(gsMap_pft_gdc2glo), &
+!               ' pft nlseg   = ',mct_gsMap_nlseg(gsMap_pft_gdc2glo,iam)
+!          write(iulog,*)'proc= ',pid,' nclumps = ',procinfo%nclumps
 
           clmin = 1
           clmax = procinfo%nclumps
@@ -728,26 +728,26 @@ contains
           endif
           do n = clmin,clmax
              cid = procinfo%cid(n)
-             write(iulog,*)'proc= ',pid,' clump no = ',n, &
-                  ' clump id= ',procinfo%cid(n),    &
-                  ' beg gridcell= ',clumps(cid)%begg, &
-                  ' end gridcell= ',clumps(cid)%endg, &
-                  ' total gridcells per clump= ',clumps(cid)%ncells
-             write(iulog,*)'proc= ',pid,' clump no = ',n, &
-                  ' clump id= ',procinfo%cid(n),    &
-                  ' beg landunit= ',clumps(cid)%begl, &
-                  ' end landunit= ',clumps(cid)%endl, &
-                  ' total landunits per clump = ',clumps(cid)%nlunits
-             write(iulog,*)'proc= ',pid,' clump no = ',n, &
-                  ' clump id= ',procinfo%cid(n),    &
-                  ' beg column  = ',clumps(cid)%begc, &
-                  ' end column  = ',clumps(cid)%endc, &
-                  ' total columns per clump  = ',clumps(cid)%ncols
-             write(iulog,*)'proc= ',pid,' clump no = ',n, &
-                  ' clump id= ',procinfo%cid(n),    &
-                  ' beg pft     = ',clumps(cid)%begp, &
-                  ' end pft     = ',clumps(cid)%endp, &
-                  ' total pfts per clump     = ',clumps(cid)%npfts
+!             write(iulog,*)'proc= ',pid,' clump no = ',n, &
+!                  ' clump id= ',procinfo%cid(n),    &
+!                  ' beg gridcell= ',clumps(cid)%begg, &
+!                  ' end gridcell= ',clumps(cid)%endg, &
+!                  ' total gridcells per clump= ',clumps(cid)%ncells
+!             write(iulog,*)'proc= ',pid,' clump no = ',n, &
+!                  ' clump id= ',procinfo%cid(n),    &
+!                  ' beg landunit= ',clumps(cid)%begl, &
+!                  ' end landunit= ',clumps(cid)%endl, &
+!                  ' total landunits per clump = ',clumps(cid)%nlunits
+!             write(iulog,*)'proc= ',pid,' clump no = ',n, &
+!                  ' clump id= ',procinfo%cid(n),    &
+!                  ' beg column  = ',clumps(cid)%begc, &
+!                  ' end column  = ',clumps(cid)%endc, &
+!                  ' total columns per clump  = ',clumps(cid)%ncols
+!             write(iulog,*)'proc= ',pid,' clump no = ',n, &
+!                  ' clump id= ',procinfo%cid(n),    &
+!                  ' beg pft     = ',clumps(cid)%begp, &
+!                  ' end pft     = ',clumps(cid)%endp, &
+!                  ' total pfts per clump     = ',clumps(cid)%npfts
           end do
        end if
        call shr_sys_flush(iulog)

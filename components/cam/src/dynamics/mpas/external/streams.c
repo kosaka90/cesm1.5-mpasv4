@@ -5,13 +5,24 @@
 // Additional copyright and license information can be found in the LICENSE file
 // distributed with this code, or at http://mpas-dev.github.com/license.html
 //
+// KSA
+// MPAS_ALL_TASKS_PRINT is undefined as default, but if encountering endrun or
+// other run-time error, need to define MPAS_ALL_TASKS_PRINT so that correct stack 
+// trace is passed to cesm.log. 
+// Without MPAS_ALL_TASKS_PRINT, the stack trace comes from the master proc, which
+// is not necessarily where the error occurs.
+// Defining MPAS_ALL_TASKS_PRINT allows all processes write into standard error
+// unit, which seems to be used to show stack trance, and goes to cesm.log
+// KSA
+
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
 
 #define UNDERSCORE
 #define MPAS_NO_LOG_REDIRECT
-#define MPAS_ALL_TASKS_PRINT
+//#define MPAS_ALL_TASKS_PRINT
 
 
 #ifdef UNDERSCORE
@@ -89,12 +100,12 @@ void open_streams(int * id)
 		   return;
 	   }
 
-	   sprintf(fname, "/dev/null");
-	   fd_out = open(fname,O_CREAT|O_WRONLY|O_TRUNC,0644);
-	   if (dup2(fd_out, 1) < 0) {
-		   fprintf(stderr, "Error duplicating STDOUT\n");
-		   return;
-	   }
+//	   sprintf(fname, "/dev/null");
+//	   fd_out = open(fname,O_CREAT|O_WRONLY|O_TRUNC,0644);
+//	   if (dup2(fd_out, 1) < 0) {
+//		   fprintf(stderr, "Error duplicating STDOUT\n");
+//		   return;
+//	   }
    }
 #endif //MPAS_ALL_TASKS_PRINT
 
