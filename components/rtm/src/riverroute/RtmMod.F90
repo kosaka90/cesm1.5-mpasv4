@@ -741,18 +741,20 @@ contains
        pid = max(pid,0)
        pid = min(pid,npes-1)
        if (iam == pid) then
-          write(iulog,*) 'rtm decomp info',' proc = ',iam, &
-             ' begr = ',runoff%begr,&
-             ' endr = ',runoff%endr, &
-             ' numr = ',runoff%lnumr
-          write(iulog,*) '               ',' proc = ',iam, &
-             ' begrl= ',begrl,&
-             ' endrl= ',endrl, &
-             ' numrl= ',lnumrl
-          write(iulog,*) '               ',' proc = ',iam, &
-             ' begro= ',begro,&
-             ' endro= ',endro, &
-             ' numro= ',lnumro
+!++KSA comment out this to speed up high-res initialization
+!          write(iulog,*) 'rtm decomp info',' proc = ',iam, &
+!             ' begr = ',runoff%begr,&
+!             ' endr = ',runoff%endr, &
+!             ' numr = ',runoff%lnumr
+!          write(iulog,*) '               ',' proc = ',iam, &
+!             ' begrl= ',begrl,&
+!             ' endrl= ',endrl, &
+!             ' numrl= ',lnumrl
+!          write(iulog,*) '               ',' proc = ',iam, &
+!             ' begro= ',begro,&
+!             ' endro= ',endro, &
+!             ' numro= ',lnumro
+!--KSA
        endif
        call shr_sys_flush(iulog)
        call mpi_barrier(mpicom_rof,ier)

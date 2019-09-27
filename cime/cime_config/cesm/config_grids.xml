@@ -533,13 +533,19 @@
       <mask>tx0.1v2</mask>
    </model_grid>
 
+   <model_grid alias="mp960a_g16">
+      <grid name="atm">mp960a</grid>
+      <grid name="lnd">mp960a</grid>
+      <grid name="ocnice">gx1v6</grid>
+      <grid name="rof">r05</grid>
+   </model_grid>
+   
    <model_grid alias="mp240a_g16">
       <grid name="atm">mp240a</grid>
       <grid name="lnd">mp240a</grid>
       <grid name="ocnice">gx1v6</grid>
       <grid name="rof">r05</grid>
    </model_grid>
-   
 
    <model_grid alias="mp120a_g16">
       <grid name="atm">mp120a</grid>
@@ -916,6 +922,13 @@
       <support>Experimental for very high resolution experiments</support>
     </domain>
 
+    <domain name="mp960a">
+      <nx>10242</nx> <ny>1</ny>
+      <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/domain.lnd.mp960a_gx1v6.190821.nc</file>
+      <file grid="ocnice">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/domain.ocn.gx1v6.190821.nc</file>
+      <desc>mp960a is MPAS-A 960km grid:</desc>
+    </domain>
+    
     <domain name="mp240a">
       <nx>10242</nx> <ny>1</ny>
       <file grid="atm|lnd">/global/project/projectdirs/m1867/MPASinput/mp240a/domain.lnd.mp240a_gx1v6.150311.nc</file>
@@ -1285,6 +1298,13 @@
       <map name="LND2ATM_SMAPNAME">cpl/gridmaps/fv0.23x0.31/map_fv0.23x0.31_to_ne240np4_aave_110428.nc</map>
     </gridmap>
 
+    <gridmap atm_grid="mp960a" ocn_grid="gx1v6">
+      <map name="ATM2OCN_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/mp960a_TO_gx1v6_conserve.nc</map>
+      <map name="ATM2OCN_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/mp960a_TO_gx1v6_bilinear.nc</map>
+      <map name="ATM2OCN_VMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/mp960a_TO_gx1v6_patch.nc</map>
+      <map name="OCN2ATM_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/gx1v6_TO_mp960a_conserve.nc</map>
+      <map name="OCN2ATM_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/gx1v6_TO_mp960a_conserve.nc</map>
+    </gridmap>
 
     <gridmap atm_grid="mp240a" ocn_grid="gx1v6">
       <map name="ATM2OCN_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp240a/map_mp240a_TO_gx1v6_aave.150311.nc</map>
@@ -1569,8 +1589,10 @@
 
 
 
-
-
+   <gridmap lnd_grid="mp960a" rof_grid="r05">
+      <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/mp960a_TO_r05_conserve.nc</map>
+      <map name="ROF2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/r05_TO_mp960a_conserve.nc</map>
+    </gridmap>
 
     <gridmap lnd_grid="mp240a" rof_grid="r05">
       <map name="LND2ROF_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp240a/map_mp240a_TO_r05_aave.150311.nc</map>
@@ -1839,6 +1861,13 @@
       <map name="GLC2LND_SMAPNAME">/glade/p/work/zarzycki/ASD2017_files/cpl/gridmaps/gland4km/map_gland4km_TO_conus_30_x8_aave.170117.nc</map>
     </gridmap>
 
+    <gridmap lnd_grid="mp960a" glc_grid="gland4" >
+      <map name="LND2GLC_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/mp960a_TO_gland4km_conserve.nc</map>
+      <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/mp960a_TO_gland4km_bilinear.nc</map>
+      <map name="GLC2LND_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/gland4km_TO_mp960a_conserve.nc</map>
+      <map name="GLC2LND_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp960a/gridmaps/gland4km_TO_mp960a_conserve.nc</map>
+    </gridmap>
+    
     <gridmap lnd_grid="mp240a" glc_grid="gland4" >
       <map name="LND2GLC_FMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp240a/map_mp240a_TO_gland4km_conserve.nc</map>
       <map name="LND2GLC_SMAPNAME">/global/project/projectdirs/m1867/MPASinput/mp240a/map_mp240a_TO_gland4km_bilinear.nc</map>

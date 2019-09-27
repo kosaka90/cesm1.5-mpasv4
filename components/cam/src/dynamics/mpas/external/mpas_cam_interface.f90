@@ -48,6 +48,7 @@ module mpas_cam_interface
       use cam_initfiles,    only: ncdata, rest_pfile
       use cam_control_mod,  only: initial_run
       use ioFileMod,        only: opnfil
+      use spmd_utils,       only: masterproc !added by KSA
 #endif 
    
       implicit none
@@ -116,7 +117,9 @@ module mpas_cam_interface
          end subroutine xml_stream_get_attributes
       end interface
 
-      write(stderrUnit,*) 'Called MPAS_INIT1'
+      if(masterproc) then
+          write(stderrUnit,*) 'Called MPAS_INIT1'
+      end if
 
       readNamelistArg = .false.
       readStreamsArg = .false.

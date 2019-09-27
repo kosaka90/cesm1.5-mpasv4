@@ -21,7 +21,12 @@ module mpas_io_units
 
    use mpas_kind_types
 
+   use cam_logfile,      only: iulog   !added by KSA
+   use spmd_utils,       only: masterproc !added by KSA
+
    integer, save :: stdoutUnit, stderrUnit
+ 
+   
    integer, parameter, private :: maxUnits = 99
    logical, dimension(0:maxUnits), private, save :: unitsInUse
 
@@ -133,17 +138,29 @@ module mpas_io_units
         integer, intent(in), optional :: stdoutUnit_in !< Input - Optional: Unit to set stdoutUnit to
         integer, intent(in), optional :: stderrUnit_in !< Input - Optional: Unit to set stderrUnit to
 
-        if(present(stdoutUnit_in)) then
-            stdoutUnit = stdoutUnit_in
-        else
-            stdoutUnit = 6
-        end if
+        !KSA made the standard error/out unit number depndent on master proc or not
 
-        if(present(stderrUnit_in)) then
-            stderrUnit = stderrUnit_in
+        !if(present(stdoutUnit_in)) then
+        !    stdoutUnit = stdoutUnit_in
+        !else
+        !    stdoutUnit = 6
+        !end if
+
+        !if(present(stderrUnit_in)) then
+        !    stderrUnit = stderrUnit_in
+        !else
+        !    stderrUnit = 0
+        !end if
+        
+!++KSA   
+        if(masterproc) then
+             stderrUnit = 6 !goes to cesm.log   
+             stdoutUnit = iulog  !goes to atm.log
         else
-            stderrUnit = 0
+             stderrUnit = 0   !standard error is point to a null file in streams.c
+             stdoutUnit = 0   !-> not printed in cesm/atm.log 
         end if
+!--KSA
         
         unitsInUse(stdoutUnit) = .true.
         unitsInUse(stderrUnit) = .true.

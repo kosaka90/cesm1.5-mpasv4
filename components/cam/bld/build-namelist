@@ -3342,6 +3342,10 @@ add_default($nl, 'gw_apply_tndmax');
 # BEH add adjust_te to the default and set it to false
 add_default($nl, 'adjust_te'        , 'val'=>'.false.');
 
+# KSA add do_macv2sp to the default and set it to false
+add_default($nl, 'do_macv2sp'        , 'val'=>'.false.');
+
+
 if ($waccm_phys or $cfg->get('nlev') >= 60) {
     # Spectral gravity waves are part of WACCM physics, and also drive the
     # QBO in the high vertical resolution configuration.

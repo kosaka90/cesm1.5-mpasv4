@@ -462,11 +462,13 @@ contains
     call htapes_fieldlist()
 
     ! Determine if gridcell (xy) averaging is done for all fields on tape
-
+    ! (KSA) allow only master proc to write this info (goes to lnd.log)
     do t=1,ntapes
        tape(t)%dov2xy = hist_dov2xy(t)
-       write(iulog,*)trim(subname),' hist tape = ',t,&
-            ' written with dov2xy= ',tape(t)%dov2xy
+       if (masterproc) then
+           write(iulog,*)trim(subname),' hist tape = ',t,&
+                ' written with dov2xy= ',tape(t)%dov2xy
+       end if
     end do
 
     ! Set number of time samples in each history file and

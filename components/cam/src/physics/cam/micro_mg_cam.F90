@@ -94,6 +94,11 @@ use ref_pres,       only: top_lev=>trop_cloud_top_lev
 
 use subcol_utils,   only: subcol_get_scheme
 
+!++KSA
+use prescribed_macv2,   only: do_macv2sp
+!--KSA
+
+
 implicit none
 private
 save
@@ -245,6 +250,10 @@ interface p
    module procedure p1
    module procedure p2
 end interface p
+
+
+! KSA: for debugging MACv2-SP aerosol for HighResMIP
+logical, PARAMETER :: localdebug = .FALSE.
 
 
 !===============================================================================
@@ -1014,6 +1023,13 @@ subroutine micro_mg_cam_init(pbuf2d)
 
    end if
 
+!++KSA output variables from MACv2-SP in MG2 scheme
+   if(do_macv2sp) then
+       call addfld('MACv2_dNovrN'    ,   horiz_only,   'A', '-',   'normalized change in drop number due to anthropogenic aerosol, MACv2 in microphysics')
+       call addfld('ICWNC_MACv2',     (/ 'lev' /), 'A', 'm-3',      'Prognostic in-cloud water number conc used by radiation with MACv2'             )
+   end if
+!--KSA
+
    ! physics buffer indices
    ast_idx      = pbuf_get_index('AST')
    cld_idx      = pbuf_get_index('CLD')
@@ -1136,6 +1152,12 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
    use subcol,          only: subcol_field_avg
    use tropopause,      only: tropopause_find, TROP_ALG_CPP, TROP_ALG_NONE, NOTFOUND
    use wv_saturation,   only: qsat
+
+!++KSA
+   use prescribed_macv2,   only: sp_aop_dNovrN
+   use time_manager,       only: get_curr_date, get_curr_calday
+   use phys_grid,          only: get_rlat_all_p, get_rlon_all_p
+!--KSA
 
    type(physics_state),         intent(in)    :: state
    type(physics_ptend),         intent(out)   :: ptend
@@ -1299,6 +1321,7 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
 
    real(r8), allocatable :: packed_rndst(:,:,:)
    real(r8), allocatable :: packed_nacon(:,:,:)
+
 
    ! Optional outputs.
    real(r8) :: packed_tnd_qsnow(mgncol,nlev)
@@ -1533,6 +1556,18 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
    real(r8) :: racau_grid(pcols)     ! ratio of vertical averages
    integer  :: cnt_grid(pcols)       ! counters
 
+!++KSA variables for MACv2-SP aerosol for HighResMIP --------------------
+   real(r8) :: clat(pcols)     ! current latitudes(radians)
+   real(r8) :: clon(pcols)     ! current longitudes(radians)
+   integer :: yr, mon, day      ! year, month, and day components of date
+   integer :: ncsec             ! current time of day [seconds]
+   integer, parameter :: nmon = 12
+   real(r8), parameter    :: mons(nmon) = (/1., 2., 3., 4., 5., 6., 7., 8., 9.,10.,11.,12./)
+   real(r8), parameter :: lambda  = 550.0_r8     !SW wavelengh input to MACv2-SP
+   real(r8) :: year_fr, calday
+   real(r8) :: dNovrN_grid(pcols)     ! fractional change of droplet concentration
+!--KSA end of variables for MACv2-SP aerosol  --------------------
+   
    logical  :: lq(pcnst)
 
    real(r8) :: icimrst_grid(pcols,pver) ! stratus ice mixing ratio - on grid
@@ -1655,6 +1690,11 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
    psetcols = state%psetcols
    ngrdcol  = state%ngrdcol
 
+   !KSA
+   !ngrdcol = number of grid columns, 
+   !ncol = = ngrdcol * nsubcol, assuming nsubcol is same for all grid columns
+   !      = number of all active (sub)columns
+   
    itim_old = pbuf_old_tim_idx()
 
    call phys_getopts(use_subcol_microp_out=use_subcol_microp)
@@ -2548,6 +2588,64 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
    ncic_grid(:ngrdcol,top_lev:) = nc_grid(:ngrdcol,top_lev:) / &
         max(mincld,liqcldf_grid(:ngrdcol,top_lev:))
 
+!++KSA for MACv2-SP aerosol, Twomey (1st indirect) effect
+  if(do_macv2sp) then
+       
+       call get_curr_date(yr, mon, day, ncsec)
+   
+       calday = get_curr_calday()
+       year_fr = yr + calday/365.0_r8
+   
+       call get_rlat_all_p(lchnk, ngrdcol, clat)
+       call get_rlon_all_p(lchnk, ngrdcol, clon)
+   
+  
+       if (masterproc .AND. localdebug) then !for debug/understanding
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): calling sp_aop_dNovrN'
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): pcols, ncol, mgncol,ngrdcol,lchnk ', pcols, ncol, mgncol,ngrdcol,lchnk
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): yr, mon, day, ncsec', yr, mon, day, ncsec
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): calday', calday
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): year_fr:', year_fr
+       end if
+    
+       !get dNovrN, the fractional increase of droplet number concentration due to anthropogenic
+       !aerosol, from MACv2-SP
+       call sp_aop_dNovrN (ngrdcol ,lambda, state_loc%phis/gravit, clon, clat, year_fr, state_loc%zm, &
+                       dNovrN_grid)
+      
+       if (masterproc .AND. localdebug) then !for debug/understanding
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): ncic_grid(:ngrdcol,10) before', ncic_grid(:ngrdcol,10)
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): dNovrN_grid(:ngrdcol)', dNovrN_grid(:ngrdcol)
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): state_loc%phis(:ngrdcol)', state_loc%phis(:ngrdcol)
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): clon(:ngrdcol)', clon(:ngrdcol)
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): clat(:ngrdcol)', clat(:ngrdcol)
+           !write(iulog,*) 'micro_mg_cam_tend_pack (KSA): max(dNovrN_grid(:ngrdcol)):', maxval(dNovrN_grid(:ngrdcol))
+           !write(iulog,*) 'micro_mg_cam_tend_pack (KSA): min(dNovrN_grid(:ngrdcol)):', minval(dNovrN_grid(:ngrdcol))
+       end if     
+       
+       do k = top_lev, pver
+          do i = 1, ngrdcol
+             ncic_grid(i,k) = ncic_grid(i,k)*dNovrN_grid(i)!standard MACv2-SP
+             !sensitivity test
+             !ncic_grid(i,k) = ncic_grid(i,k)* ( (dNovrN_grid(i)-1._r8)*2._r8  + 1._r8)
+        
+          end do
+       end do
+
+       !this is the last place where ncic_grid is used
+       !lambdaac and mu (in physics buffer) are used only by radiation (and MG scheme)
+       
+       !in-cloud droplet number conc., used by radiation for MACv2-SP
+        call outfld('ICWNC_MACv2',       ncic_grid,       pcols, lchnk)
+        
+        if (masterproc .AND. localdebug) then !for debug/understanding
+            write(iulog,*) 'micro_mg_cam_tend_pack (KSA): ncic_grid(:ngrdcol,10) after', ncic_grid(:ngrdcol,10)
+        end if
+        
+   end if
+   
+!--KSA
+
    call size_dist_param_liq(mg_liq_props, icwmrst_grid(:ngrdcol,top_lev:), &
         ncic_grid(:ngrdcol,top_lev:), rho_grid(:ngrdcol,top_lev:), &
         mu_grid(:ngrdcol,top_lev:), lambdac_grid(:ngrdcol,top_lev:))
@@ -3046,6 +3144,12 @@ subroutine micro_mg_cam_tend_pack(state, ptend, dtime, pbuf, mgncol, mgcols, nle
 
       call outfld("TROPF_RHADJ", cp_rh,       pcols, lchnk)
    end if
+
+!++KSA, writing MACv2_dNovrN for output
+   if(do_macv2sp) then
+       call outfld('MACv2_dNovrN',    dNovrN_grid,      pcols, lchnk)
+   end if
+!--KSA
 
    ! ptend_loc is deallocated in physics_update above
    call physics_state_dealloc(state_loc)

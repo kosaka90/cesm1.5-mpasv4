@@ -885,7 +885,7 @@ module atm_time_integration
       call mpas_pool_get_dimension(state, 'moist_start', moist_start)
       call mpas_pool_get_dimension(state, 'moist_end', moist_end)
 
-      write(stderrUnit,*) 'CMZ moist_start   moist_end:  ',moist_start,'  ',moist_end
+      !write(stderrUnit,*) 'CMZ moist_start   moist_end:  ',moist_start,'  ',moist_end
 
       dtseps = .5*dts*(1.+epssm)
       rcv = rgas/(cp-rgas)

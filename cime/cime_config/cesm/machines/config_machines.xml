@@ -423,7 +423,7 @@
     <!-- KSA: After NERSC major OS update, July 2019 -->
     <!-- KSA: And after Cori emergency update, August 9, 2019, which led to module rm/load error -->
     <modules>
-      <command name="switch">craype craype/2.5.18</command>
+      <command name="load">craype/2.5.18</command>
     </modules>
 
       <!-- KSA: Compilers -->
