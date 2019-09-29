@@ -16,6 +16,8 @@ subroutine qneg3 (subnam  ,idx     ,ncol    ,ncold   ,lver    ,lconst_beg  , &
 !-----------------------------------------------------------------------
    use shr_kind_mod, only: r8 => shr_kind_r8
    use cam_logfile,  only: iulog
+   use spmd_utils,   only: masterproc !added by KSA
+
    implicit none
 
 !------------------------------Arguments--------------------------------
@@ -98,7 +100,15 @@ subroutine qneg3 (subnam  ,idx     ,ncol    ,ncold   ,lver    ,lconst_beg  , &
          end if
       end do
       if (found .and. abs(worst)>max(qmin(m),1.e-12_r8)) then
-         write(iulog,9000)subnam,m,idx,nvals,qmin(m),worst,iw,kw
+!++KSA, added conditioning on master proc to avoild too many write statement from all
+!       procs, which slow down simulation      
+          if (masterproc) then !KSA, for CAM-MPAS's modified logging
+             write(iulog,9000)subnam,m,idx,nvals,qmin(m),worst,iw,kw
+          else
+             !(KSA)standard error unit goes to null
+             write(0,9000)subnam,m,idx,nvals,qmin(m),worst,iw,kw
+          end if
+!--KSA
       end if
    end do
 !
