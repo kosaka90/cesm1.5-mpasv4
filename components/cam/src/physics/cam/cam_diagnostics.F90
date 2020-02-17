@@ -425,6 +425,9 @@ contains
     call addfld ('THE8501000', horiz_only,  'A', 'K','ThetaE difference 850 mb - 1000 mb')
     call addfld ('THE9251000', horiz_only,  'A', 'K','ThetaE difference 925 mb - 1000 mb')
 
+    call addfld ('U10M',       horiz_only,  'A', 'm/s',  'Zonal wind at 10m above surface')
+    call addfld ('V10M',       horiz_only,  'A', 'm/s',  'Meridional wind at 10m above surface')
+
     call addfld ('Q1000',      horiz_only,  'A', 'kg/kg','Specific Humidity at 1000 mbar pressure surface')
     call addfld ('Q925',       horiz_only,  'A', 'kg/kg','Specific Humidity at 925 mbar pressure surface')
     call addfld ('Q850',       horiz_only,  'A', 'kg/kg','Specific Humidity at 850 mbar pressure surface')
@@ -943,7 +946,7 @@ contains
     !-----------------------------------------------------------------------
     use physconst,          only: gravit, rga, rair, cpair, latvap, rearth, pi, cappa
     use time_manager,       only: get_nstep
-    use interpolate_data,   only: vertinterp
+    use interpolate_data,   only: vertinterp, vertinterpz
     use constituent_burden, only: constituent_burden_comp
     use cam_control_mod,    only: moist_physics
     use co2_cycle,          only: c_i, co2_transport
@@ -1220,6 +1223,17 @@ contains
       call vertinterp(ncol, pcols, pver, state%pmid, 20000._r8, state%v, p_surf)
       call outfld('V200    ', p_surf, pcols, lchnk )
     end if
+
+!++BEH
+    if (hist_fld_active('U10M')) then
+       call vertinterpz(ncol, pcols, pver, state%zm, 10._r8, state%u, p_surf)
+       call outfld('U10M    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('V90M')) then
+       call vertinterpz(ncol, pcols, pver, state%zm, 10._r8, state%v, p_surf)
+       call outfld('V10M    ', p_surf, pcols, lchnk )
+    end if
+!--BEH
 
 !++KSA
     if (hist_fld_active('U700')) then
