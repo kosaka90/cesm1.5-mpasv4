@@ -245,7 +245,10 @@ contains
     !++BEH -- add new outputs for HRMIP (high-frequency output)
     call addfld ('OMEGA925',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 925 mbar pressure surface')
     call addfld ('OMEGA250',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 250 mbar pressure surface')
-    call addfld ('Q250',       horiz_only,  'A', 'kg/kg','Specific Humidity at 250 mbar pressure surface')
+    call addfld ('Q250',       horiz_only,  'A', 'kg/kg',     'Specific Humidity at 250 mbar pressure surface')
+    call addfld ('U925',       horiz_only,  'A', 'm/s',       'Zonal wind at 925 mbar pressure surface')
+    call addfld ('V925',       horiz_only,  'A', 'm/s',       'Meridional wind at 200 mbar pressure surface')
+    call addfld ('Z925',       horiz_only,  'A', 'm',         'Geopotential Z at 500 mbar pressure surface')
     !--BEH
 
     call addfld ('PSL',        horiz_only,  'A', 'Pa','Sea level pressure')
@@ -1133,6 +1136,18 @@ contains
     if (hist_fld_active('Q250')) then
       call vertinterp(ncol, pcols, pver, state%pmid, 25000._r8, state%q(1,1,1), p_surf)
       call outfld('Q250    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('U925')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 92500._r8, state%u, p_surf)
+      call outfld('U925    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('V925')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 92500._r8, state%v, p_surf)
+      call outfld('V925    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('Z925')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 92500._r8, z3, p_surf)
+      call outfld('Z925    ', p_surf, pcols, lchnk)
     end if
     !--BEH
     
