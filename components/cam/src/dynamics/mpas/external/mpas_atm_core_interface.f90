@@ -2784,6 +2784,10 @@ write(stderrUnit,*) ' '
 ! Starting group aerosol
 ! Define constituent var aer1
 ! My Packages are cam5
+! Use the next four aerosol (passive scalar) arrays to advect RAINQM, SNOWQM, 
+! NUMRAI, and NUMSNO for MG2 prescribed aerosol. This means we ignore their 
+! influence on moist air density (KSA)
+
       if (cam5Active) then
          index_counter = index_counter + 1
          if (associated(newSubPool)) then
@@ -2862,501 +2866,345 @@ write(stderrUnit,*) ' '
             call mpas_pool_add_dimension(newSubPool, 'index_aer4', -1)
          end if
       end if
-! Define constituent var aer5
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer5', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer5', -1)
-         end if
-      end if
-! Define constituent var aer6
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer6', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer6', -1)
-         end if
-      end if
-! Define constituent var aer7
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer7', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer7', -1)
-         end if
-      end if
-! Define constituent var aer8
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer8', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer8', -1)
-         end if
-      end if
-! Define constituent var aer9
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer9', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer9', -1)
-         end if
-      end if
-! Define constituent var aer10
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer10', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer10', -1)
-         end if
-      end if
-! Define constituent var aer11
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer11', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer11', -1)
-         end if
-      end if
-! Define constituent var aer12
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer12', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer12', -1)
-         end if
-      end if
-! Define constituent var aer13
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer13', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer13', -1)
-         end if
-      end if
-! Define constituent var aer14
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer14', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer14', -1)
-         end if
-      end if
-! Define constituent var aer15
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer15', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer15', -1)
-         end if
-      end if
-! Define constituent var aer16
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer16', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer16', -1)
-         end if
-      end if
-! Define constituent var aer17
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer17', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer17', -1)
-         end if
-      end if
-! Define constituent var aer18
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer18', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer18', -1)
-         end if
-      end if
-! Define constituent var aer19
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer19', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer19', -1)
-         end if
-      end if
-!++CMZ
-! Define constituent var aer21
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer21', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer21', -1)
-         end if
-      end if
-! Define constituent var aer22
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer22', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer22', -1)
-         end if
-      end if
-! Define constituent var aer23
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer23', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer23', -1)
-         end if
-      end if
-! Define constituent var aer24
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer24', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer24', -1)
-         end if
-      end if
-! Define constituent var aer25
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer25', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer25', -1)
-         end if
-      end if
-! Define constituent var aer26
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer26', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer26', -1)
-         end if
-      end if
-! Define constituent var aer27
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer27', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer27', -1)
-         end if
-      end if
-! Define constituent var aer28
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer28', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer28', -1)
-         end if
-      end if
-!--CMZ
-! Define constituent var aer20
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer20', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer20', -1)
-         end if
-      end if
-         if (.not. group_started) then
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', -1)
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_end', -1)
-            end if
-         else
-            group_started = .false.
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_end', index_counter)
-            end if
-         end if
-! End of group       
 
+!++ KSA: comment out all the aerosols below for prescribed aerosol with MG2
+
+!! Define constituent var aer5
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer5', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer5', -1)
+!         end if
+!      end if
+!! Define constituent var aer6
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer6', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer6', -1)
+!         end if
+!      end if
+!! Define constituent var aer7
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer7', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer7', -1)
+!         end if
+!      end if
+!! Define constituent var aer8
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer8', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer8', -1)
+!         end if
+!      end if
+!! Define constituent var aer9
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer9', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer9', -1)
+!         end if
+!      end if
+!! Define constituent var aer10
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer10', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer10', -1)
+!         end if
+!      end if
+!! Define constituent var aer11
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer11', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer11', -1)
+!         end if
+!      end if
+!! Define constituent var aer12
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer12', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer12', -1)
+!         end if
+!      end if
+!! Define constituent var aer13
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer13', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer13', -1)
+!         end if
+!      end if
+!! Define constituent var aer14
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer14', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer14', -1)
+!         end if
+!      end if
+!! Define constituent var aer15
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer15', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer15', -1)
+!         end if
+!      end if
+!! Define constituent var aer16
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer16', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer16', -1)
+!         end if
+!      end if
+!! Define constituent var aer17
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer17', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer17', -1)
+!         end if
+!      end if
+!! Define constituent var aer18
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer18', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer18', -1)
+!         end if
+!      end if
+!! Define constituent var aer19
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer19', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer19', -1)
+!         end if
+!      end if
+!! Define constituent var aer20
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer20', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer20', -1)
+!         end if
+!      end if
+
+!--KSA: end of comments for prescribed aerosol with MG2
+
+     if (.not. group_started) then
+        if (associated(newSubPool)) then
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_start', -1)
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_end', -1)
+        end if
+     else
+        group_started = .false.
+        if (associated(newSubPool)) then
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_end', index_counter)
+        end if
+     end if
+
+! End of group       
 
 
       numConstituents = index_counter
@@ -3364,9 +3212,9 @@ write(stderrUnit,*) ' '
          call mpas_pool_add_dimension(newSubPool, 'num_scalars', numConstituents)
       end if
 
-!++CMZ      
-      write(stderrUnit,*) 'CMZ1 numConstituents: ', index_counter
-!--CMZ
+!++KSA      
+      write(stderrUnit,*) 'KSA1 numConstituents: ', index_counter
+!--KSA
 
 ! Defining time level 1
       allocate( r3Ptr(1) % constituentNames(numConstituents) )
@@ -3407,6 +3255,9 @@ write(stderrUnit,*) ' '
       if (index_counter > 0) then
          r3Ptr(1) % constituentNames(const_index) = 'qni'
       end if
+
+    
+      !KSA: we use the following four to advect rain and snow prognostic variables
       if (associated(newSubPool)) then
          call mpas_pool_get_dimension(newSubPool, 'index_aer1', const_index)
       end if
@@ -3431,167 +3282,112 @@ write(stderrUnit,*) ' '
       if (index_counter > 0) then
          r3Ptr(1) % constituentNames(const_index) = 'aer4'
       end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer5', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer5'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer6', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer6'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer7', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer7'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer8', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer8'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer9', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer9'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer10', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer10'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer11', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer11'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer12', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer12'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer13', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer13'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer14', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer14'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer15', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer15'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer16', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer16'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer17', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer17'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer18', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer18'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer19', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer19'
-      end if
 
 
-!++CMZ
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer21', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer21'
-      end if
+!++ KSA: remove the following advected aerosols
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer5', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer5'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer6', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer6'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer7', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer7'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer8', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer8'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer9', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer9'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer10', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer10'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer11', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer11'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer12', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer12'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer13', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer13'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer14', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer14'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer15', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer15'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer16', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer16'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer17', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer17'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer18', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer18'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer19', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer19'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer20', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer20'
+!      end if
+!--KSA
 
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer22', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer22'
-      end if
 
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer23', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer23'
-      end if
+!++KSA      
+      write(stderrUnit,*) 'KSA2 numConstituents'
+!--KSA
 
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer24', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer24'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer25', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer25'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer26', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer26'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer27', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer27'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer28', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer28'
-      end if
-!--CMZ
-
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer20', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer20'
-      end if
-
-!++CMZ      
-      write(stderrUnit,*) 'CMZ2 numConstituents'
-!--CMZ
 
 ! Setup dimensions for       
       r3Ptr(1) % dimNames(1) = 'num_scalars'
@@ -3669,161 +3465,106 @@ write(stderrUnit,*) ' '
       if (index_counter > 0) then
          r3Ptr(2) % constituentNames(const_index) = 'aer4'
       end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer5', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer5'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer6', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer6'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer7', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer7'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer8', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer8'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer9', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer9'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer10', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer10'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer11', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer11'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer12', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer12'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer13', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer13'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer14', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer14'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer15', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer15'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer16', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer16'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer17', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer17'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer18', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer18'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer19', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer19'
-      end if
 
-!++CMZ
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer21', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer21'
-      end if
+!++KSA
 
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer22', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer22'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer23', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer23'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer24', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer24'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer25', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer25'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer26', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer26'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer27', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer27'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer28', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer28'
-      end if
-!--CMZ
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer20', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(2) % constituentNames(const_index) = 'aer20'
-      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer5', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer5'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer6', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer6'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer7', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer7'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer8', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer8'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer9', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer9'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer10', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer10'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer11', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer11'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer12', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer12'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer13', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer13'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer14', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer14'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer15', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer15'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer16', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer16'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer17', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer17'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer18', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer18'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer19', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer19'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer20', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(2) % constituentNames(const_index) = 'aer20'
+!      end if
+!--KSA
 
 ! Setup dimensions for       
       r3Ptr(2) % dimNames(1) = 'num_scalars'
@@ -4679,6 +4420,33 @@ write(stderrUnit,*) ' '
       r2Ptr(1) % isActive = .true.
       call mpas_pool_add_field(newSubPool, 'pv_cell', r2Ptr)
       call mpas_pool_add_field(block % allFields, 'pv_cell', r2Ptr)
+
+!++KSA Define variable vort_cell (vorticity at cell centers)
+      allocate(r2Ptr(1))
+
+! Setting up time level 1
+      r2Ptr(1) % fieldName = 'vor_cell'
+      r2Ptr(1) % isVarArray = .false.
+      r2Ptr(1) % isDecomposed = .true.
+      r2Ptr(1) % hasTimeDimension = .true.
+      r2Ptr(1) % isPersistent = .true.
+      r2Ptr(1) % isActive = .false.
+! Setting up dimensions
+      r2Ptr(1) % dimNames(1) = 'nVertLevels'
+      r2Ptr(1) % dimNames(2) = 'nCells'
+     r2Ptr(1) % defaultValue = 0.0
+     nullify(r2Ptr(1) % array)
+      nullify(r2Ptr(1) % next)
+      nullify(r2Ptr(1) % prev)
+      nullify(r2Ptr(1) % sendList)
+      nullify(r2Ptr(1) % recvList)
+      nullify(r2Ptr(1) % copyList)
+      r2Ptr(1) % block => block
+
+      r2Ptr(1) % isActive = .true.
+      call mpas_pool_add_field(newSubPool, 'vor_cell', r2Ptr)
+      call mpas_pool_add_field(block % allFields, 'vor_cell', r2Ptr)
+!--KSA
 
 ! Define variable uReconstructX
       allocate(r2Ptr(1))
@@ -6669,513 +6437,344 @@ write(stderrUnit,*) ' '
             call mpas_pool_add_dimension(newSubPool, 'index_aer4', -1)
          end if
       end if
-! Define constituent var tend_aer5
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer5', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer5', -1)
-         end if
-      end if
-! Define constituent var tend_aer6
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer6', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer6', -1)
-         end if
-      end if
-! Define constituent var tend_aer7
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer7', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer7', -1)
-         end if
-      end if
-! Define constituent var tend_aer8
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer8', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer8', -1)
-         end if
-      end if
-! Define constituent var tend_aer9
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer9', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer9', -1)
-         end if
-      end if
-! Define constituent var tend_aer10
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer10', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer10', -1)
-         end if
-      end if
-! Define constituent var tend_aer11
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer11', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer11', -1)
-         end if
-      end if
-! Define constituent var tend_aer12
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer12', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer12', -1)
-         end if
-      end if
-! Define constituent var tend_aer13
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer13', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer13', -1)
-         end if
-      end if
-! Define constituent var tend_aer14
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer14', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer14', -1)
-         end if
-      end if
-! Define constituent var tend_aer15
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer15', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer15', -1)
-         end if
-      end if
-! Define constituent var tend_aer16
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer16', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer16', -1)
-         end if
-      end if
-! Define constituent var tend_aer17
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer17', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer17', -1)
-         end if
-      end if
-! Define constituent var tend_aer18
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer18', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer18', -1)
-         end if
-      end if
-! Define constituent var tend_aer19
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer19', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer19', -1)
-         end if
-      end if
-
-!++CMZ
-
-! Define constituent var tend_aer21
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer21', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer21', -1)
-         end if
-      end if
-
-! Define constituent var tend_aer22
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer22', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer22', -1)
-         end if
-      end if
-
-! Define constituent var tend_aer23
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer23', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer23', -1)
-         end if
-      end if
-
-! Define constituent var tend_aer24
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer24', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer24', -1)
-         end if
-      end if
-
-! Define constituent var tend_aer25
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer25', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer25', -1)
-         end if
-      end if
-
-! Define constituent var tend_aer26
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer26', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer26', -1)
-         end if
-      end if
-
-! Define constituent var tend_aer27
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer27', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer27', -1)
-         end if
-      end if
-
-! Define constituent var tend_aer28
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer28', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer28', -1)
-         end if
-      end if
 
 
-!--CMZ
+!++KSA
+!! Define constituent var tend_aer5
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer5', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer5', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer6
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer6', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer6', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer7
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer7', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer7', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer8
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer8', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer8', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer9
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer9', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer9', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer10
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer10', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer10', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer11
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer11', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer11', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer12
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer12', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer12', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer13
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer13', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer13', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer14
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer14', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer14', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer15
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer15', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer15', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer16
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer16', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer16', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer17
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer17', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer17', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer18
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer18', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer18', -1)
+!         end if
+!      end if
+!! Define constituent var tend_aer19
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer19', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer19', -1)
+!         end if
+!      end if
 
-
-
-! Define constituent var tend_aer20
+!! Define constituent var tend_aer20
 ! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer20', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer20', -1)
-         end if
-      end if
-         if (.not. group_started) then
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', -1)
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_end', -1)
-            end if
-         else
-            group_started = .false.
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_end', index_counter)
-            end if
-         end if
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer20', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer20', -1)
+!         end if
+!      end if
+!--KSA
+
+     if (.not. group_started) then
+        if (associated(newSubPool)) then
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_start', -1)
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_end', -1)
+        end if
+     else
+        group_started = .false.
+        if (associated(newSubPool)) then
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_end', index_counter)
+        end if
+     end if
+
 ! End of group       
 
       numConstituents = index_counter
@@ -7245,161 +6844,105 @@ write(stderrUnit,*) ' '
       if (index_counter > 0) then
          r3Ptr(1) % constituentNames(const_index) = 'tend_aer4'
       end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer5', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer5'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer6', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer6'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer7', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer7'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer8', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer8'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer9', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer9'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer10', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer10'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer11', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer11'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer12', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer12'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer13', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer13'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer14', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer14'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer15', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer15'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer16', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer16'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer17', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer17'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer18', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer18'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer19', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer19'
-      end if
 
-!++CMZ
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer21', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer21'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer22', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer22'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer23', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer23'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer24', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer24'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer25', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer25'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer26', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer26'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer27', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer27'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer28', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer28'
-      end if
-!--CMZ
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer20', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'tend_aer20'
-      end if
+!++KSA: Removed the following for the prescribed aerosol
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer5', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer5'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer6', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer6'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer7', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer7'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer8', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer8'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer9', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer9'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer10', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer10'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer11', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer11'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer12', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer12'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer13', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer13'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer14', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer14'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer15', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer15'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer16', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer16'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer17', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer17'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer18', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer18'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer19', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer19'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer20', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'tend_aer20'
+!      end if
+!--KSA
 
 ! Setup dimensions for       
       r3Ptr(1) % dimNames(1) = 'num_scalars_tend'
@@ -7955,512 +7498,343 @@ write(stderrUnit,*) ' '
             call mpas_pool_add_dimension(newSubPool, 'index_aer4', -1)
          end if
       end if
-! Define constituent var aer5_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer5', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer5', -1)
-         end if
-      end if
-! Define constituent var aer6_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer6', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer6', -1)
-         end if
-      end if
-! Define constituent var aer7_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer7', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer7', -1)
-         end if
-      end if
-! Define constituent var aer8_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer8', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer8', -1)
-         end if
-      end if
-! Define constituent var aer9_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer9', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer9', -1)
-         end if
-      end if
-! Define constituent var aer10_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer10', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer10', -1)
-         end if
-      end if
-! Define constituent var aer11_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer11', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer11', -1)
-         end if
-      end if
-! Define constituent var aer12_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer12', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer12', -1)
-         end if
-      end if
-! Define constituent var aer13_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer13', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer13', -1)
-         end if
-      end if
-! Define constituent var aer14_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer14', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer14', -1)
-         end if
-      end if
-! Define constituent var aer15_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer15', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer15', -1)
-         end if
-      end if
-! Define constituent var aer16_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer16', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer16', -1)
-         end if
-      end if
-! Define constituent var aer17_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer17', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer17', -1)
-         end if
-      end if
-! Define constituent var aer18_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer18', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer18', -1)
-         end if
-      end if
-! Define constituent var aer19_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer19', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer19', -1)
-         end if
-      end if
 
-!++CMZ
+!++KSA
+!! Define constituent var aer5_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer5', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer5', -1)
+!         end if
+!      end if
+!! Define constituent var aer6_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer6', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer6', -1)
+!         end if
+!      end if
+!! Define constituent var aer7_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer7', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer7', -1)
+!         end if
+!      end if
+!! Define constituent var aer8_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer8', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer8', -1)
+!         end if
+!      end if
+!! Define constituent var aer9_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer9', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer9', -1)
+!         end if
+!      end if
+!! Define constituent var aer10_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer10', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer10', -1)
+!         end if
+!      end if
+!! Define constituent var aer11_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer11', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer11', -1)
+!         end if
+!      end if
+!! Define constituent var aer12_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer12', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer12', -1)
+!         end if
+!      end if
+!! Define constituent var aer13_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer13', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer13', -1)
+!         end if
+!      end if
+!! Define constituent var aer14_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer14', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer14', -1)
+!         end if
+!      end if
+!! Define constituent var aer15_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer15', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer15', -1)
+!         end if
+!      end if
+!! Define constituent var aer16_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer16', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer16', -1)
+!         end if
+!      end if
+!! Define constituent var aer17_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer17', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer17', -1)
+!         end if
+!      end if
+!! Define constituent var aer18_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer18', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer18', -1)
+!         end if
+!      end if
+!! Define constituent var aer19_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer19', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer19', -1)
+!         end if
+!      end if
+!! Define constituent var aer20_cam_tend
+!! My packages are cam5
+!      if (cam5Active) then
+!         index_counter = index_counter + 1
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer20', index_counter)
+!         end if
+!         group_counter = group_counter + 1
+!         if (.not. group_started) then
+!            group_start = index_counter
+!            if (associated(newSubPool)) then
+!               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
+!            end if
+!            group_started = .true.
+!         end if
+!      else
+!         if (associated(newSubPool)) then
+!            call mpas_pool_add_dimension(newSubPool, 'index_aer20', -1)
+!         end if
+!      end if
 
-! Define constituent var aer21_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer21', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer21', -1)
-         end if
-      end if
+!--KSA
 
-! Define constituent var aer22_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer22', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer22', -1)
-         end if
-      end if
-
-! Define constituent var aer23_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer23', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer23', -1)
-         end if
-      end if
-
-! Define constituent var aer24_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer24', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer24', -1)
-         end if
-      end if
-
-! Define constituent var aer25_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer25', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer25', -1)
-         end if
-      end if
-
-! Define constituent var aer26_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer26', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer26', -1)
-         end if
-      end if
-
-! Define constituent var aer27_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer27', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer27', -1)
-         end if
-      end if
-
-! Define constituent var aer28_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer28', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer28', -1)
-         end if
-      end if
-
-!--CMZ
-
-
-! Define constituent var aer20_cam_tend
-! My packages are cam5
-      if (cam5Active) then
-         index_counter = index_counter + 1
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer20', index_counter)
-         end if
-         group_counter = group_counter + 1
-         if (.not. group_started) then
-            group_start = index_counter
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', group_start)
-            end if
-            group_started = .true.
-         end if
-      else
-         if (associated(newSubPool)) then
-            call mpas_pool_add_dimension(newSubPool, 'index_aer20', -1)
-         end if
-      end if
-         if (.not. group_started) then
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_start', -1)
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_end', -1)
-            end if
-         else
-            group_started = .false.
-            if (associated(newSubPool)) then
-               call mpas_pool_add_dimension(newSubPool, 'aerosol_end', index_counter)
-            end if
-         end if
-! End of group       
+     if (.not. group_started) then
+        if (associated(newSubPool)) then
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_start', -1)
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_end', -1)
+        end if
+     else
+        group_started = .false.
+        if (associated(newSubPool)) then
+           call mpas_pool_add_dimension(newSubPool, 'aerosol_end', index_counter)
+        end if
+     end if
+!! End of group       
 
       numConstituents = index_counter
       if (associated(newSubPool)) then
@@ -8529,160 +7903,104 @@ write(stderrUnit,*) ' '
       if (index_counter > 0) then
          r3Ptr(1) % constituentNames(const_index) = 'aer4_cam_tend'
       end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer5', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer5_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer6', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer6_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer7', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer7_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer8', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer8_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer9', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer9_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer10', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer10_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer11', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer11_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer12', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer12_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer13', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer13_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer14', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer14_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer15', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer15_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer16', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer16_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer17', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer17_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer18', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer18_cam_tend'
-      end if
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer19', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer19_cam_tend'
-      end if
 
-!++CMZ
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer21', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer21_cam_tend'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer22', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer22_cam_tend'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer23', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer23_cam_tend'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer24', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer24_cam_tend'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer25', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer25_cam_tend'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer26', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer26_cam_tend'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer27', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer27_cam_tend'
-      end if
-
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer28', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer28_cam_tend'
-      end if
-!--CMZ
-      if (associated(newSubPool)) then
-         call mpas_pool_get_dimension(newSubPool, 'index_aer20', const_index)
-      end if
-      if (index_counter > 0) then
-         r3Ptr(1) % constituentNames(const_index) = 'aer20_cam_tend'
-      end if
+!++KSA
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer5', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer5_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer6', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer6_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer7', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer7_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer8', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer8_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer9', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer9_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer10', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer10_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer11', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer11_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer12', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer12_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer13', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer13_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer14', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer14_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer15', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer15_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer16', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer16_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer17', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer17_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer18', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer18_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer19', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer19_cam_tend'
+!      end if
+!      if (associated(newSubPool)) then
+!         call mpas_pool_get_dimension(newSubPool, 'index_aer20', const_index)
+!      end if
+!      if (index_counter > 0) then
+!         r3Ptr(1) % constituentNames(const_index) = 'aer20_cam_tend'
+!      end if
 
 ! Setup dimensions for       
       r3Ptr(1) % dimNames(1) = 'num_scalars_cam_tend'

@@ -181,6 +181,11 @@ contains
       call addfld ('PRESSURE',   (/ 'lev' /), 'A','Pa',         'Pressure')
       call addfld ('PRESSUREi',  (/ 'ilev' /),'A','Pa',         'Pressure at interface')
       call addfld ('Z3i',        (/ 'ilev' /),'A', 'm',         'Geopotential Height at interface (above sea level)') !BEH
+    !++KSA
+      call addfld ('DIV',   (/ 'lev' /), 'A','1/s',         'Divergence')
+      call addfld ('VOR',   (/ 'lev' /), 'A','1/s',         'Vorticity')
+    ! outfld calls in subroutine d_p_coupling
+    !--KSA
     end if
 !--CMZ
 
@@ -236,7 +241,15 @@ contains
     call addfld ('OMEGA500',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 500 mbar pressure surface')
 !++KSA
     call addfld ('OMEGA700',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 700 mbar pressure surface')
-!--KSA
+    !--KSA
+    !++BEH -- add new outputs for HRMIP (high-frequency output)
+    call addfld ('OMEGA925',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 925 mbar pressure surface')
+    call addfld ('OMEGA250',   horiz_only,  'A', 'Pa/s',      'Vertical velocity at 250 mbar pressure surface')
+    call addfld ('Q250',       horiz_only,  'A', 'kg/kg',     'Specific Humidity at 250 mbar pressure surface')
+    call addfld ('U925',       horiz_only,  'A', 'm/s',       'Zonal wind at 925 mbar pressure surface')
+    call addfld ('V925',       horiz_only,  'A', 'm/s',       'Meridional wind at 200 mbar pressure surface')
+    call addfld ('Z925',       horiz_only,  'A', 'm',         'Geopotential Z at 500 mbar pressure surface')
+    !--BEH
 
     call addfld ('PSL',        horiz_only,  'A', 'Pa','Sea level pressure')
 
@@ -411,6 +424,9 @@ contains
 
     call addfld ('THE8501000', horiz_only,  'A', 'K','ThetaE difference 850 mb - 1000 mb')
     call addfld ('THE9251000', horiz_only,  'A', 'K','ThetaE difference 925 mb - 1000 mb')
+
+    call addfld ('U10M',       horiz_only,  'A', 'm/s',  'Zonal wind at 10m above surface')
+    call addfld ('V10M',       horiz_only,  'A', 'm/s',  'Meridional wind at 10m above surface')
 
     call addfld ('Q1000',      horiz_only,  'A', 'kg/kg','Specific Humidity at 1000 mbar pressure surface')
     call addfld ('Q925',       horiz_only,  'A', 'kg/kg','Specific Humidity at 925 mbar pressure surface')
@@ -930,7 +946,7 @@ contains
     !-----------------------------------------------------------------------
     use physconst,          only: gravit, rga, rair, cpair, latvap, rearth, pi, cappa
     use time_manager,       only: get_nstep
-    use interpolate_data,   only: vertinterp
+    use interpolate_data,   only: vertinterp, vertinterpz
     use constituent_burden, only: constituent_burden_comp
     use cam_control_mod,    only: moist_physics
     use co2_cycle,          only: c_i, co2_transport
@@ -1110,6 +1126,34 @@ contains
       call outfld('OMEGA700', p_surf, pcols, lchnk)
     end if
 !--KSA
+
+    !++BEH
+    if (hist_fld_active('OMEGA925')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 92500._r8, state%omega, p_surf)
+      call outfld('OMEGA925', p_surf, pcols, lchnk)
+    end if
+    if (hist_fld_active('OMEGA250')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 25000._r8, state%omega, p_surf)
+      call outfld('OMEGA250', p_surf, pcols, lchnk)
+    end if
+    if (hist_fld_active('Q250')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 25000._r8, state%q(1,1,1), p_surf)
+      call outfld('Q250    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('U925')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 92500._r8, state%u, p_surf)
+      call outfld('U925    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('V925')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 92500._r8, state%v, p_surf)
+      call outfld('V925    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('Z925')) then
+      call vertinterp(ncol, pcols, pver, state%pmid, 92500._r8, z3, p_surf)
+      call outfld('Z925    ', p_surf, pcols, lchnk)
+    end if
+    !--BEH
+    
     !
     ! Sea level pressure
     !
@@ -1179,6 +1223,17 @@ contains
       call vertinterp(ncol, pcols, pver, state%pmid, 20000._r8, state%v, p_surf)
       call outfld('V200    ', p_surf, pcols, lchnk )
     end if
+
+!++BEH
+    if (hist_fld_active('U10M')) then
+       call vertinterpz(ncol, pcols, pver, state%zm, 10._r8, state%u, p_surf)
+       call outfld('U10M    ', p_surf, pcols, lchnk )
+    end if
+    if (hist_fld_active('V90M')) then
+       call vertinterpz(ncol, pcols, pver, state%zm, 10._r8, state%v, p_surf)
+       call outfld('V10M    ', p_surf, pcols, lchnk )
+    end if
+!--BEH
 
 !++KSA
     if (hist_fld_active('U700')) then

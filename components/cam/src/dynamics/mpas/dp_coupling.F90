@@ -70,6 +70,10 @@ CONTAINS
     real(r8), pointer :: temp(:,:)
     real(r8), pointer :: omega(:,:)
     real(r8), pointer :: tracer(:,:,:)
+!++KSA
+    real(r8), pointer :: div(:,:)
+    real(r8), pointer :: vor(:,:)
+!--KSA
 
     integer :: lchnk, icol, k      ! indices over chunks, columns, layers
     integer :: ncols, ig, nblk, nb, m, i
@@ -98,12 +102,17 @@ CONTAINS
     temp => dyn_out%t
     omega => dyn_out%omega
     tracer => dyn_out%tracer
+!++KSA
+    div => dyn_out%div
+    vor => dyn_out%vor
+!--KSA
 
 ! Note: Omega is dimensioned plev+1, but this interface transmits only the first plev levels.
     call mpas_to_cam(numcols, pver, pcnst, psd, phis, pint(:,pverp:1:-1), pmid(:,pver:1:-1), &
                      zint(:,pverp:1:-1), zmid(:,pver:1:-1), &
                      temp(:,plev:1:-1), ux(:,plev:1:-1), uy(:,plev:1:-1), &
-                     omega(:,plev:1:-1), tracer(:,plev:1:-1,:)) 
+                     omega(:,plev:1:-1), tracer(:,plev:1:-1,:), div(:,plev:1:-1),vor(:,plev:1:-1)) 
+    !KSA div(:,plev:1:-1),vor(:,plev:1:-1) added
     omega(:,plev+1) = 0._r8
 
 
@@ -132,6 +141,10 @@ CONTAINS
                 !phys_state(lchnk)%pmid(icol,k)=pmid(i,k)
                 phys_state(lchnk)%zi(icol,k)=zint(i,k)
                 phys_state(lchnk)%zm(icol,k)=zmid(i,k)
+!++KSA
+                phys_state(lchnk)%div(icol,k)=div(i,k)
+                phys_state(lchnk)%vor(icol,k)=vor(i,k)
+!--KSA
              end do
              phys_state(lchnk)%pintdry(icol,pverp)=pint(i,pverp)
              !phys_state(lchnk)%pint(icol,pverp)=pint(i,pverp)
@@ -230,6 +243,12 @@ CONTAINS
     call derived_phys(phys_state,phys_tend,pbuf2d)
     call t_stopf('derived_phys')
 
+!++KSA
+   do lchnk=begchunk,endchunk
+        call outfld('DIV',phys_state(lchnk)%div,pcols,lchnk)
+        call outfld('VOR',phys_state(lchnk)%vor,pcols,lchnk)
+   end do
+!--KSA
 
     if (write_inithist() ) then
      do lchnk=begchunk,endchunk
